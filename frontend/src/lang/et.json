@@ -1,0 +1,10 @@
+{
+    "mainPage": {
+        "title": "Apteegileidja",
+        "introduction": "Apteegileidja on kogukonna juhitud platform, mis pakub eesti trans ja mittebinaarsetele inimestele informatsiooni apteekide kohta, eelkõige teiste tagasisidet seoses hormoonravi retseptide ostmisega. Eesti trans inimesed peavad praegu ootama ligi 3 aastat komisjoni järjekorras, selleks et oleks võimalik üldse saada Eesti tervishoiu süsteemis ligipääs transtervishoiule, mistõttu on paljud kaalunud kas nn DIY hormoonravi või Imago/GenderGP kasuks. Olenemata asjaolust, et Imago ja GenderGP retseptid on Euroopa Liidus kehtivad, kipuvad paljud apteekrid kas teadmatusest või eelarvamustest neid retsepte mitte väljastama, mis arusaadavalt põhjustab palju stressi. Probleeme võib kahjuks ka tekkida eesti arsti poolt väljastatud hormoonravi retseptidega, kas siis eelarvamuste või otsese transfoobia tõttu. Selle projekti peamine eesmärk on pakkuda inimestele võimalust apteekidega seoses oma tagasiside anda, kui ka teiste tagasisidet lugeda seoses siis Imago/GenderGP retseptide või eesti arsti poolt väljastatud hormoonravi retseptidega.",
+        "gotoMap": {
+            "pretext": "Liigu interaktiivsele",
+            "title": "kaardile"
+        }
+    }
+}

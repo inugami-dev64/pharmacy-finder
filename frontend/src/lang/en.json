@@ -1,0 +1,10 @@
+{
+    "mainPage": {
+        "title": "Pharmacy finder",
+        "introduction": "Pharmacy finder is a community led platform, that provides Estonian trans and non-binary people with knowledge about pharmacies and overall experiences of having HRT medications dispensed there. Estonian trans people currently face around 3 year waitlists when trying to gain access to trans healthcare via national health service, which is why many people have opted to either DIY options or foreign telehealth services such as Imago or GenderGP. Sadly there are pharmacies out there which refuse to fill Imago or GenderGP prescriptions due to either pharmacists not being knowledgable enough to fill them or baselessly accusing these prescriptions of being fradulant which can understandably cause a lot of distress to those trying to dispense them. Issues can also arise when trying to dispense HRT medicine that is issued by an Estonian doctor due to some pharmacists being straight up transphobic or having prejudices towards their customers. The main goal of this project is to help people share their experiences with pharmacies so that others can make better decisions when it comes picking a pharmacy to dispense HRT medicine, whether it's from Imago/GenderGP or from an Estonian doctor.",
+        "gotoMap": {
+            "pretext": "Go to interactive",
+            "title": "map"
+        }
+    }
+}
