@@ -1,9 +1,11 @@
 <script lang="ts">
     import { _ } from 'svelte-i18n';
     import TransHeart from '../components/main/TransHeart.svelte'
+    import LanguageSwitcher from '../components/common/LanguageSwitcher.svelte';
 </script>
 
 <div class="wrapper">
+    <LanguageSwitcher/>
     <div class="intro-container">
         <img src="banner.svg" alt="banner" class="banner">
         <h1>{$_("mainPage.title")}</h1>
