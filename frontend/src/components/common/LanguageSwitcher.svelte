@@ -12,7 +12,6 @@
         }
     ])
 
-    console.log("en")
     let selectedValue: string | undefined = $state()
 
     function changeLanguage(e: Event) {
