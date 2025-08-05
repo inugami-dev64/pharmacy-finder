@@ -1,5 +1,6 @@
 <script lang="ts">
     import { _ } from 'svelte-i18n';
+    import TransHeart from '../components/main/TransHeart.svelte'
 </script>
 
 <div class="wrapper">
@@ -11,7 +12,7 @@
     </div>
 
     <footer>
-        <span>Made with love by Karmen aka <a href="https://github.com/inugami-dev64">inugami-dev64</a></span>
+        <span>Made with <TransHeart width=32 height=32/> by Karmen aka <a href="https://github.com/inugami-dev64">inugami-dev64</a></span>
     </footer>
 </div>
 
