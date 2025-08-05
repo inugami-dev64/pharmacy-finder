@@ -11,6 +11,8 @@
     --h5-size: 22px;
     --h6-size: 20px;
     --normal-text-size: 18px;
+    --primary-text-color: #171921;
+    --secondary-text-color: #4f4f4f;
 }
 
 body {
@@ -23,19 +25,28 @@ body {
 
 h1, h2, h3, h4, h5, h6, b {
     font-weight: var(--bold-text-weight);
+    color: var(--primary-text-color);
 }
 
 b {
     font-size: var(--normal-text-size);
+    color: var(--primary-text-color);
 }
 
 p, span, a, div, ol, ul, li, hr, pre, blockquote {
     font-weight: var(--normal-text-weight);
     font-size: var(--normal-text-size);
+    color: var(--primary-text-color);
 }
 
 a {
     text-decoration: none;
+    color: var(--primary-text-color);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--secondary-text-color)
 }
 
 h1 {
