@@ -1,7 +1,13 @@
 <script lang="ts">
     import type { PharmacyInfo } from '$lib/service/pharmacy-info';
-    import type { LatLngExpression } from 'leaflet';
+    import type { Icon, LatLngExpression } from 'leaflet';
     import { onMount, onDestroy } from 'svelte';
+
+    // Pharmacy icons
+    import ApothekaMarker from "$lib/assets/markers/apotheka.png";
+    import SudameapteekMarker from "$lib/assets/markers/sudameapteek.png";
+    import BenuMarker from "$lib/assets/markers/benu.png";
+    import EuroapteekMarker from "$lib/assets/markers/euroapteek.png";
 
     export let pharmacies: PharmacyInfo[];
     export let callback: (pharmacy: PharmacyInfo) => Promise<void>;
@@ -19,6 +25,14 @@
         ];
 
         const leaflet = await import('leaflet');
+
+        const markers: Map<String, Icon> = new Map<String, Icon>([
+            ["apotheka", leaflet.icon({iconUrl: ApothekaMarker, iconSize: [32, 32], iconAnchor: [16, 16]})],
+            ["südameapteek", leaflet.icon({iconUrl: SudameapteekMarker, iconSize: [32, 32], iconAnchor: [16, 16]})],
+            ["benu", leaflet.icon({iconUrl: BenuMarker, iconSize: [32, 32], iconAnchor: [16, 16]})],
+            ["euroapteek", leaflet.icon({iconUrl: EuroapteekMarker, iconSize: [32, 32], iconAnchor: [16, 16]})]
+        ]);
+
         map = leaflet.map(mapElement, { zoomControl: false }).setView(MAP_CENTER, 13);
         map.fitBounds(MAP_BOUNDS)
         leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -26,11 +40,12 @@
         }).addTo(map);
 
         for (let pharmacy of pharmacies) {
-            leaflet.marker([<number>pharmacy.latitude, <number>pharmacy.longitude]).
+            let icon = markers.get(pharmacy.chain?.toLowerCase() || "none")
+            leaflet.marker(
+                    [<number>pharmacy.latitude, <number>pharmacy.longitude], 
+                    icon === undefined ? undefined : {icon: icon}).
                 addTo(map).
-                on('click', e => {
-                    callback(pharmacy)
-                })
+                on('click', e => callback(pharmacy));
         }
     });
 
