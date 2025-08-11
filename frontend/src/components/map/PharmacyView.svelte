@@ -8,6 +8,7 @@
     import ApothekaLogo from "$lib/assets/apotheka-logo.svg"
     import SudameapteekLogo from "$lib/assets/sudameapteek-logo.svg"
     import EuroapteekLogo from "$lib/assets/euroapteek-logo.svg"
+    import Loader from "../common/widgets/Loader.svelte";
 
     export let pharmacy: PharmacyInfo;
     export let visible: boolean;
@@ -47,6 +48,11 @@
             <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View less</button>
             {/if}
         </div>
+
+        <div class="phr-ratings">
+            <div class="loader-container">
+                <Loader/>
+            </div>
         </div>
     </div>
 </div>
@@ -56,6 +62,13 @@
     h3, p {
         padding: 0;
         margin: 0;
+    }
+
+    .loader-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        height: fit-content;
     }
 
     .phr-view {
