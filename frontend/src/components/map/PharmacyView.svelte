@@ -11,6 +11,9 @@
 
     export let pharmacy: PharmacyInfo;
     export let visible: boolean;
+
+    let showMoreAverageScores: boolean = false;
+    
 </script>
 
 {#if visible}
@@ -34,7 +37,16 @@
             <p>{pharmacy.chain}</p>
             <h3>{pharmacy.name}</h3>
             <p>{pharmacy.aadress}, {pharmacy.postalCode}, {pharmacy.city}, {pharmacy.county}</p>
-            <span><StarRating value={pharmacy.avgRating || 0}/></span>
+            <span><StarRating value={pharmacy.overallRating || 0} title="Overall rating"/></span>
+            {#if !showMoreAverageScores}
+            <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View more...</button>
+            {:else}
+            <span><StarRating value={pharmacy.acceptanceRating || 0} title="Acceptance rating"/></span>
+            <span><StarRating value={pharmacy.eRating || 0} title="E rating"/></span>
+            <span><StarRating value={pharmacy.tRating || 0} title="T rating"/></span>
+            <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View less</button>
+            {/if}
+        </div>
         </div>
     </div>
 </div>
@@ -51,8 +63,8 @@
         left: 1em;
         top: 1em;
         width: calc(25% - 2em);
-        min-width: 360px;
-        max-width: 400px;
+        min-width: 380px;
+        max-width: 420px;
         height: fit-content;
         max-height: calc(100% - 2em);
         padding: 1em;
@@ -66,6 +78,11 @@
     .phr-view > div > img {
         margin-bottom: 2em;
         width: 100%;
+    }
+
+    .phr-info {
+        margin-bottom: 0.5em;
+        border-bottom: 1px solid #cfcfcf;
     }
 
     .close {
