@@ -1,4 +1,5 @@
 <script lang="ts">
+    export let title: string;
     export let value: number;
 </script>
 
@@ -27,6 +28,7 @@
             </g>
         </svg>
     </div>
+    <span>{title}: </span>
     <span>{value}/5</span>
 </div>
 {/if}
