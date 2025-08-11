@@ -9,7 +9,10 @@ export class PharmacyInfo {
     phoneNumber: string | undefined
     latitude: number | undefined;
     longitude: number | undefined;
-    avgRating: number | undefined;
+    overallRating: number | undefined;
+    acceptanceRating: number | undefined;
+    eRating: number | undefined;
+    tRating: number | undefined;
 }
 
 export async function getPharmacies(): Promise<PharmacyInfo[]> {
@@ -24,7 +27,10 @@ export async function getPharmacies(): Promise<PharmacyInfo[]> {
             phoneNumber: "+3726109490",
             latitude: 59.437264,
             longitude: 24.760051,
-            avgRating: 1
+            overallRating: 3.8,
+            acceptanceRating: 2.5,
+            eRating: 3.0,
+            tRating: 1
         }
     ]
 }
