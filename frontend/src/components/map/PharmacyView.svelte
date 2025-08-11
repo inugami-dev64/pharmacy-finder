@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { PharmacyInfo } from "$lib/service/pharmacy-info";
     import CloseButton from "../common/icons/CloseButton.svelte";
+    import StarRating from "../common/widgets/StarRating.svelte";
     
     // Import logos
     import BenuLogo from "$lib/assets/benu-logo.svg"
@@ -33,6 +34,7 @@
             <p>{pharmacy.chain}</p>
             <h3>{pharmacy.name}</h3>
             <p>{pharmacy.aadress}, {pharmacy.postalCode}, {pharmacy.city}, {pharmacy.county}</p>
+            <span><StarRating value={pharmacy.avgRating || 0}/></span>
         </div>
     </div>
 </div>
