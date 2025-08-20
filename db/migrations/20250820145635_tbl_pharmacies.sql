@@ -13,10 +13,13 @@ CREATE TABLE pharmacies (
     latitude REAL NOT NULL,
     longitude REAL NOT NULL
 );
+
+CREATE INDEX idx_pharmacies_latitude_longitude ON pharmacies (latitude, longitude); 
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
+DROP INDEX idx_pharmacies_latitude_longitude;
 DROP TABLE pharmacies;
 DROP TYPE chain_t;
 -- +goose StatementEnd
