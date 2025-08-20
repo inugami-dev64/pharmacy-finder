@@ -42,7 +42,7 @@
         for (let pharmacy of pharmacies) {
             let icon = markers.get(pharmacy.chain?.toLowerCase() || "none")
             leaflet.marker(
-                    [<number>pharmacy.latitude, <number>pharmacy.longitude], 
+                    [<number>pharmacy.lat, <number>pharmacy.lng],
                     icon === undefined ? undefined : {icon: icon}).
                 addTo(map).
                 on('click', e => callback(pharmacy));
