@@ -1,5 +1,5 @@
 module pharmafinder
 
-go 1.24.5
+go 1.22
 
-require github.com/gorilla/mux v1.8.1 // indirect
+require github.com/gorilla/mux v1.8.1
