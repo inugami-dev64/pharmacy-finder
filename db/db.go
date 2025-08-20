@@ -47,7 +47,7 @@ func (q *SQLXQuery[T]) Query() (*T, error) {
 }
 
 func (q *SQLXQuery[T]) QueryAll() ([]T, error) {
-	var vals []T
+	vals := []T{}
 	err := q.trx.Select(&vals, q.q, q.args...)
 
 	if err == sql.ErrNoRows {

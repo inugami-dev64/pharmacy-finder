@@ -28,13 +28,13 @@ func (repo PharmacyRepositorySQLX) FindPharmaciesInCoordinateBounds(sw types.Poi
 	FROM
 		pharmacies p
 	WHERE
-		p.latitude >= ?
+		p.latitude >= $1
 	AND
-		p.longitude >= ?
+		p.longitude >= $2
 	AND
-		p.latitude <= ?
+		p.latitude <= $3
 	AND
-		p.longitude <= ?
+		p.longitude <= $4
 	`
 
 	args := []interface{}{sw.Lat, sw.Lng, ne.Lat, ne.Lng}
@@ -42,6 +42,7 @@ func (repo PharmacyRepositorySQLX) FindPharmaciesInCoordinateBounds(sw types.Poi
 	return &SQLXQuery[entity.Pharmacy]{
 		uniqueKey: "id",
 		key:       "id",
+		trx:       repo.conn,
 		q:         q,
 		args:      args,
 	}
