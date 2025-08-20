@@ -8,10 +8,12 @@ import (
 	"mime"
 	"net/http"
 	"pharmafinder"
+	"pharmafinder/db"
 	"regexp"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 const PATH_PREFIX = "frontend/build"
@@ -58,6 +60,13 @@ func StaticServer(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Attempt to load .env files if they exist
+	godotenv.Load("deploy/.env")
+
+	// Connect to the database
+	conn := db.ConnectToDB()
+	db.EnsureMigrationsAreUpToDate(conn)
+
 	r := mux.NewRouter()
 	r.PathPrefix("/").
 		Methods("GET").
