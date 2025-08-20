@@ -28,3 +28,5 @@ main
 pharma
 vendor
 /deploy/volumes
+/pharmafinder
+/pharmafinder-dbg
