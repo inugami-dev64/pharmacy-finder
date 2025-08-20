@@ -124,7 +124,9 @@ func EnsureMigrationsAreUpToDate(db *sqlx.DB) {
 	}
 }
 
-func ConnectToDB() *sqlx.DB {
+// Attempts to connect to the database and
+// update SQL migrations
+func ProvideDatabaseHandle() *sqlx.DB {
 	dbHost := os.Getenv("POSTGRES_HOST")
 	dbPort := os.Getenv("POSTGRES_PORT")
 	dbUser := os.Getenv("POSTGRES_USER")
@@ -139,6 +141,8 @@ func ConnectToDB() *sqlx.DB {
 	if err != nil {
 		panic(fmt.Errorf("failed to connect to database: %v", err))
 	}
+
+	EnsureMigrationsAreUpToDate(db)
 
 	return db
 }
