@@ -1,84 +1,61 @@
 package main
 
 import (
-	"fmt"
-	"io"
-	"io/fs"
+	"context"
 	"log"
-	"mime"
+	"net"
 	"net/http"
 	"pharmafinder"
 	"pharmafinder/db"
-	"regexp"
 	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"go.uber.org/fx"
 )
 
-const PATH_PREFIX = "frontend/build"
+func NewServerMux() *mux.Router {
+	r := mux.NewRouter()
+	r.PathPrefix("/").
+		Methods("GET").
+		HandlerFunc(pharmafinder.StaticServer)
 
-func StaticServer(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Request made to %s\n", r.URL.Path)
-	regex := regexp.MustCompile(`^.*/(.*?(\.[A-Za-z0-9]+))$`)
+	return r
+}
 
-	var file fs.File
-	var err error
-	var mimetype string
-	if regex.MatchString(r.URL.Path) {
-		file, err = pharmafinder.ServerFS.Open(fmt.Sprintf("%s%s", PATH_PREFIX, r.URL.Path))
-		ext := regex.FindStringSubmatch(r.URL.Path)[2]
-		mimetype = mime.TypeByExtension(ext)
-	} else if r.URL.Path[len(r.URL.Path)-1] != '/' {
-		path := fmt.Sprintf("%s.html", r.URL.Path)
-		file, err = pharmafinder.ServerFS.Open(fmt.Sprintf("%s%s", PATH_PREFIX, path))
-		ext := regex.FindStringSubmatch(path)[2]
-		mimetype = mime.TypeByExtension(ext)
-	} else {
-		path := fmt.Sprintf("%sindex.html", r.URL.Path)
-		file, err = pharmafinder.ServerFS.Open(fmt.Sprintf("%s%s", PATH_PREFIX, path))
-		ext := regex.FindStringSubmatch(path)[2]
-		mimetype = mime.TypeByExtension(ext)
+func NewHTTPServer(lc fx.Lifecycle, mux *mux.Router) *http.Server {
+	server := &http.Server{
+		Handler:      mux,
+		Addr:         ":8080",
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
 	}
 
-	if err != nil {
-		log.Printf("Could not open file %s: %v\n", r.URL.Path, err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
+			ln, err := net.Listen("tcp", server.Addr)
+			if err != nil {
+				return err
+			}
+			log.Println("Starting HTTP server at", server.Addr)
+			go server.Serve(ln)
+			return nil
+		},
+		OnStop: func(ctx context.Context) error {
+			return server.Shutdown(ctx)
+		},
+	})
 
-	data, err := io.ReadAll(file)
-	if err != nil {
-		log.Printf("Failed to read file %s: %v\n", r.URL.Path, err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Add("Content-Type", mimetype)
-	w.Write(data)
-	w.WriteHeader(http.StatusOK)
+	return server
 }
 
 func main() {
 	// Attempt to load .env files if they exist
 	godotenv.Load("deploy/.env")
-
-	// Connect to the database
-	conn := db.ConnectToDB()
-	db.EnsureMigrationsAreUpToDate(conn)
-
-	r := mux.NewRouter()
-	r.PathPrefix("/").
-		Methods("GET").
-		HandlerFunc(StaticServer)
-
-	server := &http.Server{
-		Handler:      r,
-		Addr:         "127.0.0.1:8080",
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
-	}
-
-	log.Printf("Listening on %s\n", server.Addr)
-	log.Fatal(server.ListenAndServe())
+	fx.New(
+		fx.Provide(NewHTTPServer),
+		fx.Provide(NewServerMux),
+		fx.Provide(db.ProvideDatabaseHandle),
+		fx.Invoke(func(*http.Server) {}),
+	).Run()
 }
