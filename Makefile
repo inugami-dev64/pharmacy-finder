@@ -1,6 +1,6 @@
 vpath % ./frontend/node_modules ./frontend/build 
 
-GOSRC := $(shell find . -type f -name "*.go")
+GOSRC := $(shell find . -type f -name "*.go" -o -name "*.sql" 2>/dev/null)
 
 ./frontend/node_modules: ./frontend/package.json
 	npm install --prefix ./frontend
