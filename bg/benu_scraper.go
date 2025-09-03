@@ -71,6 +71,50 @@ func (src *benuPharmacy) mapToPharmacy(dst *entity.Pharmacy, newTS time.Time) {
 	}
 }
 
+func (scraper BenuScraper) createEntitiesFromJson(data string) ([]entity.Pharmacy, error) {
+	var pharmacies map[string]benuPharmacy
+	err := json.Unmarshal([]byte(data), &pharmacies)
+	if err != nil {
+		log.Printf("Failed to unmarshal BENU pharmacy json: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal BENU pharmacy json")
+	}
+
+	existing, err := scraper.repo.FindPharmaciesByChain(entity.CHAIN_BENU).QueryAll()
+	if err != nil {
+		log.Printf("Failed to query existing BENU pharmacies in the database: %v", err)
+		return nil, fmt.Errorf("failed to query existing BENU pharmacies in the database")
+	}
+
+	ret := make([]entity.Pharmacy, 0)
+	for _, pharmacy := range pharmacies {
+		newTS, err := time.Parse("2006-01-02 15:04:05", pharmacy.ModTime)
+		if err != nil {
+			// maybe the timestamp is missing
+			newTS = time.Now().UTC()
+		}
+
+		var existingPharmacy *entity.Pharmacy
+		for i := range existing {
+			if pharmacy.ID == existing[i].PharmacyID {
+				existingPharmacy = &existing[i]
+				break
+			}
+		}
+
+		// if existing pharmacy was found, then we check if it should be updated based on the timestamps
+		if existingPharmacy != nil && (time.Time(existingPharmacy.ModTime).UTC().UnixMilli() == newTS.UTC().UnixMilli()) {
+			pharmacy.mapToPharmacy(existingPharmacy, newTS)
+			ret = append(ret, *existingPharmacy)
+		} else if existingPharmacy == nil {
+			var newPharmacy entity.Pharmacy
+			pharmacy.mapToPharmacy(&newPharmacy, newTS)
+			ret = append(ret, newPharmacy)
+		}
+	}
+
+	return ret, nil
+}
+
 func ProvideBenuScraper(repo db.PharmacyRepository) Scraper {
 	return BenuScraper{repo: repo}
 }
