@@ -1,6 +1,7 @@
 package bg
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -143,13 +144,25 @@ func (scraper BenuScraper) Scrape() {
 		return
 	}
 
-	doc := soup.HTMLParse(string(body))
-	script := doc.Find("div", "class", "bnContainer").Find("script")
+	script := soup.HTMLParse(string(body)).
+		Find("main").
+		Find("div", "class", "bnContainer").
+		Find("script")
+
 	if script.Error != nil {
 		log.Printf("Failed to extract script tag from BENU website's HTML body")
 		return
 	}
 
 	txt := script.Text()
-	fmt.Println(txt)
+	re := regexp.MustCompile(`(?m)^.*?pharmacies = ({.+});?$`)
+	data := re.FindStringSubmatch(txt)[1]
+	pharmacies, err := scraper.createEntitiesFromJson(data)
+
+	if err != nil {
+		log.Printf("Failed to read pharmacy data from json: %v", err)
+		return
+	}
+
+	scraper.repo.StoreAll(pharmacies)
 }
