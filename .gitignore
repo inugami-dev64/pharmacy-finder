@@ -34,3 +34,4 @@ vendor
 /pharmafinder
 /pharmafinder-dbg
 __debug_*
+/mock
