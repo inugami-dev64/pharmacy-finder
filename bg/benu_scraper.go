@@ -9,6 +9,7 @@ import (
 	"pharmafinder/db"
 	"pharmafinder/db/entity"
 	"pharmafinder/types"
+	"pharmafinder/utils"
 	"regexp"
 	"strings"
 	"time"
@@ -19,7 +20,8 @@ import (
 const BENU_ENDPOINT = "https://www.benu.ee/leia-apteek"
 
 type BenuScraper struct {
-	repo db.PharmacyRepository
+	repo       db.PharmacyRepository
+	httpClient utils.HttpClient
 }
 
 type benuPharmacy struct {
@@ -116,8 +118,11 @@ func (scraper BenuScraper) createEntitiesFromJson(data string) ([]entity.Pharmac
 	return ret, nil
 }
 
-func ProvideBenuScraper(repo db.PharmacyRepository) Scraper {
-	return BenuScraper{repo: repo}
+func ProvideBenuScraper(repo db.PharmacyRepository, client utils.HttpClient) Scraper {
+	return BenuScraper{
+		repo:       repo,
+		httpClient: client,
+	}
 }
 
 func (scraper BenuScraper) Scrape() {
@@ -127,7 +132,7 @@ func (scraper BenuScraper) Scrape() {
 		return
 	}
 	req.Header.Set("User-Agent", USER_AGENT)
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := scraper.httpClient.Do(req)
 	if err != nil {
 		log.Printf("Failed to make a request to %s: %v", BENU_ENDPOINT, err)
 		return
