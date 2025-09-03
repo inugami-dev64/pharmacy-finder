@@ -10,7 +10,7 @@ docker run -it \
     -e POSTGRES_DB=${POSTGRES_DB} \
     -e POSTGRES_USER=${POSTGRES_USER} \
     -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
-    -v ./deploy/volumes/postgres:/var/lib/postgresql/data \
+    -v ./deploy/_volumes/postgres:/var/lib/postgresql/data \
     -p 127.0.0.1:5432:5432 \
     postgres:17-alpine3.22
 
