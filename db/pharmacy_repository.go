@@ -9,6 +9,7 @@ import (
 
 type PharmacyRepository interface {
 	FindPharmaciesInCoordinateBounds(sw types.Point, ne types.Point) Query[entity.Pharmacy]
+	FindPharmaciesByChain(chain entity.PharmacyChain) Query[entity.Pharmacy]
 	StoreAll(pharmacies []entity.Pharmacy) error
 	Trx(conn any) PharmacyRepository
 }
@@ -39,6 +40,26 @@ func (repo PharmacyRepositorySQLX) FindPharmaciesInCoordinateBounds(sw types.Poi
 
 	args := []interface{}{sw.Lat, sw.Lng, ne.Lat, ne.Lng}
 
+	return &SQLXQuery[entity.Pharmacy]{
+		uniqueKey: "id",
+		key:       "id",
+		trx:       repo.conn,
+		q:         q,
+		args:      args,
+	}
+}
+
+func (repo PharmacyRepositorySQLX) FindPharmaciesByChain(chain entity.PharmacyChain) Query[entity.Pharmacy] {
+	q := `
+	SELECT
+		*
+	FROM
+		pharmacies p
+	WHERE
+		chain = ?
+	`
+
+	args := []interface{}{string(chain)}
 	return &SQLXQuery[entity.Pharmacy]{
 		uniqueKey: "id",
 		key:       "id",
