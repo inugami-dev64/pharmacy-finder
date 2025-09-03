@@ -6,6 +6,11 @@ import (
 	"log"
 	"net/http"
 	"pharmafinder/db"
+	"pharmafinder/db/entity"
+	"pharmafinder/types"
+	"regexp"
+	"strings"
+	"time"
 
 	"github.com/anaskhan96/soup"
 )
@@ -14,6 +19,56 @@ const BENU_ENDPOINT = "https://www.benu.ee/leia-apteek"
 
 type BenuScraper struct {
 	repo db.PharmacyRepository
+}
+
+type benuPharmacy struct {
+	ID        int64   `json:"ID"`
+	Latitude  float32 `json:"latitude"`
+	Longitude float32 `json:"longitude"`
+	Region    string  `json:"region"`
+	Address   string  `json:"address"`
+	PostCode  string  `json:"postCode"`
+	Phone     string  `json:"phone"`
+	Email     string  `json:"email"`
+	ModTime   string  `json:"modTime"`
+}
+
+func (src *benuPharmacy) mapToPharmacy(dst *entity.Pharmacy, newTS time.Time) {
+	dst.PharmacyID = src.ID
+	dst.Chain = string(entity.CHAIN_BENU)
+	dst.County = src.Region
+	dst.PostalCode = src.PostCode
+	dst.Email = src.Email
+	dst.PhoneNumber = fmt.Sprintf("+372%s", src.Phone)
+	dst.ModTime = types.Time(newTS)
+	dst.Latitude = src.Latitude
+	dst.Longitude = src.Longitude
+
+	// extracting address information with regex
+	re := regexp.MustCompile(`^(.*?) *- *(.*?)( *- *(.*?))?( *- *(.*))?$`)
+	groups := re.FindStringSubmatch(src.Address)
+
+	// 7 groups means that the address also contains a district
+	// 5 groups means no district but it has a city
+	// 3 groups means no district and no city (can be extracted from the address part)
+	if len(groups) == 7 {
+		dst.City = groups[1]
+		dst.Name = groups[4]
+		dst.Address = fmt.Sprintf("%s, %s", groups[6], groups[2])
+	} else if len(groups) == 5 {
+		dst.City = groups[1]
+		dst.Name = groups[2]
+		dst.Address = groups[4]
+	} else if len(groups) == 3 {
+		dst.Name = groups[1]
+		data := strings.Split(groups[2], ",")
+		if len(data) == 2 {
+			dst.Address = strings.Trim(data[0], " ")
+			dst.City = strings.Trim(data[1], " ")
+		}
+	} else {
+		log.Println("Failed to extract BENU pharmacy address data")
+	}
 }
 
 func ProvideBenuScraper(repo db.PharmacyRepository) Scraper {
