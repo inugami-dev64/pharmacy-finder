@@ -2,6 +2,15 @@ package entity
 
 import "pharmafinder/types"
 
+type PharmacyChain string
+
+const (
+	CHAIN_APOTHEKA     PharmacyChain = PharmacyChain("Apotheka")
+	CHAIN_SUDAMEAPTEEK               = PharmacyChain("Südameapteek")
+	CHAIN_BENU                       = PharmacyChain("Benu")
+	CHAIN_EUROAPTEEK                 = PharmacyChain("Euroapteek")
+)
+
 type Pharmacy struct {
 	ID          int64      `db:"id" json:"id"`
 	PharmacyID  int64      `db:"pharmacy_id" json:"-"`
