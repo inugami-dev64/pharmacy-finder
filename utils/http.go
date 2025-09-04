@@ -6,3 +6,7 @@ import "net/http"
 type HttpClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
+
+func ProvideHTTPClient() HttpClient {
+	return http.DefaultClient
+}
