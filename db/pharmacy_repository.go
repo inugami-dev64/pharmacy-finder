@@ -75,6 +75,7 @@ func (repo PharmacyRepositorySQLX) StoreAll(pharmacies []entity.Pharmacy) error 
 	_, err := repo.conn.NamedExec(
 		`INSERT INTO pharmacies (chain,"name","address",city,county,postal_code,phone_number,latitude,longitude)
 			VALUES (:chain,:name,:address,:city,:county,:postal_code,:phone_number,:latitude,:longitude)
+		ON CONFLICT DO UPDATE
 		`, pharmacies)
 
 	return err
