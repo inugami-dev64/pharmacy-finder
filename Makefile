@@ -4,7 +4,8 @@ GOPATH := $(shell go env GOPATH)
 GOSRC := $(shell find . -type f -name "*.go" -o -name "*.sql" 2>/dev/null)
 
 MOCKGEN_DST := mock/pharmacy_repository_mock.go \
-			   mock/http_mock.go
+			   mock/http_mock.go \
+			   mock/db_mock.go
 
 .PHONY: all
 all: ./pharmafinder-dbg ./pharmafinder
@@ -34,6 +35,9 @@ mock/pharmacy_repository_mock.go: db/pharmacy_repository.go
 
 mock/http_mock.go: utils/http.go
 	${GOPATH}/bin/mockgen -source=utils/http.go -destination=mock/http_mock.go -package=mock
+
+mock/db_mock.go: db/db.go
+	${GOPATH}/bin/mockgen -source=db/db.go -destination=mock/db_mock.go -package=mock
 
 .PHONY: mockgen
 mockgen: ${MOCKGEN_DST}
