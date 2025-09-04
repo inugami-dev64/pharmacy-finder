@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"pharmafinder"
 	v1 "pharmafinder/api/v1"
+	"pharmafinder/bg"
 	"pharmafinder/db"
+	"pharmafinder/utils"
 	"pharmafinder/web"
 	"time"
 
@@ -73,12 +75,25 @@ func main() {
 			db.ProvideDatabaseHandle,
 			db.ProvidePharmacyRepository,
 
+			// Utilities
+			utils.ProvideHTTPClient,
+
+			// Background workers
+			fx.Annotate(
+				bg.ProvideBenuScraper,
+				fx.ResultTags(`group:"scrapers"`),
+			),
+			fx.Annotate(
+				bg.NewCronJob,
+				fx.ParamTags(`group:"scrapers"`),
+			),
+
 			// /pharmacies/* controller
 			fx.Annotate(
 				v1.ProvidePharmacyController,
 				fx.ResultTags(`group:"routes"`),
 			),
 		),
-		fx.Invoke(func(*http.Server) {}),
+		fx.Invoke(func(*http.Server, bg.CronJob) {}),
 	).Run()
 }
