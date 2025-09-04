@@ -11,6 +11,7 @@ import (
 	"pharmafinder/types"
 	"pharmafinder/utils"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -25,15 +26,15 @@ type BenuScraper struct {
 }
 
 type benuPharmacy struct {
-	ID        int64   `json:"ID"`
-	Latitude  float32 `json:"latitude"`
-	Longitude float32 `json:"longitude"`
-	Region    string  `json:"region"`
-	Address   string  `json:"address"`
-	PostCode  string  `json:"postCode"`
-	Phone     string  `json:"phone"`
-	Email     string  `json:"email"`
-	ModTime   string  `json:"modTime"`
+	ID        int64  `json:"ID"`
+	Latitude  string `json:"latitude"`
+	Longitude string `json:"longitude"`
+	Region    string `json:"region"`
+	Address   string `json:"address"`
+	PostCode  string `json:"postCode"`
+	Phone     string `json:"phone"`
+	Email     string `json:"email"`
+	ModTime   string `json:"modTime"`
 }
 
 func (src *benuPharmacy) mapToPharmacy(dst *entity.Pharmacy, newTS time.Time) {
@@ -44,8 +45,19 @@ func (src *benuPharmacy) mapToPharmacy(dst *entity.Pharmacy, newTS time.Time) {
 	dst.Email = src.Email
 	dst.PhoneNumber = fmt.Sprintf("+372%s", src.Phone)
 	dst.ModTime = types.Time(newTS)
-	dst.Latitude = src.Latitude
-	dst.Longitude = src.Longitude
+	lat, err := strconv.ParseFloat(src.Latitude, 32)
+	if err != nil {
+		log.Printf("Failed to extract BENU pharmacy latitude: invalid value %s", src.Latitude)
+		return
+	}
+
+	lng, err := strconv.ParseFloat(src.Longitude, 32)
+	if err != nil {
+		log.Printf("Failed to extract BENU pharmacy longitude: invalid value %s", src.Longitude)
+		return
+	}
+	dst.Latitude = float32(lat)
+	dst.Longitude = float32(lng)
 
 	// extracting address information with regex
 	re := regexp.MustCompile(`^(.*?) *- *(.*?)( *- *(.*?))?( *- *(.*))?$`)
@@ -55,22 +67,22 @@ func (src *benuPharmacy) mapToPharmacy(dst *entity.Pharmacy, newTS time.Time) {
 	// 5 groups means no district but it has a city
 	// 3 groups means no district and no city (can be extracted from the address part)
 	if len(groups) == 7 {
-		dst.City = groups[1]
-		dst.Name = groups[4]
-		dst.Address = fmt.Sprintf("%s, %s", groups[6], groups[2])
-	} else if len(groups) == 5 {
-		dst.City = groups[1]
-		dst.Name = groups[2]
-		dst.Address = groups[4]
-	} else if len(groups) == 3 {
-		dst.Name = groups[1]
-		data := strings.Split(groups[2], ",")
-		if len(data) == 2 {
-			dst.Address = strings.Trim(data[0], " ")
-			dst.City = strings.Trim(data[1], " ")
+		if groups[6] != "" {
+			dst.City = groups[1]
+			dst.Name = groups[4]
+			dst.Address = fmt.Sprintf("%s, %s", groups[6], groups[2])
+		} else if groups[4] != "" {
+			dst.City = groups[1]
+			dst.Name = groups[2]
+			dst.Address = groups[4]
+		} else if groups[2] != "" {
+			dst.Name = groups[1]
+			data := strings.Split(groups[2], ",")
+			if len(data) == 2 {
+				dst.Address = strings.Trim(data[0], " ")
+				dst.City = strings.Trim(data[1], " ")
+			}
 		}
-	} else {
-		log.Println("Failed to extract BENU pharmacy address data")
 	}
 }
 
@@ -105,7 +117,7 @@ func (scraper BenuScraper) createEntitiesFromJson(data string) ([]entity.Pharmac
 		}
 
 		// if existing pharmacy was found, then we check if it should be updated based on the timestamps
-		if existingPharmacy != nil && (time.Time(existingPharmacy.ModTime).UTC().UnixMilli() == newTS.UTC().UnixMilli()) {
+		if existingPharmacy != nil && (time.Time(existingPharmacy.ModTime).UTC().UnixMilli() < newTS.UTC().UnixMilli()) {
 			pharmacy.mapToPharmacy(existingPharmacy, newTS)
 			ret = append(ret, *existingPharmacy)
 		} else if existingPharmacy == nil {
@@ -160,7 +172,7 @@ func (scraper BenuScraper) Scrape() {
 	}
 
 	txt := script.Text()
-	re := regexp.MustCompile(`(?m)^.*?pharmacies = ({.+});?$`)
+	re := regexp.MustCompile(`(?m)^.*?pharmacies = ({.+}).*$`)
 	data := re.FindStringSubmatch(txt)[1]
 	pharmacies, err := scraper.createEntitiesFromJson(data)
 
