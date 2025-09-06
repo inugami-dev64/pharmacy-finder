@@ -26,7 +26,7 @@ func GetLogger(scope string) zerolog.Logger {
 			Compress:   true,
 		}
 
-		consoleWriter := zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}
+		consoleWriter := zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.DateTime}
 		multi := zerolog.MultiLevelWriter(logWriter, consoleWriter)
 		zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMs
 
