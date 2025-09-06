@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"net"
 	"net/http"
 	"pharmafinder"
@@ -45,11 +44,12 @@ func NewHTTPServer(lc fx.Lifecycle, mux *mux.Router) *http.Server {
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
+			logger := utils.GetLogger("SRV")
 			ln, err := net.Listen("tcp", server.Addr)
 			if err != nil {
 				return err
 			}
-			log.Println("Starting HTTP server at", server.Addr)
+			logger.Info().Msgf("Starting HTTP server at %s", server.Addr)
 			go server.Serve(ln)
 			return nil
 		},
