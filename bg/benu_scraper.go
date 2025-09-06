@@ -52,7 +52,14 @@ func (src *benuPharmacy) mapToPharmacy(dst *entity.Pharmacy, newTS time.Time, lo
 	dst.County = src.Region
 	dst.PostalCode = src.PostCode
 	dst.Email = src.Email
-	dst.PhoneNumber = fmt.Sprintf("+372%s", src.Phone)
+	re := regexp.MustCompile(`(\+372)? *([\d ]+)`)
+	groups := re.FindStringSubmatch(src.Phone)
+	if len(groups) == 3 {
+		dst.PhoneNumber = fmt.Sprintf("+372%s", strings.ReplaceAll(groups[2], " ", ""))
+	} else {
+		logger.Error().Msgf("Failed to extract BENU pharmacy phone number")
+		return fmt.Errorf("invalid phone number '%s'", src.Phone)
+	}
 	dst.ModTime = types.Time(newTS)
 	lat, err := strconv.ParseFloat(src.Latitude, 32)
 	if err != nil {
@@ -69,8 +76,8 @@ func (src *benuPharmacy) mapToPharmacy(dst *entity.Pharmacy, newTS time.Time, lo
 	dst.Longitude = float32(lng)
 
 	// extracting address information with regex
-	re := regexp.MustCompile(`^(.*?) *- *(.*?)( *- *(.*?))?( *- *(.*))?$`)
-	groups := re.FindStringSubmatch(src.Address)
+	re = regexp.MustCompile(`^(.*?) *- *(.*?)( *- *(.*?))?( *- *(.*))?$`)
+	groups = re.FindStringSubmatch(src.Address)
 
 	// 7 groups means that the address also contains a district
 	// 5 groups means no district but it has a city
