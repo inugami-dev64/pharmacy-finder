@@ -16,6 +16,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"go.uber.org/fx"
+	"go.uber.org/fx/fxevent"
 )
 
 func NewServerMux(routes [][]web.Route) *mux.Router {
@@ -64,6 +65,9 @@ func main() {
 	// Attempt to load .env files if they exist
 	godotenv.Load("deploy/.env")
 	fx.New(
+		fx.WithLogger(func() fxevent.Logger {
+			return &utils.FXZerologLogger{Logger: utils.GetLogger("FX")}
+		}),
 		fx.Provide(
 			NewHTTPServer,
 			fx.Annotate(
