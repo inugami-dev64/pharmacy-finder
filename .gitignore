@@ -38,3 +38,4 @@ __debug_*
 
 # Logs
 /logs
+app.log*
