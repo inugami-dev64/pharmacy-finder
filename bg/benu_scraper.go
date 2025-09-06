@@ -27,7 +27,7 @@ type BenuScraper struct {
 }
 
 func ProvideBenuScraper(repo db.PharmacyRepository, client utils.HttpClient) Scraper {
-	return BenuScraper{
+	return &BenuScraper{
 		repo:       repo,
 		httpClient: client,
 		logger:     utils.GetLogger("BG"),
@@ -156,7 +156,8 @@ func (scraper *BenuScraper) createEntitiesFromJson(data string) ([]entity.Pharma
 	return ret, nil
 }
 
-func (scraper BenuScraper) Scrape() {
+func (scraper *BenuScraper) Scrape() {
+	scraper.logger.Info().Msg("Running BENU pharmacy scraper")
 	req, err := http.NewRequest("GET", BENU_ENDPOINT, nil)
 	if err != nil {
 		scraper.logger.Error().Msg("Failed to create a new request for BENU scraper")
