@@ -1,21 +1,27 @@
 package v1
 
 import (
-	"log"
 	"net/http"
 	"pharmafinder/db"
 	"pharmafinder/types"
+	"pharmafinder/utils"
 	"pharmafinder/web"
 	"strconv"
 	"strings"
+
+	"github.com/rs/zerolog"
 )
 
 type PharmaciesController struct {
-	repo db.PharmacyRepository
+	repo   db.PharmacyRepository
+	logger zerolog.Logger
 }
 
 func ProvidePharmacyController(repo db.PharmacyRepository) []web.Route {
-	controller := &PharmaciesController{repo: repo}
+	controller := &PharmaciesController{
+		repo:   repo,
+		logger: utils.GetLogger("API"),
+	}
 	return controller.GetRoutes()
 }
 
@@ -34,7 +40,7 @@ func (handler *PharmaciesController) GetPharmacies(details *web.HttpRequestDetai
 	neCoords := strings.Split(neText, ",")
 
 	if len(swCoords) != 2 || len(neCoords) != 2 {
-		log.Println("Could not extract latitude and longitude from bounds")
+		handler.logger.Warn().Msg("Could not extract latitude and longitude from bounds")
 		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Missing coordinate bounds"), nil
 	}
 
@@ -60,7 +66,7 @@ func (handler *PharmaciesController) GetPharmacies(details *web.HttpRequestDetai
 
 	data, err := handler.repo.FindPharmaciesInCoordinateBounds(sw, ne).QueryAll()
 	if err != nil {
-		log.Println("Failed to query pharmacies in coordinate bounds")
+		handler.logger.Warn().Msgf("Failed to query pharmacies in coordinate bounds")
 		return http.StatusInternalServerError, nil, err
 	}
 
