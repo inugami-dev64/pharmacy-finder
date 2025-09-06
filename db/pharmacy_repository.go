@@ -56,7 +56,7 @@ func (repo PharmacyRepositorySQLX) FindPharmaciesByChain(chain entity.PharmacyCh
 	FROM
 		pharmacies p
 	WHERE
-		chain = ?
+		p.chain = $1
 	`
 
 	args := []interface{}{string(chain)}
@@ -72,13 +72,43 @@ func (repo PharmacyRepositorySQLX) FindPharmaciesByChain(chain entity.PharmacyCh
 func (repo PharmacyRepositorySQLX) StoreAll(pharmacies []entity.Pharmacy) error {
 	// Separate entities which shall be inserted
 	// and entities which shall be updated
-	_, err := repo.conn.NamedExec(
-		`INSERT INTO pharmacies (chain,"name","address",city,county,postal_code,phone_number,latitude,longitude)
-			VALUES (:chain,:name,:address,:city,:county,:postal_code,:phone_number,:latitude,:longitude)
-		ON CONFLICT DO UPDATE
-		`, pharmacies)
+	toInsert := make([]entity.Pharmacy, 0)
+	for _, entity := range pharmacies {
+		if entity.ID != 0 {
+			_, err := repo.conn.NamedExec(
+				`UPDATE pharmacies SET
+					pharmacy_id = :pharmacy_id,
+					chain = :chain,
+					name = :name,
+					"address" = :address,
+					city = :city,
+					county = :county,
+					postal_code = :postal_code,
+					email = :email,
+					phone_number = :phone_number,
+					mod_time = :mod_time,
+					latitude = :latitude,
+					longitude = :longitude
+				WHERE
+					id = :id
+				`, entity)
+			if err != nil {
+				return err
+			}
+		} else {
+			toInsert = append(toInsert, entity)
+		}
+	}
 
-	return err
+	if len(toInsert) > 0 {
+		_, err := repo.conn.NamedExec(
+			`INSERT INTO pharmacies (pharmacy_id,chain,"name","address",city,county,postal_code,email,phone_number,mod_time,latitude,longitude)
+				VALUES (:pharmacy_id,:chain,:name,:address,:city,:county,:postal_code,:email,:phone_number,:mod_time,:latitude,:longitude)`,
+			toInsert)
+		return err
+	}
+
+	return nil
 }
 
 func (repo PharmacyRepositorySQLX) Trx(conn any) PharmacyRepository {
