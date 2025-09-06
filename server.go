@@ -3,17 +3,20 @@ package pharmafinder
 import (
 	"fmt"
 	"io"
-	"log"
 	"mime"
 	"net/http"
+	"pharmafinder/utils"
 	"regexp"
+
+	"github.com/rs/zerolog"
 )
 
 const PATH_PREFIX = "frontend/build"
 
+var logger zerolog.Logger = utils.GetLogger("WEB")
+
 // Static file handler
 func StaticServer(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Request made to %s\n", r.URL.Path)
 	regex := regexp.MustCompile(`^.*/(.*?(\.[A-Za-z0-9]+))$`)
 
 	var path string
@@ -30,19 +33,37 @@ func StaticServer(w http.ResponseWriter, r *http.Request) {
 	mimetype := mime.TypeByExtension(ext)
 
 	if err != nil {
-		log.Printf("Could not open file %s: %v\n", r.URL.Path, err)
+		logger.Error().Msgf("Could not open file %s: %v\n", r.URL.Path, err)
+		logger.Debug().
+			Str("method", r.Method).
+			Str("path", r.URL.Path).
+			Str("addr", r.RemoteAddr).
+			Int("code", http.StatusInternalServerError).
+			Msg("Request made")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		log.Printf("Failed to read file %s: %v\n", r.URL.Path, err)
+		logger.Error().Msgf("Failed to read file %s: %v\n", r.URL.Path, err)
+		logger.Debug().
+			Str("method", r.Method).
+			Str("path", r.URL.Path).
+			Str("addr", r.RemoteAddr).
+			Int("code", http.StatusInternalServerError).
+			Msg("Request made")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Add("Content-Type", mimetype)
+	logger.Debug().
+		Str("method", r.Method).
+		Str("path", r.URL.Path).
+		Str("addr", r.RemoteAddr).
+		Int("code", http.StatusOK).
+		Msg("Request made")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
