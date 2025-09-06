@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"os"
 	"pharmafinder"
+	"pharmafinder/utils"
 
 	_ "github.com/lib/pq"
+	sqldblogger "github.com/simukti/sqldb-logger"
+	"github.com/simukti/sqldb-logger/logadapter/zerologadapter"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pressly/goose/v3"
@@ -133,16 +136,30 @@ func ProvideDatabaseHandle() *sqlx.DB {
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_DB")
 
-	db, err := sqlx.Connect("postgres", fmt.Sprintf(
+	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		dbHost, dbPort, dbUser, dbPassword, dbName,
-	))
+	)
 
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		panic(fmt.Errorf("failed to connect to database: %v", err))
 	}
 
-	EnsureMigrationsAreUpToDate(db)
+	// prepare the logger
+	loggerOptions := []sqldblogger.Option{
+		sqldblogger.WithSQLQueryFieldname("query"),
+		sqldblogger.WithDurationUnit(sqldblogger.DurationMillisecond),
+		sqldblogger.WithDurationFieldname("duration"),
+		sqldblogger.WithQueryerLevel(sqldblogger.LevelTrace),
+		sqldblogger.WithExecerLevel(sqldblogger.LevelTrace),
+		sqldblogger.WithPreparerLevel(sqldblogger.LevelTrace),
+	}
+	adapter := zerologadapter.New(utils.GetLogger("SQL"))
+	db = sqldblogger.OpenDriver(dsn, db.Driver(), adapter, loggerOptions...)
 
-	return db
+	// pass it to sqlx
+	sqlxDB := sqlx.NewDb(db, "postgres")
+	EnsureMigrationsAreUpToDate(sqlxDB)
+	return sqlxDB
 }
