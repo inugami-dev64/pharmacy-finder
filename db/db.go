@@ -8,6 +8,7 @@ import (
 	"pharmafinder/utils"
 
 	_ "github.com/lib/pq"
+	"github.com/rs/zerolog"
 	sqldblogger "github.com/simukti/sqldb-logger"
 	"github.com/simukti/sqldb-logger/logadapter/zerologadapter"
 
@@ -115,8 +116,22 @@ func (q *SQLXQuery[T]) Page(uniqueKey interface{}, key interface{}, length int, 
 	return data, nil
 }
 
+// Custom logger type for goose logging
+type GooseLogger struct {
+	Logger zerolog.Logger
+}
+
+func (l *GooseLogger) Fatalf(format string, v ...interface{}) {
+	l.Logger.Error().Msgf(format, v...)
+}
+
+func (l *GooseLogger) Printf(format string, v ...interface{}) {
+	l.Logger.Info().Msgf(format, v...)
+}
+
 func EnsureMigrationsAreUpToDate(db *sqlx.DB) {
 	goose.SetBaseFS(pharmafinder.MigrationsFS)
+	goose.SetLogger(&GooseLogger{Logger: utils.GetLogger("DB")})
 
 	if err := goose.SetDialect("postgres"); err != nil {
 		panic(err)
