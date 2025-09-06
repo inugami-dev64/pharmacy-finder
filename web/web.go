@@ -110,6 +110,7 @@ func (handler *HttpRequestHandler[T]) ServeHTTP(w http.ResponseWriter, r *http.R
 
 func createJsonResponse(w http.ResponseWriter, code int, resp interface{}) {
 	b, _ := json.Marshal(resp)
+	w.Header().Add("Content-Type", "application/json; utf-8")
 	w.WriteHeader(code)
 	w.Write(b)
 }
