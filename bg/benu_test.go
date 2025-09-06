@@ -79,6 +79,36 @@ var benuPharmacies map[int]entity.Pharmacy = map[int]entity.Pharmacy{
 		Latitude:    59.35835,
 		Longitude:   27.41395,
 	},
+	9: {
+		ID:          0,
+		PharmacyID:  9,
+		Chain:       string(entity.CHAIN_BENU),
+		Name:        "Mini-Rimi Apteek",
+		Address:     "Kihelkonna mnt 3",
+		City:        "Kuressaare",
+		County:      "Saaremaa",
+		PostalCode:  "93810",
+		Email:       "benu.5144@benu.ee",
+		PhoneNumber: "+3724554472",
+		ModTime:     types.Time(unwrap(time.Parse("2006-01-02 15:04:05", "2025-03-06 15:04:28"))),
+		Latitude:    58.26269,
+		Longitude:   22.48023,
+	},
+	389: {
+		ID:          0,
+		PharmacyID:  389,
+		Chain:       string(entity.CHAIN_BENU),
+		Name:        "Kilingi-Nõmme Apteek",
+		Address:     "Pärnu mnt 65",
+		City:        "Kilingi-Nõmme",
+		County:      "Pärnumaa",
+		PostalCode:  "86305",
+		Email:       "knapt103@hot.ee",
+		PhoneNumber: "+3724430440",
+		ModTime:     types.Time(unwrap(time.Parse("2006-01-02 15:04:05", "2025-01-06 10:16:47"))),
+		Latitude:    58.149111,
+		Longitude:   24.960938,
+	},
 }
 
 func TestBenuScraper_EmptyDB(t *testing.T) {
@@ -112,7 +142,7 @@ func TestBenuScraper_EmptyDB(t *testing.T) {
 	repoMock.EXPECT().
 		StoreAll(gomock.Any()).
 		DoAndReturn(func(pharmacies []entity.Pharmacy) error {
-			assert.Equal(t, 4, len(pharmacies))
+			assert.Equal(t, 6, len(pharmacies))
 
 			for _, pharmacy := range pharmacies {
 				if v, ok := m2[int(pharmacy.PharmacyID)]; ok {
