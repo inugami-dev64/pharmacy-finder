@@ -75,28 +75,30 @@ func (src *benuPharmacy) mapToPharmacy(dst *entity.Pharmacy, newTS time.Time, lo
 	dst.Latitude = float32(lat)
 	dst.Longitude = float32(lng)
 
-	// extracting address information with regex
-	re = regexp.MustCompile(`^(.*?) *- *(.*?)( *- *(.*?))?( *- *(.*))?$`)
+	// extracting address information with this insane regex
+	re = regexp.MustCompile(`^(.*?)(( -)|(- )|( - ))(.*?)((( -)|(- )|( - ))(.*?))?((( -)|(- )|( - ))(.*))?$`)
 	groups = re.FindStringSubmatch(src.Address)
 
-	// 7 groups means that the address also contains a district
-	// 5 groups means no district but it has a city
-	// 3 groups means no district and no city (can be extracted from the address part)
-	if len(groups) == 7 {
-		if groups[6] != "" {
-			dst.City = groups[1]
-			dst.Name = groups[4]
-			dst.Address = fmt.Sprintf("%s, %s", groups[6], groups[2])
-		} else if groups[4] != "" {
-			dst.City = groups[1]
-			dst.Name = groups[2]
-			dst.Address = groups[4]
-		} else if groups[2] != "" {
-			dst.Name = groups[1]
-			data := strings.Split(groups[2], ",")
-			if len(data) == 2 {
+	// 18 groups means that the address also contains a district
+	// 12 groups means no district but it has a city
+	// 6 groups means no district and no city (can be extracted from the address part)
+	if len(groups) == 19 {
+		if groups[18] != "" {
+			dst.City = strings.Trim(groups[1], " ")
+			dst.Name = strings.Trim(groups[12], " ")
+			dst.Address = fmt.Sprintf("%s, %s", strings.Trim(groups[18], " "), strings.Trim(groups[6], " "))
+		} else if groups[12] != "" {
+			dst.City = strings.Trim(groups[1], " ")
+			dst.Name = strings.Trim(groups[6], " ")
+			dst.Address = strings.Trim(groups[12], " ")
+		} else if groups[6] != "" {
+			dst.Name = strings.Trim(groups[1], " ")
+			data := strings.Split(strings.Trim(groups[6], " "), ",")
+			if len(data) >= 2 {
 				dst.Address = strings.Trim(data[0], " ")
 				dst.City = strings.Trim(data[1], " ")
+			} else {
+				dst.Address = strings.Trim(groups[6], " ")
 			}
 		}
 	}
