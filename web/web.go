@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"net/url"
 	"pharmafinder/types"
+	"pharmafinder/utils"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/zerolog"
 )
 
 // Controller interface defines the shared functionality
@@ -48,6 +50,7 @@ type HttpRequestHandler[T interface{}] struct {
 	callback CallbackFunction[T]
 	pattern  string
 	methods  []string
+	logger   zerolog.Logger
 }
 
 func NewRequestsHandler[T interface{}](
@@ -58,6 +61,7 @@ func NewRequestsHandler[T interface{}](
 		callback: callback,
 		pattern:  pattern,
 		methods:  methods,
+		logger:   utils.GetLogger("WEB"),
 	}
 }
 
@@ -84,10 +88,22 @@ func (handler *HttpRequestHandler[T]) ServeHTTP(w http.ResponseWriter, r *http.R
 			Timestamp:  types.Time(time.Now().UTC()),
 			Message:    "Internal server error",
 		})
+		handler.logger.Debug().
+			Str("method", r.Method).
+			Str("path", r.URL.Path).
+			Str("addr", r.RemoteAddr).
+			Int("code", http.StatusInternalServerError).
+			Msg("Request made")
 		return
 	}
 
 	createJsonResponse(w, code, resp)
+	handler.logger.Debug().
+		Str("method", r.Method).
+		Str("path", r.URL.Path).
+		Str("addr", r.RemoteAddr).
+		Int("code", code).
+		Msg("Request made")
 }
 
 // Utility functions down below
