@@ -16,7 +16,7 @@ func NewCronJob(scrapers []Scraper, lc fx.Lifecycle) CronJob {
 
 	// Run scrapers on server startup
 	for _, scraper := range scrapers {
-		scraper.Scrape()
+		go scraper.Scrape()
 	}
 
 	lc.Append(fx.Hook{
