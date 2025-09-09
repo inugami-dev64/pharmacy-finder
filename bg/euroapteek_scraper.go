@@ -60,12 +60,14 @@ func (scraper EuroapteekScraper) mapToPharmacies(existingPharmacies []entity.Pha
 
 		if existingPharmacy == nil {
 			var pharmacy entity.Pharmacy
+			pharmacy.PharmacyID = int64(crc64.Checksum([]byte(scraped.Name), crc64Table))
+			pharmacy.Chain = string(entity.CHAIN_EUROAPTEEK)
 			pharmacy.Name = scraped.Name
 			pharmacy.Address = scraped.Address
 			pharmacy.City = scraped.City
 			pharmacy.County = scraped.County
 			// Commented out for testing reasons (this is extremely slow query)
-			//pharmacy.PostalCode = fetchOmnivaZipCode(fmt.Sprintf("%s, %s, %s", pharmacy.Address, pharmacy.City, pharmacy.County), scraper.httpClient, &scraper.logger)
+			pharmacy.PostalCode = fetchOmnivaZipCode(fmt.Sprintf("%s, %s, %s", pharmacy.Address, pharmacy.City, pharmacy.County), scraper.httpClient, &scraper.logger)
 			pharmacy.ModTime = types.Time(time.UnixMilli(0))
 
 			// extract coordinates (lat, lng)
@@ -100,7 +102,7 @@ func (scraper EuroapteekScraper) mapToPharmacies(existingPharmacies []entity.Pha
 }
 
 func (scraper *EuroapteekScraper) Scrape() {
-	scraper.logger.Info().Msg("Scraping Euroapteek pharmacy locations")
+	scraper.logger.Info().Msg("Scraping Euroapteek pharmacy locations...")
 
 	existingPharmacies, err := scraper.repo.FindPharmaciesByChain(entity.CHAIN_EUROAPTEEK).QueryAll()
 	if err != nil {
