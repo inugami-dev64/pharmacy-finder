@@ -4,6 +4,7 @@ import (
 	"pharmafinder/db"
 	"pharmafinder/db/entity"
 	"pharmafinder/utils"
+	"time"
 
 	"github.com/rs/zerolog"
 )
@@ -25,14 +26,39 @@ func ProvideSydameapteekScraper(repo db.PharmacyRepository, client utils.HttpCli
 }
 
 func (scraper *SydameapteekScraper) Scrape() {
-	pharmacies, err := fetchShops(APOTHEKA_ENDPOINT, scraper.httpClient, &scraper.logger)
+	scraper.logger.Info().Msg("Scraping Südameapteek pharmacy locations...")
+	existingPharmacies, err := scraper.repo.FindPharmaciesByChain(entity.CHAIN_SUDAMEAPTEEK).QueryAll()
+	if err != nil {
+		scraper.logger.Error().Msgf("Failed to query existing Südameapteek pharmacies: %v", err)
+		return
+	}
+
+	pharmacies, err := fetchShops(SYDAMEAPTEEK_ENDPOINT, scraper.httpClient, &scraper.logger)
 	if err != nil {
 		scraper.logger.Error().Msgf("Failed to fetch Südameapteek pharmacies: %v", err)
 		return
 	}
 
-	apothekaPharmacies := mapShopsToPharmacies(pharmacies, entity.CHAIN_APOTHEKA, &scraper.logger, scraper.httpClient)
-	err = scraper.repo.StoreAll(apothekaPharmacies)
+	pharmaciesToSave := make([]entity.Pharmacy, 0)
+	sudameapteekPharmacies := mapShopsToPharmacies(pharmacies, entity.CHAIN_SUDAMEAPTEEK, &scraper.logger, scraper.httpClient)
+	for i := range sudameapteekPharmacies {
+		var existingPharmacy *entity.Pharmacy
+		for _, existing := range existingPharmacies {
+			if sudameapteekPharmacies[i].PharmacyID == existing.PharmacyID {
+				existingPharmacy = &existing
+				break
+			}
+		}
+
+		if existingPharmacy != nil && time.Time(existingPharmacy.ModTime).UTC().UnixMilli() < time.Time(sudameapteekPharmacies[i].ModTime).UTC().UnixMilli() {
+			sudameapteekPharmacies[i].ID = existingPharmacy.ID
+			pharmaciesToSave = append(pharmaciesToSave, sudameapteekPharmacies[i])
+		} else if existingPharmacy == nil {
+			pharmaciesToSave = append(pharmaciesToSave, sudameapteekPharmacies[i])
+		}
+	}
+
+	err = scraper.repo.StoreAll(pharmaciesToSave)
 	if err != nil {
 		scraper.logger.Error().Msgf("Failed to persist Südameapteek pharmacies: %v", err)
 	}

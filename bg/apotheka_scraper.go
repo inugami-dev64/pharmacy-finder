@@ -26,6 +26,7 @@ func ProvideApothekaScraper(repo db.PharmacyRepository, client utils.HttpClient)
 }
 
 func (scraper *ApothekaScraper) Scrape() {
+	scraper.logger.Info().Msg("Scraping Apotheka pharmacy locations...")
 	existingPharmacies, err := scraper.repo.FindPharmaciesByChain(entity.CHAIN_APOTHEKA).QueryAll()
 	if err != nil {
 		scraper.logger.Error().Msgf("Failed to query existing Apotheka pharmacies: %v", err)
