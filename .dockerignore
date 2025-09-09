@@ -1,0 +1,5 @@
+deploy/_volumes
+pharmafinder*
+frontend/.svelte-kit
+frontend/build
+frontend/node_modules

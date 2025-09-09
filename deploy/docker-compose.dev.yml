@@ -1,0 +1,70 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:17-alpine3.22
+    restart: always
+    volumes:
+      - ./_volumes/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_HOST: "${POSTGRES_HOST}"
+    networks:
+      - db-net
+      - www-net
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  backend:
+    build:
+      context: ..
+    restart: always
+    environment:
+      POSTGRES_HOST: "${POSTGRES_HOST}"
+      POSTGRES_PORT: "${POSTGRES_PORT}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      LOG_LEVEL: "${LOG_LEVEL}"
+      LOG_DIR: "${LOG_DIR}"
+      LOG_FILENAME: "${LOG_FILENAME}"
+      MAX_LOG_SIZE: "${MAX_LOG_SIZE}"
+      MAX_LOG_BACKUPS: "${MAX_LOG_BACKUPS}"
+      MAX_LOG_AGE: "${MAX_LOG_AGE}"
+    volumes:
+      - ./_volumes/logs:/var/log/backend
+    networks:
+      - db-net
+      - nginx-net
+    depends_on:
+      - postgres
+
+  frontend:
+    image: node:24-alpine3.21
+    command: sh -c "cd /app && npm ci && npm run dev"
+    restart: always
+    volumes:
+      - ../frontend:/app
+    networks:
+      - nginx-net
+
+  nginx:
+    image: nginx:1.29
+    restart: always
+    ports:
+      - "127.0.0.1:9999:9999"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - nginx-net
+      - www-net
+
+networks:
+  db-net:
+  nginx-net:
+  www-net:
+    external: true
