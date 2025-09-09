@@ -2,7 +2,7 @@
     import type { PharmacyInfo } from "$lib/service/pharmacy-info";
     import CloseButton from "../common/icons/CloseButton.svelte";
     import StarRating from "../common/widgets/StarRating.svelte";
-    
+
     // Import logos
     import BenuLogo from "$lib/assets/benu-logo.svg"
     import ApothekaLogo from "$lib/assets/apotheka-logo.svg"
@@ -14,7 +14,7 @@
     export let visible: boolean;
 
     let showMoreAverageScores: boolean = false;
-    
+
 </script>
 
 {#if visible}
@@ -37,14 +37,17 @@
         <div class="phr-info">
             <p>{pharmacy.chain}</p>
             <h3>{pharmacy.name}</h3>
-            <p>{pharmacy.aadress}, {pharmacy.postalCode}, {pharmacy.city}, {pharmacy.county}</p>
-            <span><StarRating value={pharmacy.overallRating || 0} title="Overall rating"/></span>
+            <p>{pharmacy.address},</p>
+            <p>{pharmacy.city},</p>
+            <p>{pharmacy.county},</p>
+            <p>{pharmacy.postalCode}</p>
+            <!--<span><StarRating value={pharmacy.overallRating || 0} title="Overall rating"/></span>-->
             {#if !showMoreAverageScores}
             <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View more...</button>
             {:else}
-            <span><StarRating value={pharmacy.acceptanceRating || 0} title="Acceptance rating"/></span>
+            <!--<span><StarRating value={pharmacy.acceptanceRating || 0} title="Acceptance rating"/></span>
             <span><StarRating value={pharmacy.eRating || 0} title="E rating"/></span>
-            <span><StarRating value={pharmacy.tRating || 0} title="T rating"/></span>
+            <span><StarRating value={pharmacy.tRating || 0} title="T rating"/></span>-->
             <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View less</button>
             {/if}
         </div>
