@@ -1,0 +1,27 @@
+[{
+    "name": "Liivaku Apteek",
+    "priority": 0,
+    "phoneNumber": "82820101",
+    "address": "J. S\u00fctiste tee 28",
+    "city": "Tallinn",
+    "country": "Harjumaa",
+    "location": "Maxima X ",
+    "mondayFridayHours": "09:00-20:00",
+    "saturdayHours": "10:00-18:00",
+    "sundayHours": "X",
+    "lat": "59.397629",
+    "lng": "24.69058"
+}, {
+    "name": "N\u00f5mme Tee Apteek",
+    "priority": 0,
+    "phoneNumber": "82820102",
+    "address": "N\u00f5mme tee 23a",
+    "city": "Tallinn",
+    "country": "Harjumaa",
+    "location": "Maxima X",
+    "mondayFridayHours": "09:00-20:00",
+    "saturdayHours": "09:00-18:00",
+    "sundayHours": "09:00-17:00",
+    "lat": "59.41785",
+    "lng": "24.72165"
+}]
