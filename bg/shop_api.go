@@ -24,7 +24,7 @@ type shop struct {
 	ShopID            string  `json:"shop_id"`
 	Name              string  `json:"name"`
 	City              string  `json:"city"`
-	County            string  `json:"county"`
+	County            string  `json:"districtName"`
 	Address           string  `json:"address"`
 	Email             string  `json:"email"`
 	Phone             string  `json:"phone"`
