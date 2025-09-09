@@ -8,6 +8,7 @@ import (
 	"pharmafinder/db/entity"
 	"pharmafinder/types"
 	"pharmafinder/utils"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -91,19 +92,33 @@ func mapShopsToPharmacies(pharmacyShops *shops, chain entity.PharmacyChain, logg
 		pharmacy.Chain = string(chain)
 		pharmacy.Name = pharmacyShops.Items[i].Name
 
-		addressParts := strings.Split(pharmacyShops.Items[i].Address, ",")
-		if len(addressParts) > 0 {
-			pharmacy.Address = strings.Trim(addressParts[0], " ")
+		parts := strings.Split(pharmacyShops.Items[i].Address, ",")
+		if len(parts) > 0 {
+			pharmacy.Address = strings.Trim(parts[0], " ")
 		} else {
 			pharmacy.Address = pharmacyShops.Items[i].Address
 		}
 
-		pharmacy.City = pharmacyShops.Items[i].City
+		parts = strings.Split(pharmacyShops.Items[i].City, ",")
+		if len(parts) > 0 {
+			pharmacy.City = strings.Trim(parts[0], " ")
+		} else {
+			pharmacy.City = pharmacyShops.Items[i].City
+		}
+
 		pharmacy.County = pharmacyShops.Items[i].County
 
 		pharmacy.PostalCode = fetchOmnivaZipCode(pharmacyShops.Items[i].Address, client, logger)
 		pharmacy.Email = pharmacyShops.Items[i].Email
-		pharmacy.PhoneNumber = fmt.Sprintf("+372%s", pharmacyShops.Items[i].Phone)
+
+		re := regexp.MustCompile(`(\+372)? *([\d ]+)`)
+		groups := re.FindStringSubmatch(pharmacyShops.Items[i].Phone)
+		if len(groups) == 3 {
+			pharmacy.PhoneNumber = fmt.Sprintf("+372%s", strings.ReplaceAll(groups[2], " ", ""))
+		} else {
+			logger.Warn().Msgf("Failed to extract Apotheka/Südameapteek pharmacy phone number")
+		}
+
 		ts, err := time.Parse("2006-01-02 15:04:05", pharmacyShops.Items[i].UpdatedAt)
 		if err != nil {
 			logger.Warn().Msgf("Failed to extract modification timestamp for pharmacy '%s'", pharmacy.Name)
