@@ -96,6 +96,10 @@ func main() {
 				fx.ResultTags(`group:"scrapers"`),
 			),
 			fx.Annotate(
+				bg.ProvideEuroapteekScraper,
+				fx.ResultTags(`group:"scrapers"`),
+			),
+			fx.Annotate(
 				bg.NewCronJob,
 				fx.ParamTags(`group:"scrapers"`),
 			),
