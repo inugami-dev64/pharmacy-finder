@@ -11,7 +11,7 @@
 
     async function showPharmacyView(pharmacy: PharmacyInfo) {
         activePharmacy = pharmacy;
-        visible = !visible;
+        visible = true;
     }
 </script>
 

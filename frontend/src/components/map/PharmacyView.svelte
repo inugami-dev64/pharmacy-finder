@@ -20,7 +20,7 @@
 {#if visible}
 <div class="phr-view">
     <div class="close">
-        <CloseButton size=32 on:click={(e) => visible = !visible}/>
+        <CloseButton size=32 on:click={(e) => visible = false}/>
     </div>
 
     <div>
