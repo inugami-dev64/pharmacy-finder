@@ -19,7 +19,7 @@ const (
 
 type PharmacyReview struct {
 	ID               int64      `db:"id" json:"id"`
-	PharmacyID       int64      `db:"pharmacy_id" json:"pharmacyId"`
+	PharmacyID       int64      `db:"pharmacy_id" json:"-"`
 	PrescriptionType string     `db:"prescription_type" json:"prescriptionType"`
 	Stars            int        `db:"stars" json:"stars"`
 	HRTKind          string     `db:"hrt_kind" json:"hrtKind"`
