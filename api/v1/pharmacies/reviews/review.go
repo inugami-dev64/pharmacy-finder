@@ -65,7 +65,17 @@ func (handler *PharmacyReviewController) GetPharmacyReviews(details *web.HttpReq
 		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed ID path variable"), nil
 	}
 
-	reviews, err := handler.repo.FindReviewForPharmacy(id).QueryAll()
+	ukStr, kStr, l, desc := db.ExtractPagerQueryParameters(details.Params)
+	uk, _ := strconv.ParseInt(ukStr, 10, 64)
+	k, _ := strconv.ParseInt(kStr, 10, 64)
+
+	var reviews []entity.PharmacyReview
+	if uk == 0 || k == 0 {
+		reviews, err = handler.repo.FindReviewForPharmacy(id).Page(nil, nil, l, desc)
+	} else {
+		reviews, err = handler.repo.FindReviewForPharmacy(id).Page(uk, types.Time(time.UnixMilli(k)), l, desc)
+	}
+
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
