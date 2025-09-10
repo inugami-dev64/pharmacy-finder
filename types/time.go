@@ -11,7 +11,7 @@ import (
 type Time time.Time
 
 func (t Time) Value() (driver.Value, error) {
-	return time.Time(t), nil
+	return time.Time(t).UTC().Format("2006-01-02 15:04:05.000"), nil
 }
 
 func (t *Time) Scan(src interface{}) error {
@@ -34,6 +34,6 @@ func (t *Time) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	*t = Time(time.UnixMilli(ts))
+	*t = Time(time.UnixMilli(ts).UTC())
 	return nil
 }
