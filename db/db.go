@@ -100,43 +100,76 @@ func ExtractPagerQueryParameters(params url.Values) (string, string, int, bool) 
 func (q *SQLXQuery[T]) Page(uniqueKey interface{}, key interface{}, length int, desc bool) ([]T, error) {
 	var outerQuery string
 	args := q.args
+	c := len(args) + 1
 
-	if !desc {
-		outerQuery = fmt.Sprintf(`
-		SELECT
-		 	*
-		FROM (
-			%s
-		) AS q
-		WHERE
-			(q."%s", q."%s") > (?, ?)
-		ORDER BY
-			q."%s",
-			q."%s"
-		LIMIT
-			?
-		`, q.q, q.key, q.uniqueKey, q.key, q.uniqueKey)
-		args = append(args, key, uniqueKey, length)
+	if uniqueKey == nil || key == nil {
+		if !desc {
+			outerQuery = fmt.Sprintf(
+				`SELECT
+					*
+				FROM (
+					%s
+				) AS q
+				ORDER BY
+					q."%s",
+					q."%s"
+				LIMIT
+					$%d
+				`, q.q, q.key, q.uniqueKey, c)
+			args = append(args, length)
+		} else {
+			outerQuery = fmt.Sprintf(
+				`SELECT
+					*
+				FROM (
+					%s
+				) AS q
+				ORDER BY
+					q."%s" DESC,
+					q."%s" DESC
+				LIMIT
+					$%d
+				`, q.q, q.key, q.uniqueKey, c)
+			args = append(args, length)
+		}
 	} else {
-		outerQuery = fmt.Sprintf(`
-		SELECT
-		 	*
-		FROM (
-			%s
-		) AS q
-		WHERE
-			(q."%s", q."%s") < (?, ?)
-		ORDER BY
-			q."%s" DESC,
-			q."%s" DESC
-		LIMIT
-			?
-		`, q.q, q.key, q.uniqueKey, q.key, q.uniqueKey)
-		args = append(args, key, uniqueKey, length)
+		if !desc {
+			outerQuery = fmt.Sprintf(
+				`SELECT
+					*
+				FROM (
+					%s
+				) AS q
+				WHERE
+					(q."%s", q."%s") > ($%d, $%d)
+				ORDER BY
+					q."%s",
+					q."%s"
+				LIMIT
+					$%d
+				`, q.q, q.key, q.uniqueKey, c, c+1, q.key, q.uniqueKey, c+2)
+			args = append(args, key, uniqueKey, length)
+		} else {
+			outerQuery = fmt.Sprintf(
+				`SELECT
+					*
+				FROM (
+					%s
+				) AS q
+				WHERE
+					(q."%s", q."%s") < ($%d, $%d)
+				ORDER BY
+					q."%s" DESC,
+					q."%s" DESC
+				LIMIT
+					$%d
+				`, q.q, q.key, q.uniqueKey, c, c+1, q.key, q.uniqueKey, c+2)
+			args = append(args, key, uniqueKey, length)
+		}
 	}
 
-	var data []T
-	err := q.trx.Select(&data, outerQuery, args)
+	data := []T{}
+	err := q.trx.Select(&data, outerQuery, args...)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -183,7 +216,7 @@ func ProvideDatabaseHandle() *sqlx.DB {
 	dbName := os.Getenv("POSTGRES_DB")
 
 	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=utc",
 		dbHost, dbPort, dbUser, dbPassword, dbName,
 	)
 
@@ -197,9 +230,9 @@ func ProvideDatabaseHandle() *sqlx.DB {
 		sqldblogger.WithSQLQueryFieldname("query"),
 		sqldblogger.WithDurationUnit(sqldblogger.DurationMillisecond),
 		sqldblogger.WithDurationFieldname("duration"),
-		sqldblogger.WithQueryerLevel(sqldblogger.LevelTrace),
-		sqldblogger.WithExecerLevel(sqldblogger.LevelTrace),
-		sqldblogger.WithPreparerLevel(sqldblogger.LevelTrace),
+		sqldblogger.WithQueryerLevel(sqldblogger.LevelDebug),
+		sqldblogger.WithExecerLevel(sqldblogger.LevelDebug),
+		sqldblogger.WithPreparerLevel(sqldblogger.LevelDebug),
 	}
 	adapter := zerologadapter.New(utils.GetLogger("SQL"))
 	db = sqldblogger.OpenDriver(dsn, db.Driver(), adapter, loggerOptions...)
