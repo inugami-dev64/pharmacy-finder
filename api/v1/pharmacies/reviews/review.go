@@ -36,6 +36,7 @@ func (handler *PharmacyReviewController) GetRoutes() []web.Route {
 	return []web.Route{
 		web.NewRequestsHandler[PharmacyReviewController](handler.PostPharmacyReview, "/pharmacies/{id}/reviews", []string{"POST"}),
 		web.NewRequestsHandler[PharmacyReviewController](handler.GetPharmacyReviews, "/pharmacies/{id}/reviews", []string{"GET"}),
+		web.NewRequestsHandler[PharmacyReviewController](handler.PatchPharmacyReview, "/pharmacies/{pharmaID}/reviews/{reviewID}", []string{"PATCH"}),
 	}
 }
 
@@ -118,4 +119,62 @@ func (handler *PharmacyReviewController) PostPharmacyReview(details *web.HttpReq
 
 	review.ModificationCode = modCode
 	return http.StatusOK, review, nil
+}
+
+// `PATCH /api/v1/pharmacies/{pharmaID}/reviews/{reviewID}`
+func (handler *PharmacyReviewController) PatchPharmacyReview(details *web.HttpRequestDetails[dto.PharmacyReviewModificationDTO]) (int, interface{}, error) {
+	pharmaIDStr := details.PathVars["pharmaID"]
+	reviewIDStr := details.PathVars["reviewID"]
+
+	pharmaID, err := strconv.ParseInt(pharmaIDStr, 10, 64)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed pharmacy ID path variable '%s'", pharmaIDStr)
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed pharmacy ID path variable"), nil
+	}
+
+	reviewID, err := strconv.ParseInt(reviewIDStr, 10, 64)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed review ID path variable '%s'", pharmaIDStr)
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed review ID path variable"), nil
+
+	}
+
+	review, err := handler.repo.FindReviewByID(pharmaID, reviewID).Query()
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	} else if review == nil {
+		return http.StatusNotFound, types.NewHttpError(http.StatusNotFound, "Not found"), nil
+	}
+
+	// check if provided modifcation code matches the one in the database
+	h := sha256.New()
+	h.Write([]byte(details.Body.ModificationCode))
+	checksum := h.Sum(nil)
+
+	if hex.EncodeToString(checksum) != review.ModificationCode {
+		return http.StatusForbidden, types.NewHttpError(http.StatusForbidden, "Invalid modification code"), nil
+	}
+
+	review.PrescriptionType = details.Body.PrescriptionType
+	review.Stars = details.Body.Stars
+	review.HRTKind = details.Body.HRTKind
+	review.Nationality = details.Body.Nationality
+	review.Review = details.Body.Review
+	review.UpdatedAt = types.Time(time.Now().UTC())
+
+	err = handler.repo.Store(review)
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	return http.StatusOK, dto.PharmacyReviewsetResultDTO{
+		ID:               review.ID,
+		PrescriptionType: review.PrescriptionType,
+		Stars:            review.Stars,
+		HRTKind:          review.HRTKind,
+		Nationality:      review.Nationality,
+		Review:           review.Review,
+		CreatedAt:        review.CreatedAt,
+		UpdatedAt:        review.UpdatedAt,
+	}, nil
 }
