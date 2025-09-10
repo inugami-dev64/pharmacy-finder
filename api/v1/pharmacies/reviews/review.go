@@ -37,6 +37,7 @@ func (handler *PharmacyReviewController) GetRoutes() []web.Route {
 		web.NewRequestsHandler[PharmacyReviewController](handler.PostPharmacyReview, "/pharmacies/{id}/reviews", []string{"POST"}),
 		web.NewRequestsHandler[PharmacyReviewController](handler.GetPharmacyReviews, "/pharmacies/{id}/reviews", []string{"GET"}),
 		web.NewRequestsHandler[PharmacyReviewController](handler.PatchPharmacyReview, "/pharmacies/{pharmaID}/reviews/{reviewID}", []string{"PATCH"}),
+		web.NewRequestsHandler[PharmacyReviewController](handler.DeletePharmacyReview, "/pharmacies/{pharmaID}/reviews/{reviewID}", []string{"DELETE"}),
 	}
 }
 
@@ -163,6 +164,64 @@ func (handler *PharmacyReviewController) PatchPharmacyReview(details *web.HttpRe
 	review.UpdatedAt = types.Time(time.Now().UTC())
 
 	err = handler.repo.Store(review)
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	return http.StatusOK, dto.PharmacyReviewsetResultDTO{
+		ID:               review.ID,
+		PrescriptionType: review.PrescriptionType,
+		Stars:            review.Stars,
+		HRTKind:          review.HRTKind,
+		Nationality:      review.Nationality,
+		Review:           review.Review,
+		CreatedAt:        review.CreatedAt,
+		UpdatedAt:        review.UpdatedAt,
+	}, nil
+}
+
+// `DELETE /api/v1/pharmacies/{pharmaID}/reviews/{reviewID}`
+func (handler *PharmacyReviewController) DeletePharmacyReview(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
+	pharmaIDStr := details.PathVars["pharmaID"]
+	reviewIDStr := details.PathVars["reviewID"]
+
+	pharmaID, err := strconv.ParseInt(pharmaIDStr, 10, 64)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed pharmacy ID path variable '%s'", pharmaIDStr)
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed pharmacy ID path variable"), nil
+	}
+
+	reviewID, err := strconv.ParseInt(reviewIDStr, 10, 64)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed review ID path variable '%s'", pharmaIDStr)
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed review ID path variable"), nil
+
+	}
+
+	review, err := handler.repo.FindReviewByID(pharmaID, reviewID).Query()
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	} else if review == nil {
+		return http.StatusNotFound, types.NewHttpError(http.StatusNotFound, "Not found"), nil
+	}
+
+	auth := details.Header.Get("Authorization")
+	splits := strings.Split(auth, " ")
+	var bearer string
+	if len(splits) > 1 {
+		bearer = strings.Trim(splits[1], " \t")
+	}
+
+	// check if provided modifcation code matches the one in the database
+	h := sha256.New()
+	h.Write([]byte(bearer))
+	checksum := h.Sum(nil)
+
+	if hex.EncodeToString(checksum) != review.ModificationCode {
+		return http.StatusForbidden, types.NewHttpError(http.StatusForbidden, "Invalid modification code"), nil
+	}
+
+	review, err = handler.repo.Delete(reviewID).Query()
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
