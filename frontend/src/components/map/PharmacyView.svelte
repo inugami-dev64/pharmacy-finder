@@ -35,12 +35,11 @@
         {/if}
 
         <div class="phr-info">
-            <p>{pharmacy.chain}</p>
-            <h3>{pharmacy.name}</h3>
-            <p>{pharmacy.address},</p>
-            <p>{pharmacy.city},</p>
-            <p>{pharmacy.county},</p>
-            <p>{pharmacy.postalCode}</p>
+            <div class="phr-primary">
+                <p>{pharmacy.chain}</p>
+                <h3>{pharmacy.name}</h3>
+                <p>{pharmacy.address}, {pharmacy.city}, {pharmacy.county}, {pharmacy.postalCode}</p>
+            </div>
             <!--<span><StarRating value={pharmacy.overallRating || 0} title="Overall rating"/></span>-->
             {#if !showMoreAverageScores}
             <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View more...</button>
@@ -99,6 +98,10 @@
     .phr-info {
         margin-bottom: 0.5em;
         border-bottom: 1px solid #cfcfcf;
+    }
+
+    .phr-primary p, .phr-primary h3 {
+        margin: 0.25em 0;
     }
 
     .close {
