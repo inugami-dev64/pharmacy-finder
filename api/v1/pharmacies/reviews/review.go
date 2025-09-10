@@ -2,6 +2,8 @@ package reviews
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
 	"math/big"
 	"net/http"
 	"pharmafinder/db"
@@ -60,6 +62,11 @@ func (handler *PharmacyReviewController) PostPharmacyReview(details *web.HttpReq
 		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed ID path variable"), nil
 	}
 
+	modCode := handler.generateModificationCode()
+	h := sha256.New()
+	h.Write([]byte(modCode))
+	checksum := h.Sum(nil)
+
 	review := entity.PharmacyReview{
 		PharmacyID:       id,
 		PrescriptionType: details.Body.PrescriptionType,
@@ -69,7 +76,7 @@ func (handler *PharmacyReviewController) PostPharmacyReview(details *web.HttpReq
 		Review:           details.Body.Review,
 		CreatedAt:        types.Time(time.Now().UTC()),
 		UpdatedAt:        types.Time(time.Now().UTC()),
-		ModificationCode: handler.generateModificationCode(),
+		ModificationCode: hex.EncodeToString(checksum),
 	}
 
 	err = handler.repo.Store(&review)
@@ -77,5 +84,6 @@ func (handler *PharmacyReviewController) PostPharmacyReview(details *web.HttpReq
 		return http.StatusInternalServerError, nil, err
 	}
 
+	review.ModificationCode = modCode
 	return http.StatusOK, review, nil
 }
