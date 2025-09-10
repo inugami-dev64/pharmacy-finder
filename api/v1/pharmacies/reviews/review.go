@@ -35,6 +35,7 @@ func ProvidePharmacyReviewController(repo db.PharmacyReviewRepository) []web.Rou
 func (handler *PharmacyReviewController) GetRoutes() []web.Route {
 	return []web.Route{
 		web.NewRequestsHandler[PharmacyReviewController](handler.PostPharmacyReview, "/pharmacies/{id}/reviews", []string{"POST"}),
+		web.NewRequestsHandler[PharmacyReviewController](handler.GetPharmacyReviews, "/pharmacies/{id}/reviews", []string{"GET"}),
 	}
 }
 
@@ -51,6 +52,37 @@ func (handler *PharmacyReviewController) generateModificationCode() string {
 	}
 
 	return builder.String()
+}
+
+// `GET /api/v1/pharmacies/{id}/reviews`
+func (handler *PharmacyReviewController) GetPharmacyReviews(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
+	idStr := details.PathVars["id"]
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed ID path variable '%s'", idStr)
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed ID path variable"), nil
+	}
+
+	reviews, err := handler.repo.FindReviewForPharmacy(id).QueryAll()
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	reviewResult := make([]dto.PharmacyReviewsetResultDTO, len(reviews))
+	for i := range reviews {
+		reviewResult[i] = dto.PharmacyReviewsetResultDTO{
+			ID:               reviews[i].ID,
+			PrescriptionType: reviews[i].PrescriptionType,
+			Stars:            reviews[i].Stars,
+			HRTKind:          reviews[i].HRTKind,
+			Nationality:      reviews[i].Nationality,
+			Review:           reviews[i].Review,
+			CreatedAt:        reviews[i].CreatedAt,
+			UpdatedAt:        reviews[i].UpdatedAt,
+		}
+	}
+
+	return http.StatusOK, reviewResult, nil
 }
 
 // `POST /api/v1/pharmacies/{id}/reviews`
