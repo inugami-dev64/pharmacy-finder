@@ -9,12 +9,12 @@
     import SudameapteekLogo from "$lib/assets/sudameapteek-logo.svg"
     import EuroapteekLogo from "$lib/assets/euroapteek-logo.svg"
     import Loader from "../common/widgets/Loader.svelte";
+    import Review from "./PharmacyView/Review.svelte";
 
     export let pharmacy: PharmacyInfo;
     export let visible: boolean;
 
     let showMoreAverageScores: boolean = false;
-
 </script>
 
 {#if visible}
@@ -51,37 +51,10 @@
     </div>
 
     <!-- Container for pharmacy reviews -->
-    <div class="phr-reviews">
-        <div class="phr-review">
-            <span><StarRating value={3} scale={0.75}/></span>
-            <b>GenderGP</b>
-            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
-        </div>
-        <div class="phr-review">
-            <span><StarRating value={5} scale={0.75}/></span>
-            <b>Imago</b>
-            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
-        </div>
-        <div class="phr-review">
-            <span><StarRating value={5} scale={0.75}/></span>
-            <b>Imago</b>
-            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
-        </div>
-        <div class="phr-review">
-            <span><StarRating value={5} scale={0.75}/></span>
-            <b>Imago</b>
-            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
-        </div>
-        <div class="phr-review">
-            <span><StarRating value={5} scale={0.75}/></span>
-            <b>Imago</b>
-            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
-        </div>
-        <div class="phr-review">
-            <span><StarRating value={5} scale={0.75}/></span>
-            <b>Imago</b>
-            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
-        </div>
+    <div id="phr-reviews">
+        <Review rating={3} prescriptionType="Imago" review="Consequatur aut dolores veritatis et distinctio quis. Repellendus autem ut necessitatibus. Commodi corporis iste dicta magnam. Repudiandae voluptas voluptas fugit omnis consequatur ullam qui quo. Est dolore ut qui nobis officia nobis.…" regimen="e"/>
+        <Review rating={3} prescriptionType="Imago" review="Väga hea apteek T jaoks" regimen="t"/>
+        <Review rating={3} prescriptionType="Imago" review="Väga hea apteek T jaoks" regimen="t"/>
         <div class="loader-container">
             <Loader/>
         </div>
@@ -135,14 +108,8 @@
         margin: 0.25em 0;
     }
 
-    .phr-reviews {
+    #phr-reviews {
         overflow: auto;
-    }
-
-    .phr-review {
-        margin-right: 15px;
-        padding-bottom: 0.25em;
-        border-bottom: 1px solid #cfcfcf;
     }
 
     .close {
