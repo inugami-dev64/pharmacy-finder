@@ -70,7 +70,7 @@ func (repo PharmacyReviewRepositorySQLX) Store(review *entity.PharmacyReview) er
 		_, err := repo.conn.NamedExec(
 			`UPDATE pharmacy_reviews SET
 				pharmacy_id = :pharmacy_id,
-				prescription_type = :prescription_ttype,
+				prescription_type = :prescription_type,
 				stars = :stars,
 				hrt_kind = :hrt_kind,
 				nationality = :nationality,
