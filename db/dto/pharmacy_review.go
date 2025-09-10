@@ -5,5 +5,5 @@ type PharmacyReviewCreationDTO struct {
 	Stars            int     `json:"stars" validate:"required"`
 	HRTKind          string  `json:"hrtKind" validate:"required"`
 	Nationality      *string `json:"nationality" validate:"iso3166_1_alpha2"`
-	Review           *string `json:"review" validate:"leq=1024"`
+	Review           *string `json:"review" validate:"lte=1024"`
 }

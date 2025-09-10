@@ -20,12 +20,12 @@ const (
 type PharmacyReview struct {
 	ID               int64      `db:"id" json:"id"`
 	PharmacyID       int64      `db:"pharmacy_id" json:"pharmacyId"`
-	PrescriptionType string     `db:"type" json:"prescriptionType"`
+	PrescriptionType string     `db:"prescription_type" json:"prescriptionType"`
 	Stars            int        `db:"stars" json:"stars"`
 	HRTKind          string     `db:"hrt_kind" json:"hrtKind"`
 	Nationality      *string    `db:"nationality" json:"nationality"`
 	Review           *string    `db:"review" json:"review"`
 	CreatedAt        types.Time `db:"created_at" json:"createdAt"`
 	UpdatedAt        types.Time `db:"updated_at" json:"updatedAt"`
-	ModificationCode string     `db:"mod_code" json:"modCode"`
+	ModificationCode string     `db:"modification_code" json:"modCode"`
 }

@@ -46,7 +46,7 @@ func (repo PharmacyReviewRepositorySQLX) Store(review *entity.PharmacyReview) er
 		_, err := repo.conn.NamedExec(
 			`UPDATE pharmacy_reviews SET
 				pharmacy_id = :pharmacy_id,
-				"type" = :type,
+				prescription_type = :prescription_ttype,
 				stars = :stars,
 				hrt_kind = :hrt_kind,
 				nationality = :nationality,
@@ -60,8 +60,8 @@ func (repo PharmacyReviewRepositorySQLX) Store(review *entity.PharmacyReview) er
 	}
 
 	rows, err := repo.conn.NamedQuery(
-		`INSERT INTO pharmacy_reviews (pharmacy_id,"type",stars,hrt_kind,nationality,review,created_at,updated_at,mod_code)
-			VALUES (:pharmacy_id,:type,:stars,:hrt_kind,:nationality,:review,:created_at,:updated_at,:mod_code)
+		`INSERT INTO pharmacy_reviews (pharmacy_id,prescription_type,stars,hrt_kind,nationality,review,created_at,updated_at,modification_code)
+			VALUES (:pharmacy_id,:prescription_type,:stars,:hrt_kind,:nationality,:review,:created_at,:updated_at,:modification_code)
 		RETURNING *`,
 		review)
 
