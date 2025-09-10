@@ -2,12 +2,16 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"pharmafinder/types"
 	"pharmafinder/utils"
+	"strings"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog"
 )
@@ -54,6 +58,7 @@ type CallbackFunction[T interface{}, B interface{}] = func(details *HttpRequestD
 type HttpRequestHandler[T interface{}, B interface{}] struct {
 	callback CallbackFunction[T, B]
 	pattern  string
+	validate *validator.Validate
 	methods  []string
 	logger   zerolog.Logger
 }
@@ -65,6 +70,7 @@ func NewRequestsHandler[T interface{}, B interface{}](
 	return &HttpRequestHandler[T, B]{
 		callback: callback,
 		pattern:  pattern,
+		validate: validator.New(),
 		methods:  methods,
 		logger:   utils.GetLogger("WEB"),
 	}
@@ -125,12 +131,40 @@ func (handler *HttpRequestHandler[T, B]) assignBody(r *http.Request, w http.Resp
 		details.Body = body
 	}
 }
+
+func (handler *HttpRequestHandler[T, B]) validateBody(r *http.Request, w http.ResponseWriter, body *B) {
+	if _, ok := any(body).(*EmptyBody); !ok {
+		err := handler.validate.Struct(*body)
+		if err != nil {
+			errs := err.(validator.ValidationErrors)
+			handler.logger.Warn().
+				Str("method", r.Method).
+				Str("path", r.URL.Path).
+				Str("addr", r.RemoteAddr).
+				Int("code", http.StatusBadRequest).
+				Msgf("Validation error: %s", errs[0].Error())
+
+			createJsonResponse(w, http.StatusBadRequest, types.HttpError{
+				StatusCode: http.StatusInternalServerError,
+				Timestamp:  types.Time(time.Now().UTC()),
+				Message:    errs[0].Error(),
+			})
+		}
+	}
+}
+
+func (handler *HttpRequestHandler[T, B]) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	details := HttpRequestDetails[B]{
 		Path:     r.URL.Path,
 		Method:   r.Method,
 		Params:   r.URL.Query(),
 		PathVars: mux.Vars(r),
 	}
+
+	// in cases where we have a request body provided, we perform json unmarshalling
+	// and data validation
 	handler.assignBody(r, w, &details)
+	handler.validateBody(r, w, &details.Body)
 
 	code, resp, err := handler.callback(&details)
 	if err != nil {
