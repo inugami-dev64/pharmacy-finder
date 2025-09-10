@@ -41,6 +41,7 @@ type EmptyBody struct{}
 type HttpRequestDetails[B interface{}] struct {
 	Path   string
 	Method string
+	Header http.Header
 
 	// Unmarshalled HTTP request body
 	Body B
@@ -160,6 +161,7 @@ func (handler *HttpRequestHandler[T, B]) ServeHTTP(w http.ResponseWriter, r *htt
 	details := HttpRequestDetails[B]{
 		Path:     r.URL.Path,
 		Method:   r.Method,
+		Header:   r.Header,
 		Params:   r.URL.Query(),
 		PathVars: mux.Vars(r),
 	}
