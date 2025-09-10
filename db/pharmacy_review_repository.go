@@ -10,6 +10,7 @@ type PharmacyReviewRepository interface {
 	FindReviewForPharmacy(id int64) Query[entity.PharmacyReview]
 	FindReviewByID(pharmaID int64, reviewID int64) Query[entity.PharmacyReview]
 	Store(review *entity.PharmacyReview) error
+	Delete(id int64) Query[entity.PharmacyReview]
 	Trx(conn any) PharmacyReviewRepository
 }
 
@@ -98,6 +99,25 @@ func (repo PharmacyReviewRepositorySQLX) Store(review *entity.PharmacyReview) er
 	}
 
 	return nil
+}
+
+// Warning: potentially destructive action
+func (repo PharmacyReviewRepositorySQLX) Delete(id int64) Query[entity.PharmacyReview] {
+	q := `
+	DELETE FROM pharmacy_reviews
+	WHERE id = $1
+	RETURNING *
+	`
+
+	args := []interface{}{id}
+
+	return &SQLXQuery[entity.PharmacyReview]{
+		uniqueKey: "id",
+		key:       "updated_at",
+		trx:       repo.conn,
+		q:         q,
+		args:      args,
+	}
 }
 
 func (repo PharmacyReviewRepositorySQLX) Trx(conn any) PharmacyReviewRepository {
