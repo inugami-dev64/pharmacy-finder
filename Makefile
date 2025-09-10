@@ -1,7 +1,7 @@
 vpath % ./frontend/node_modules ./frontend/build
 
 GOPATH := $(shell go env GOPATH)
-GOSRC := $(shell find . -type f -name "*.go" -o -name "*.sql" 2>/dev/null)
+GOSRC := $(shell find . -type f -name "*.go" ! -regex '.*_mock.go' -o -name "*.sql" 2>/dev/null)
 
 MOCKGEN_DST := mock/pharmacy_repository_mock.go \
 			   mock/http_mock.go \
