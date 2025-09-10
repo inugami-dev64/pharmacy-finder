@@ -3,9 +3,11 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"net/url"
 	"os"
 	"pharmafinder"
 	"pharmafinder/utils"
+	"strconv"
 
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog"
@@ -61,6 +63,35 @@ func (q *SQLXQuery[T]) QueryAll() ([]T, error) {
 	}
 
 	return vals, nil
+}
+
+// Utility function, which extracts pager
+// HTTP query parameters and returns them
+//
+// Pager variables are following:
+//   - uk - specifying unique key value
+//   - k - specifying key value
+//   - l - specifying query set length
+//   - desc - specifying whether the pager should work in descending order
+func ExtractPagerQueryParameters(params url.Values) (string, string, int, bool) {
+	uk := params.Get("uk")
+	k := params.Get("k")
+	lStr := params.Get("l")
+	descStr := params.Get("desc")
+
+	var err error
+	var l int64
+	var desc bool
+
+	if l, err = strconv.ParseInt(lStr, 10, 64); err != nil {
+		l = 50
+	}
+
+	if desc, err = strconv.ParseBool(descStr); err != nil {
+		desc = false
+	}
+
+	return uk, k, int(l), desc
 }
 
 // This function needs testing on some actual data
