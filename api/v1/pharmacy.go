@@ -32,7 +32,7 @@ func (handler *PharmaciesController) GetRoutes() []web.Route {
 }
 
 // GET /api/v1/phamacies?sw=lat,lng&ne=lat,lng
-func (handler *PharmaciesController) GetPharmacies(details *web.HttpRequestDetails) (int, interface{}, error) {
+func (handler *PharmaciesController) GetPharmacies(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
 	swText := details.Params.Get("sw")
 	neText := details.Params.Get("ne")
 
