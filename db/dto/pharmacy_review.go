@@ -20,3 +20,8 @@ type PharmacyReviewsetResultDTO struct {
 	CreatedAt        types.Time `json:"createdAt"`
 	UpdatedAt        types.Time `json:"updatedAt"`
 }
+
+type PharmacyReviewModificationDTO struct {
+	PharmacyReviewCreationDTO
+	ModificationCode string `json:"modCode" validate:"required,lte=16"`
+}
