@@ -132,7 +132,7 @@ func (handler *HttpRequestHandler[T, B]) assignBody(r *http.Request, w http.Resp
 	}
 }
 
-func (handler *HttpRequestHandler[T, B]) validateBody(r *http.Request, w http.ResponseWriter, body *B) {
+func (handler *HttpRequestHandler[T, B]) validateBody(r *http.Request, w http.ResponseWriter, body *B) bool {
 	if _, ok := any(body).(*EmptyBody); !ok {
 		err := handler.validate.Struct(*body)
 		if err != nil {
@@ -149,8 +149,11 @@ func (handler *HttpRequestHandler[T, B]) validateBody(r *http.Request, w http.Re
 				Timestamp:  types.Time(time.Now().UTC()),
 				Message:    errs[0].Error(),
 			})
+			return false
 		}
 	}
+
+	return true
 }
 
 func (handler *HttpRequestHandler[T, B]) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -164,7 +167,9 @@ func (handler *HttpRequestHandler[T, B]) ServeHTTP(w http.ResponseWriter, r *htt
 	// in cases where we have a request body provided, we perform json unmarshalling
 	// and data validation
 	handler.assignBody(r, w, &details)
-	handler.validateBody(r, w, &details.Body)
+	if !handler.validateBody(r, w, &details.Body) {
+		return
+	}
 
 	code, resp, err := handler.callback(&details)
 	if err != nil {
