@@ -1,4 +1,4 @@
-package v1
+package pharmacies
 
 import (
 	"net/http"
