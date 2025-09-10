@@ -10,11 +10,34 @@
     import EuroapteekLogo from "$lib/assets/euroapteek-logo.svg"
     import Loader from "../common/widgets/Loader.svelte";
     import Review from "./PharmacyView/Review.svelte";
+    import { mount, onMount } from "svelte";
+    import { getPharmacyReviews, type PharmacyReview } from "$lib/service/pharmacy-review";
 
     export let pharmacy: PharmacyInfo;
     export let visible: boolean;
 
     let showMoreAverageScores: boolean = false;
+    let fetchDone: boolean = false;
+    let reviews: PharmacyReview[] = []
+
+    let key: number | null = null;
+    let uniqueKey: number | null = null;
+
+    let reviewContainer: HTMLElement;
+
+    async function checkAndUpdateReviews(_: Event) {
+        if (reviewContainer.scrollHeight <= reviewContainer.scrollTop + reviewContainer.clientHeight && pharmacy.id !== undefined) {
+            reviews = await getPharmacyReviews(pharmacy.id, key, uniqueKey)
+            if (reviews.length == 0)
+                fetchDone = true
+            else if (reviews[reviews.length - 1].id != uniqueKey && reviews[reviews.length - 1].updatedAt != key) {
+                uniqueKey = reviews[reviews.length-1].updatedAt || 0;
+                key = reviews[reviews.length - 1].id || 0;
+            } else
+                fetchDone = true;
+        }
+    }
+
 </script>
 
 {#if visible}
@@ -51,13 +74,15 @@
     </div>
 
     <!-- Container for pharmacy reviews -->
-    <div id="phr-reviews">
-        <Review rating={3} countryCode="EE" prescriptionType="Imago" review="Consequatur aut dolores veritatis et distinctio quis. Repellendus autem ut necessitatibus. Commodi corporis iste dicta magnam. Repudiandae voluptas voluptas fugit omnis consequatur ullam qui quo. Est dolore ut qui nobis officia nobis.…" regimen="e"/>
-        <Review rating={3} countryCode="FI" prescriptionType="Imago" review="Väga hea apteek T jaoks" regimen="t"/>
-        <Review rating={3} countryCode="SE" prescriptionType="Imago" review="Väga hea apteek T jaoks" regimen="t"/>
+    <div class="phr-reviews" on:scroll={checkAndUpdateReviews} bind:this={reviewContainer}>
+        {#each reviews as review}
+        <Review rating={review.stars || 0} countryCode={review.nationality || "EE"} prescriptionType={review.prescriptionType || ""} review={review.review || ""} regimen={review.hrtKind || ""}/>
+        {/each}
+        {#if !fetchDone}
         <div class="loader-container">
             <Loader/>
         </div>
+        {/if}
     </div>
 </div>
 {/if}
@@ -108,7 +133,7 @@
         margin: 0.25em 0;
     }
 
-    #phr-reviews {
+    .phr-reviews {
         overflow: auto;
     }
 
