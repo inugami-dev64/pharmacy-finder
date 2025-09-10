@@ -52,9 +52,9 @@
 
     <!-- Container for pharmacy reviews -->
     <div id="phr-reviews">
-        <Review rating={3} prescriptionType="Imago" review="Consequatur aut dolores veritatis et distinctio quis. Repellendus autem ut necessitatibus. Commodi corporis iste dicta magnam. Repudiandae voluptas voluptas fugit omnis consequatur ullam qui quo. Est dolore ut qui nobis officia nobis.…" regimen="e"/>
-        <Review rating={3} prescriptionType="Imago" review="Väga hea apteek T jaoks" regimen="t"/>
-        <Review rating={3} prescriptionType="Imago" review="Väga hea apteek T jaoks" regimen="t"/>
+        <Review rating={3} countryCode="EE" prescriptionType="Imago" review="Consequatur aut dolores veritatis et distinctio quis. Repellendus autem ut necessitatibus. Commodi corporis iste dicta magnam. Repudiandae voluptas voluptas fugit omnis consequatur ullam qui quo. Est dolore ut qui nobis officia nobis.…" regimen="e"/>
+        <Review rating={3} countryCode="FI" prescriptionType="Imago" review="Väga hea apteek T jaoks" regimen="t"/>
+        <Review rating={3} countryCode="SE" prescriptionType="Imago" review="Väga hea apteek T jaoks" regimen="t"/>
         <div class="loader-container">
             <Loader/>
         </div>
