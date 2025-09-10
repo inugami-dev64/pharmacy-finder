@@ -30,11 +30,16 @@ type Route interface {
 	Methods() []string
 }
 
+type EmptyBody struct{}
+
 // HttpRequestDetails is a struct that contains relevant data about
 // the request that was made
-type HttpRequestDetails struct {
+type HttpRequestDetails[B interface{}] struct {
 	Path   string
 	Method string
+
+	// Unmarshalled HTTP request body
+	Body B
 
 	// URL parameters
 	Params url.Values
@@ -44,20 +49,20 @@ type HttpRequestDetails struct {
 	PathVars map[string]string
 }
 
-type CallbackFunction[T interface{}] = func(details *HttpRequestDetails) (int, interface{}, error)
+type CallbackFunction[T interface{}, B interface{}] = func(details *HttpRequestDetails[B]) (int, interface{}, error)
 
-type HttpRequestHandler[T interface{}] struct {
-	callback CallbackFunction[T]
+type HttpRequestHandler[T interface{}, B interface{}] struct {
+	callback CallbackFunction[T, B]
 	pattern  string
 	methods  []string
 	logger   zerolog.Logger
 }
 
-func NewRequestsHandler[T interface{}](
-	callback CallbackFunction[T],
+func NewRequestsHandler[T interface{}, B interface{}](
+	callback CallbackFunction[T, B],
 	pattern string,
 	methods []string) Route {
-	return &HttpRequestHandler[T]{
+	return &HttpRequestHandler[T, B]{
 		callback: callback,
 		pattern:  pattern,
 		methods:  methods,
@@ -65,21 +70,67 @@ func NewRequestsHandler[T interface{}](
 	}
 }
 
-func (handler *HttpRequestHandler[T]) Pattern() string {
+func (handler *HttpRequestHandler[T, B]) Pattern() string {
 	return handler.pattern
 }
 
-func (handler *HttpRequestHandler[T]) Methods() []string {
+func (handler *HttpRequestHandler[T, B]) Methods() []string {
 	return handler.methods
 }
 
-func (handler *HttpRequestHandler[T]) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	details := HttpRequestDetails{
+func (handler *HttpRequestHandler[T, B]) assignBody(r *http.Request, w http.ResponseWriter, details *HttpRequestDetails[B]) {
+	// check if given request body should be unmarshalled
+	if _, ok := any(details.Body).(EmptyBody); !ok {
+		badRequestLogEvent := handler.logger.Warn().
+			Str("method", r.Method).
+			Str("path", r.URL.Path).
+			Str("addr", r.RemoteAddr).
+			Int("code", http.StatusBadRequest)
+
+		if !strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
+			badRequestLogEvent.Msgf("Expected content-type is application/json, got %s", r.Header.Get("Content-Type"))
+			createJsonResponse(w, http.StatusBadRequest, types.HttpError{
+				StatusCode: http.StatusBadRequest,
+				Timestamp:  types.Time(time.Now().UTC()),
+				Message:    fmt.Sprintf("Expected content-type is application/json, got %s", r.Header.Get("Content-Type")),
+			})
+			return
+		}
+
+		var body B
+		bytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			badRequestLogEvent.Msgf("Failed to read request body: %v", err)
+
+			createJsonResponse(w, http.StatusBadRequest, types.HttpError{
+				StatusCode: http.StatusBadRequest,
+				Timestamp:  types.Time(time.Now().UTC()),
+				Message:    "Invalid request body",
+			})
+			return
+		}
+
+		err = json.Unmarshal(bytes, &body)
+		if err != nil {
+			badRequestLogEvent.Msgf("Failed to json unmarshal request body: %v", err)
+
+			createJsonResponse(w, http.StatusBadRequest, types.HttpError{
+				StatusCode: http.StatusBadRequest,
+				Timestamp:  types.Time(time.Now().UTC()),
+				Message:    "Malformed JSON body",
+			})
+			return
+		}
+
+		details.Body = body
+	}
+}
 		Path:     r.URL.Path,
 		Method:   r.Method,
 		Params:   r.URL.Query(),
 		PathVars: mux.Vars(r),
 	}
+	handler.assignBody(r, w, &details)
 
 	code, resp, err := handler.callback(&details)
 	if err != nil {
