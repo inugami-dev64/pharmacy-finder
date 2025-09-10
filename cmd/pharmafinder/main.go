@@ -5,7 +5,7 @@ import (
 	"net"
 	"net/http"
 	"pharmafinder"
-	v1 "pharmafinder/api/v1"
+	"pharmafinder/api/v1/pharmacies"
 	"pharmafinder/bg"
 	"pharmafinder/db"
 	"pharmafinder/utils"
@@ -63,7 +63,7 @@ func NewHTTPServer(lc fx.Lifecycle, mux *mux.Router) *http.Server {
 
 func main() {
 	// Attempt to load .env files if they exist
-	godotenv.Load("deploy/.env")
+	godotenv.Load("deploy/.env.testing")
 	fx.New(
 		fx.WithLogger(func() fxevent.Logger {
 			return &utils.FXZerologLogger{Logger: utils.GetLogger("FX")}
@@ -105,9 +105,9 @@ func main() {
 				fx.ParamTags(`group:"scrapers"`),
 			),
 
-			// /pharmacies/* controller
+			// /pharmacies controller
 			fx.Annotate(
-				v1.ProvidePharmacyController,
+				pharmacies.ProvidePharmacyController,
 				fx.ResultTags(`group:"routes"`),
 			),
 		),
