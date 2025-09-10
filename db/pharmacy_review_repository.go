@@ -8,6 +8,7 @@ import (
 
 type PharmacyReviewRepository interface {
 	FindReviewForPharmacy(id int64) Query[entity.PharmacyReview]
+	FindReviewByID(pharmaID int64, reviewID int64) Query[entity.PharmacyReview]
 	Store(review *entity.PharmacyReview) error
 	Trx(conn any) PharmacyReviewRepository
 }
@@ -31,6 +32,29 @@ func (repo PharmacyReviewRepositorySQLX) FindReviewForPharmacy(id int64) Query[e
 	`
 
 	args := []interface{}{id}
+
+	return &SQLXQuery[entity.PharmacyReview]{
+		uniqueKey: "id",
+		key:       "updated_at",
+		trx:       repo.conn,
+		q:         q,
+		args:      args,
+	}
+}
+
+func (repo PharmacyReviewRepositorySQLX) FindReviewByID(pharmaID int64, reviewID int64) Query[entity.PharmacyReview] {
+	q := `
+	SELECT
+		*
+	FROM
+		pharmacy_reviews pr
+	WHERE
+		pr.pharmacy_id = $1
+	AND
+		pr.id = $2
+	`
+
+	args := []interface{}{pharmaID, reviewID}
 
 	return &SQLXQuery[entity.PharmacyReview]{
 		uniqueKey: "id",
