@@ -23,38 +23,67 @@
         <CloseButton size=32 on:click={(e) => visible = false}/>
     </div>
 
-    <div>
-        {#if pharmacy.chain?.toLowerCase() == "benu"}
-            <img alt="Benu logo" src="{BenuLogo}">
-        {:else if pharmacy.chain?.toLowerCase() == "apotheka" }
-            <img alt="Apotheka logo" src={ApothekaLogo}>
-        {:else if pharmacy.chain?.toLowerCase() == "südameapteek"}
-            <img alt="Südameapteek logo" src="{SudameapteekLogo}">
-        {:else if pharmacy.chain?.toLowerCase() == "euroapteek"}
-            <img alt="Euroapteek logo" src="{EuroapteekLogo}">
-        {/if}
+    {#if pharmacy.chain?.toLowerCase() == "benu"}
+        <img alt="Benu logo" src="{BenuLogo}">
+    {:else if pharmacy.chain?.toLowerCase() == "apotheka" }
+        <img alt="Apotheka logo" src={ApothekaLogo}>
+    {:else if pharmacy.chain?.toLowerCase() == "südameapteek"}
+        <img alt="Südameapteek logo" src="{SudameapteekLogo}">
+    {:else if pharmacy.chain?.toLowerCase() == "euroapteek"}
+        <img alt="Euroapteek logo" src="{EuroapteekLogo}">
+    {/if}
 
-        <div class="phr-info">
-            <div class="phr-primary">
-                <p>{pharmacy.chain}</p>
-                <h3>{pharmacy.name}</h3>
-                <p>{pharmacy.address}, {pharmacy.city}, {pharmacy.county}, {pharmacy.postalCode}</p>
-            </div>
-            <!--<span><StarRating value={pharmacy.overallRating || 0} title="Overall rating"/></span>-->
-            {#if !showMoreAverageScores}
-            <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View more...</button>
-            {:else}
-            <!--<span><StarRating value={pharmacy.acceptanceRating || 0} title="Acceptance rating"/></span>
-            <span><StarRating value={pharmacy.eRating || 0} title="E rating"/></span>
-            <span><StarRating value={pharmacy.tRating || 0} title="T rating"/></span>-->
-            <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View less</button>
-            {/if}
+    <div class="phr-info">
+        <div class="phr-primary">
+            <p>{pharmacy.chain}</p>
+            <h3>{pharmacy.name}</h3>
+            <p>{pharmacy.address}, {pharmacy.city}, {pharmacy.county}, {pharmacy.postalCode}</p>
         </div>
+        <!--<span><StarRating value={pharmacy.overallRating || 0} title="Overall rating"/></span>-->
+        {#if !showMoreAverageScores}
+        <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View more...</button>
+        {:else}
+        <!--<span><StarRating value={pharmacy.acceptanceRating || 0} title="Acceptance rating"/></span>
+        <span><StarRating value={pharmacy.eRating || 0} title="E rating"/></span>
+        <span><StarRating value={pharmacy.tRating || 0} title="T rating"/></span>-->
+        <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View less</button>
+        {/if}
+    </div>
 
-        <div class="phr-ratings">
-            <div class="loader-container">
-                <Loader/>
-            </div>
+    <!-- Container for pharmacy reviews -->
+    <div class="phr-reviews">
+        <div class="phr-review">
+            <span><StarRating value={3} scale={0.75}/></span>
+            <b>GenderGP</b>
+            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
+        </div>
+        <div class="phr-review">
+            <span><StarRating value={5} scale={0.75}/></span>
+            <b>Imago</b>
+            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
+        </div>
+        <div class="phr-review">
+            <span><StarRating value={5} scale={0.75}/></span>
+            <b>Imago</b>
+            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
+        </div>
+        <div class="phr-review">
+            <span><StarRating value={5} scale={0.75}/></span>
+            <b>Imago</b>
+            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
+        </div>
+        <div class="phr-review">
+            <span><StarRating value={5} scale={0.75}/></span>
+            <b>Imago</b>
+            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
+        </div>
+        <div class="phr-review">
+            <span><StarRating value={5} scale={0.75}/></span>
+            <b>Imago</b>
+            <p>Quibusdam magnam alias reprehenderit non vero repudiandae. Impedit et est impedit quos enim qui odit. Ullam sequi rerum voluptates voluptatem ab quam. Quod cum quis dolores delectus ex ut voluptatem. Quidem perspiciatis ipsam sequi. Ex atque et rerum voluptates nostrum omnis.</p>
+        </div>
+        <div class="loader-container">
+            <Loader/>
         </div>
     </div>
 </div>
@@ -70,18 +99,20 @@
         display: flex;
         justify-content: center;
         width: 100%;
+        margin-top: 1em;
         height: fit-content;
     }
 
     .phr-view {
+        display: flex;
+        flex-direction: column;
         position: fixed;
         left: 1em;
         top: 1em;
         width: calc(25% - 2em);
         min-width: 380px;
         max-width: 420px;
-        height: fit-content;
-        max-height: calc(100% - 2em);
+        max-height: calc(100vh - 3em);
         padding: 1em;
         z-index: 1000;
         background-color: #ffffff;
@@ -90,7 +121,7 @@
         box-sizing: border-box;
     }
 
-    .phr-view > div > img {
+    .phr-view > img {
         margin-bottom: 2em;
         width: 100%;
     }
@@ -102,6 +133,16 @@
 
     .phr-primary p, .phr-primary h3 {
         margin: 0.25em 0;
+    }
+
+    .phr-reviews {
+        overflow: auto;
+    }
+
+    .phr-review {
+        margin-right: 15px;
+        padding-bottom: 0.25em;
+        border-bottom: 1px solid #cfcfcf;
     }
 
     .close {
