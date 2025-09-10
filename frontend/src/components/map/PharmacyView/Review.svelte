@@ -2,13 +2,15 @@
     import Stars from "../../common/widgets/Stars.svelte";
     import Estrogen from "$lib/assets/regimen/estrogen.webp";
     import Testosterone from "$lib/assets/regimen/testosterone.webp";
-    import { mount, onMount } from "svelte";
+    import { onMount } from "svelte";
     import EditButton from "../../common/icons/EditButton.svelte";
+    import Countries from "$lib/assets/countries.json"
 
     export let rating: number;
     export let prescriptionType: string;
     export let review: string | null;
     export let regimen: string | null;
+    export let countryCode: string | null;
 
     let buttonName: string = "Show more...";
     let truncateText: boolean = true;
@@ -35,12 +37,15 @@
             <Stars value={rating} scale={0.75}/>
             <EditButton size={24}></EditButton>
         </span>
-        <span>
-        {#if regimen == 'e'}
-        <img src="{Estrogen}" alt="e" title="Estrogen based prescription">
-        {:else if regimen == 't'}
-        <img src="{Testosterone}" alt="t" title="Testosterone based prescription">
-        {/if}
+        <span style="display: flex; align-items: center">
+            {#if countryCode !== null && countryCode in Countries}
+            <span style="font-size: 20px" title={Countries[countryCode].name}>{Countries[countryCode].emoji}</span>
+            {/if}
+            {#if regimen == 'e'}
+            <img src="{Estrogen}" alt="e" title="Estrogen based prescription">
+            {:else if regimen == 't'}
+            <img src="{Testosterone}" alt="t" title="Testosterone based prescription">
+            {/if}
         </span>
     </div>
     <b>{prescriptionType}</b>
