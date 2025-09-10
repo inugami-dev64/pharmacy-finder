@@ -78,6 +78,7 @@ func main() {
 			// Data access layer
 			db.ProvideDatabaseHandle,
 			db.ProvidePharmacyRepository,
+			db.ProvidePharmacyReviewRepository,
 
 			// Utilities
 			utils.ProvideHTTPClient,
