@@ -12,14 +12,13 @@ services:
       POSTGRES_HOST: "${POSTGRES_HOST}"
     networks:
       - db-net
-      - www-net
     ports:
       - "127.0.0.1:5432:5432"
 
   backend:
     build:
       context: ..
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_HOST: "${POSTGRES_HOST}"
       POSTGRES_PORT: "${POSTGRES_PORT}"
