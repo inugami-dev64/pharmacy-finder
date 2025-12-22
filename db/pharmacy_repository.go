@@ -1,6 +1,7 @@
 package db
 
 import (
+	"pharmafinder/db/dto"
 	"pharmafinder/db/entity"
 	"pharmafinder/types"
 
@@ -10,6 +11,7 @@ import (
 type PharmacyRepository interface {
 	FindPharmaciesInCoordinateBounds(sw types.Point, ne types.Point) Query[entity.Pharmacy]
 	FindPharmaciesByChain(chain entity.PharmacyChain) Query[entity.Pharmacy]
+	FindPharmacyRatingsByID(id int64) Query[dto.PharmacyRatingDTO]
 	StoreAll(pharmacies []entity.Pharmacy) error
 	Trx(conn any) PharmacyRepository
 }
@@ -62,6 +64,19 @@ func (repo PharmacyRepositorySQLX) FindPharmaciesByChain(chain entity.PharmacyCh
 	args := []interface{}{string(chain)}
 	return &SQLXQuery[entity.Pharmacy]{
 		uniqueKey: "id",
+		key:       "id",
+		trx:       repo.conn,
+		q:         q,
+		args:      args,
+	}
+}
+
+func (repo PharmacyRepositorySQLX) FindPharmacyRatingsByID(id int64) Query[dto.PharmacyRatingDTO] {
+	q := `SELECT * FROM find_pharmacy_ratings($1)`
+
+	args := []interface{}{id}
+	return &SQLXQuery[dto.PharmacyRatingDTO]{
+		uniqueKey: "hrt_kind",
 		key:       "id",
 		trx:       repo.conn,
 		q:         q,
