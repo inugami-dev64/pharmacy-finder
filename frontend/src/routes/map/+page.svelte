@@ -17,7 +17,7 @@
 
 <main>
     <PharmacyView pharmacy={<PharmacyInfo>activePharmacy} bind:visible={visible}/>
-    <LeafletMap pharmacies={data.pharmacies} callback={showPharmacyView}/>
+    <LeafletMap pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies} callback={showPharmacyView}/>
 </main>
 
 <style>
