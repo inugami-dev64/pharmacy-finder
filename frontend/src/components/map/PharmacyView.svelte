@@ -3,17 +3,18 @@
     import CloseButton from "../common/icons/CloseButton.svelte";
     import StarRating from "../common/widgets/StarRating.svelte";
     import {_} from "svelte-i18n";
+    import Loader from "../common/widgets/Loader.svelte";
+    import Review from "./PharmacyView/Review.svelte";
+    import { onDestroy } from "svelte";
+    import { PAGER_LIMIT, PharmacyReview } from "$lib/service/pharmacy-review";
+    import { ratingData, reviewData } from "$lib/stores";
+    import IntersectionObserver from "svelte-intersection-observer";
 
     // Import logos
     import BenuLogo from "$lib/assets/benu-logo.svg"
     import ApothekaLogo from "$lib/assets/apotheka-logo.svg"
     import SudameapteekLogo from "$lib/assets/sudameapteek-logo.svg"
     import EuroapteekLogo from "$lib/assets/euroapteek-logo.svg"
-    import Loader from "../common/widgets/Loader.svelte";
-    import Review from "./PharmacyView/Review.svelte";
-    import { onDestroy } from "svelte";
-    import { PAGER_LIMIT, PharmacyReview } from "$lib/service/pharmacy-review";
-    import { ratingData, reviewData } from "$lib/stores";
 
     // props
     let {
@@ -32,8 +33,11 @@
     let eRating: number | undefined = $state(undefined);
     let tRating: number | undefined = $state(undefined);
 
+    let element: HTMLElement | undefined = $state();
+
     const unsubscribeReviewData = reviewData.subscribe((initialReviews) => {
-        reviews = initialReviews
+        reviews = initialReviews;
+        fetchDone = false;
         if (reviews != null && reviews.length != 0) {
             key = reviews[reviews.length-1].updatedAt;
             uniqueKey = reviews[reviews.length-1].id;
@@ -55,6 +59,24 @@
         unsubscribeReviewData();
         unsubscribeRatingData();
     });
+
+    /**
+     * Fetches next page in the review list and appends it to reviews list
+     */
+    async function updateReviewList() {
+        if (pharmacy.id && reviews) {
+            let newReviews = await PharmacyReview.readReviews(pharmacy.id, key, uniqueKey);
+            if (newReviews.length != 0) {
+                key = newReviews[newReviews.length-1].updatedAt;
+                uniqueKey = newReviews[newReviews.length-1].id;
+            }
+
+            if (newReviews.length < PAGER_LIMIT)
+                fetchDone = true;
+
+            reviews.push(...newReviews);
+        }
+    }
 </script>
 
 <div class="phr-view">
@@ -111,6 +133,19 @@
                 {#each reviews as review}
                 <Review rating={review.stars || 0} countryCode={review.nationality || "EE"} prescriptionType={review.prescriptionType || ""} review={review.review || ""} regimen={review.hrtKind || ""}/>
                 {/each}
+                {#if !fetchDone}
+                    <IntersectionObserver
+                        {element}
+                        on:observe={(e) => {
+                            if (e.detail.isIntersecting)
+                                updateReviewList().then();
+                        }}
+                    >
+                        <div bind:this={element}>
+                            Loading...
+                        </div>
+                    </IntersectionObserver>
+                {/if}
             {/if}
         {/if}
     </div>
