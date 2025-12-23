@@ -6,7 +6,7 @@
     export let value: number;
 </script>
 
-<div class="rating" >
+<div class="rating" title="{value.toFixed(1)}/5">
     <Stars scale={scale} value={value}/>
 
     {#if title !== null}
