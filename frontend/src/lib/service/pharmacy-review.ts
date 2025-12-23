@@ -60,7 +60,10 @@ export class PharmacyReview {
 
         return await fetch(`/api/v1/pharmacies/${id}/reviews`, {
             method: "POST",
-            body: JSON.stringify(copy)
+            body: JSON.stringify(copy),
+            headers: {
+                "Content-Type": "application/json"
+            }
         })
             .then(async res => {
                 if (res.status != 201) {
@@ -95,7 +98,10 @@ export class PharmacyReview {
 
         return await fetch(`/api/v1/pharmacies/${id}/reviews/${this.id}`, {
             method: "PATCH",
-            body: JSON.stringify(copy)
+            body: JSON.stringify(copy),
+            headers: {
+                "Content-Type": "application/json"
+            }
         })
             .then(async res => {
                 if (res.status != 200) {
