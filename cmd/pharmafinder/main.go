@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"pharmafinder"
 	"pharmafinder/api/v1/pharmacies"
+	"pharmafinder/api/v1/pharmacies/ratings"
 	"pharmafinder/api/v1/pharmacies/reviews"
 	"pharmafinder/bg"
 	"pharmafinder/db"
@@ -115,6 +116,12 @@ func main() {
 			// /pharmacies/{id}/reviews controller
 			fx.Annotate(
 				reviews.ProvidePharmacyReviewController,
+				fx.ResultTags(`group:"routes"`),
+			),
+
+			// /pharmacies/{id}/ratings controller
+			fx.Annotate(
+				ratings.ProvidePharmacyRatingController,
 				fx.ResultTags(`group:"routes"`),
 			),
 		),
