@@ -6,5 +6,12 @@
             "pretext": "Go to interactive",
             "title": "map"
         }
+    },
+    "map": {
+        "sidebar": {
+            "noReviews": "No reviews for this pharmacy",
+            "viewMoreRatings": "View more...",
+            "viewLessRatings": "View less"
+        }
     }
 }

@@ -6,5 +6,12 @@
             "pretext": "Liigu interaktiivsele",
             "title": "kaardile"
         }
+    },
+    "map": {
+        "sidebar": {
+            "noReviews": "Sellel apteegil puuduvad arvustused",
+            "viewMoreRatings": "Vaata rohkem...",
+            "viewLessRatings": "Vaata vähem..."
+        }
     }
 }
