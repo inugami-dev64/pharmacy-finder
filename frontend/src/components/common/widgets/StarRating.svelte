@@ -6,16 +6,14 @@
     export let value: number;
 </script>
 
-{#if value !== 0}
-<div class="rating">
+<div class="rating" >
     <Stars scale={scale} value={value}/>
 
     {#if title !== null}
     <span>{title}: </span>
     {/if}
-    <span>{value}/5</span>
+    <span>{value.toFixed(1)}/5</span>
 </div>
-{/if}
 
 
 <style>
