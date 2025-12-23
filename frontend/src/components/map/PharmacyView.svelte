@@ -15,6 +15,8 @@
     import ApothekaLogo from "$lib/assets/apotheka-logo.svg"
     import SudameapteekLogo from "$lib/assets/sudameapteek-logo.svg"
     import EuroapteekLogo from "$lib/assets/euroapteek-logo.svg"
+    import ModifyReviewForm from "./PharmacyView/ModifyReviewForm.svelte";
+    import TitleBar from "../common/TitleBar.svelte";
 
     // props
     let {
@@ -23,6 +25,7 @@
     }: {pharmacy: PharmacyInfo, onClose: () => void} = $props();
 
     let showMoreAverageScores: boolean = $state(false);
+    let showModifyReview: boolean = $state(false);
 
     let key: number | undefined = $state(undefined);
     let uniqueKey: number | undefined = $state(undefined);
@@ -80,9 +83,7 @@
 </script>
 
 <div class="phr-view">
-    <div class="close">
-        <CloseButton size=32 on:click={(e) => onClose()}/>
-    </div>
+    <TitleBar onClose={onClose}/>
 
     {#if pharmacy.chain?.toLowerCase() == "benu"}
         <img alt="Benu logo" src="{BenuLogo}">
@@ -107,7 +108,7 @@
         {:else}
             <span><StarRating value={overAllRating} title="Overall rating"/></span>
             {#if (eRating || tRating) && !showMoreAverageScores}
-            <button onclick={_ => showMoreAverageScores = !showMoreAverageScores}>{$_("map.sidebar.viewMoreRatings")}</button>
+                <button onclick={_ => showMoreAverageScores = !showMoreAverageScores}>{$_("map.sidebar.viewMoreRatings")}</button>
             {:else if (eRating || tRating)}
                 {#if eRating}
                     <span><StarRating value={eRating || 0} title="E rating"/></span>
@@ -118,11 +119,12 @@
             <button onclick={_ => showMoreAverageScores = !showMoreAverageScores}>{$_("map.sidebar.viewLessRatings")}</button>
             {/if}
         {/if}
+        <button onclick={_ => showModifyReview = true}>Write a review</button>
     </div>
 
     <!-- Container for pharmacy reviews -->
     <div class="phr-reviews">
-        {#if reviews == null}
+    {#if reviews == null}
             <div class="loader-container">
                 <Loader/>
             </div>
@@ -150,6 +152,13 @@
         {/if}
     </div>
 </div>
+
+{#if showModifyReview}
+    <ModifyReviewForm pharmacy={pharmacy} onClose={async () => {
+        showModifyReview = false;
+        await updateReviewList();
+    }}/>
+{/if}
 
 <style>
     h3, p {
@@ -199,14 +208,5 @@
 
     .phr-reviews {
         overflow: auto;
-    }
-
-    .close {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        height: fit-content;
-        justify-content: right;
-        margin-bottom: 2em;
     }
 </style>
