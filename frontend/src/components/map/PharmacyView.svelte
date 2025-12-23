@@ -35,6 +35,7 @@
     let overAllRating: number | undefined = $state(undefined);
     let eRating: number | undefined = $state(undefined);
     let tRating: number | undefined = $state(undefined);
+    let pendingReview: PharmacyReview | undefined = $state(undefined);
 
     let element: HTMLElement | undefined = $state();
 
@@ -133,7 +134,18 @@
                 <i>{$_("map.sidebar.noReviews")}</i>
             {:else}
                 {#each reviews as review}
-                <Review rating={review.stars || 0} countryCode={review.nationality || "EE"} prescriptionType={review.prescriptionType || ""} review={review.review || ""} regimen={review.hrtKind || ""}/>
+                <Review
+                    rating={review.stars || 0}
+                    countryCode={review.nationality || "EE"}
+                    prescriptionType={review.prescriptionType || ""}
+                    review={review.review || ""}
+                    regimen={review.hrtKind || ""}
+                    onDelete={() => {}}
+                    onEdit={() => {
+                        pendingReview = review;
+                        showModifyReview = true;
+                    }}
+                />
                 {/each}
                 {#if !fetchDone}
                     <IntersectionObserver
@@ -154,8 +166,12 @@
 </div>
 
 {#if showModifyReview}
-    <ModifyReviewForm pharmacy={pharmacy} onClose={async () => {
+    <ModifyReviewForm pharmacy={pharmacy} review={pendingReview} onClose={async () => {
         showModifyReview = false;
+        key = undefined;
+        uniqueKey = undefined;
+        pendingReview = undefined;
+        reviews = [];
         await updateReviewList();
     }}/>
 {/if}
