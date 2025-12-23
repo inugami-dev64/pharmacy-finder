@@ -26,4 +26,4 @@ RUN $(go env GOPATH)/bin/swag init -d ./cmd/pharmafinder,./
 
 ENTRYPOINT [ "sh", "-c", "cp -r /app/backend/docs/* /app/docs && ./pharmafinder-dbg" ]
 # For debugging with delve
-# ENTRYPOINT [ "sh", "-c", "cp -r /app/backend/docs/* /app/docs && \$(go env GOPATH)/bin/dlv --listen=:4000 --headless=true --log=true --accept-multiclient --api-version=2 exec ./pharmafinder-dbg" ]
+#ENTRYPOINT [ "sh", "-c", "cp -r /app/backend/docs/* /app/docs && $(go env GOPATH)/bin/dlv --listen=:4000 --headless=true --log=true --accept-multiclient --api-version=2 exec ./pharmafinder-dbg" ]
