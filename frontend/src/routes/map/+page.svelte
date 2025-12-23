@@ -27,6 +27,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Pharmacy finder</title>
+</svelte:head>
+
 <main>
     {#if activePharmacy != null && visible}
     <PharmacyView pharmacy={<PharmacyInfo>activePharmacy} onClose={() => visible = false}/>

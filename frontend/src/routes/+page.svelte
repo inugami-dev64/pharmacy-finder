@@ -4,6 +4,10 @@
     import LanguageSwitcher from '../components/common/LanguageSwitcher.svelte';
 </script>
 
+<svelte:head>
+    <title>Pharmacy finder</title>
+</svelte:head>
+
 <div class="wrapper">
     <LanguageSwitcher/>
     <div class="intro-container">
