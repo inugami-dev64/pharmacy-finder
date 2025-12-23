@@ -56,7 +56,22 @@ func (handler *PharmacyReviewController) generateModificationCode() string {
 	return builder.String()
 }
 
-// `GET /api/v1/pharmacies/{id}/reviews`
+// Get paged resultset for reviews of given pharmacy
+//
+// Path: `GET /api/v1/pharmacies/{id}/reviews`
+//
+// @Summary			Query reviews for pharmacy
+// @Description		Endpoint for querying paged resultset of reviews for given pharmacy
+// @Tags			Reviews
+// @Produce 		json
+// @Param			id path string true "Pharmacy ID"
+// @Param			uk query int false "ID of the latest review in previous query set"
+// @Param			k query int false "Timestamp of the latest review in previous query set (unix millis)"
+// @Param			l query int false "Limit of the query set (defaults to 50)"
+// @Param			desc query boolean false "Reverse the order of reviews (default false)"
+// @Success 		200 {array} dto.PharmacyReviewsetResultDTO
+// @Failure			400 {object} types.HttpError
+// @Router			/api/v1/pharmacies/{id}/reviews [get]
 func (handler *PharmacyReviewController) GetPharmacyReviews(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
 	idStr := details.PathVars["id"]
 	id, err := strconv.ParseInt(idStr, 10, 64)
@@ -97,7 +112,19 @@ func (handler *PharmacyReviewController) GetPharmacyReviews(details *web.HttpReq
 	return http.StatusOK, reviewResult, nil
 }
 
+// Create a new review for provided pharmacy
+//
 // `POST /api/v1/pharmacies/{id}/reviews`
+//
+// @Summary			Create a new review for given pharmacy
+// @Description		Endpoint for creating a new review for given pharmacy
+// @Tags			Reviews
+// @Accepts 		json
+// @Produce 		json
+// @Success			201 {object} entity.PharmacyReview
+// @Failure			400 {object} types.HttpError
+// @Param			request body dto.PharmacyReviewCreationDTO true "Review creation request body"
+// @Router			/api/v1/pharmacies/{id}/reviews [post]
 func (handler *PharmacyReviewController) PostPharmacyReview(details *web.HttpRequestDetails[dto.PharmacyReviewCreationDTO]) (int, interface{}, error) {
 	idStr := details.PathVars["id"]
 	id, err := strconv.ParseInt(idStr, 10, 64)
@@ -129,10 +156,24 @@ func (handler *PharmacyReviewController) PostPharmacyReview(details *web.HttpReq
 	}
 
 	review.ModificationCode = modCode
-	return http.StatusOK, review, nil
+	return http.StatusCreated, review, nil
 }
 
-// `PATCH /api/v1/pharmacies/{pharmaID}/reviews/{reviewID}`
+// Modify existing pharmacy review
+//
+// Path: `PATCH /api/v1/pharmacies/{pharmaID}/reviews/{reviewID}`
+//
+// @Summary				Modify existing pharmacy review
+// @Description 		Endpoint for modifying existing pharmacy review by supplying the modification code
+// @Tags				Reviews
+// @Accepts 			json
+// @Produce				json
+// @Param				pharmaID path int true "Pharmacy ID"
+// @Param				reviewID path int true "ID of the review to modify"
+// @Param				request body dto.PharmacyReviewModificationDTO true "Review modififcation request body"
+// @Success				200 {object} dto.PharmacyReviewsetResultDTO
+// @Failure				400 {object} types.HttpError
+// @Router				/api/v1/pharmacies/{pharmaID}/reviews/{reviewID} [patch]
 func (handler *PharmacyReviewController) PatchPharmacyReview(details *web.HttpRequestDetails[dto.PharmacyReviewModificationDTO]) (int, interface{}, error) {
 	pharmaIDStr := details.PathVars["pharmaID"]
 	reviewIDStr := details.PathVars["reviewID"]
@@ -190,7 +231,21 @@ func (handler *PharmacyReviewController) PatchPharmacyReview(details *web.HttpRe
 	}, nil
 }
 
-// `DELETE /api/v1/pharmacies/{pharmaID}/reviews/{reviewID}`
+// Delete existing pharmacy review
+//
+// Path: `DELETE /api/v1/pharmacies/{pharmaID}/reviews/{reviewID}`
+//
+// @Summary			Hard-deletes existing pharmacy review
+// @Description		Endpoint for hard-deleting existing pharmacy review
+// @Tags			Reviews
+// @Produce 		json
+// @Param			pharmaID path int true "Pharmacy ID"
+// @Param			reviewID path int true "ID of the review to delete"
+// @Security		Bearer
+// @Success 		200 {object} dto.PharmacyReviewsetResultDTO
+// @Failure			400 {object} types.HttpError
+// @Failure			403	{object} types.HttpError
+// @Router			/api/v1/pharmacies/{pharmaID}/reviews/{reviewID} [delete]
 func (handler *PharmacyReviewController) DeletePharmacyReview(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
 	pharmaIDStr := details.PathVars["pharmaID"]
 	reviewIDStr := details.PathVars["reviewID"]

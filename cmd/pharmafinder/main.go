@@ -63,6 +63,17 @@ func NewHTTPServer(lc fx.Lifecycle, mux *mux.Router) *http.Server {
 	return server
 }
 
+// @title 							PharmacyFinder API
+// @version							1.0
+// @description 					PharmacyFinder API v1.0
+// @host 							localhost:9999
+// @schemes 						http
+
+// @contact.name					Karmen Ott
+// @contact.url 					https://github.com/inugami-dev64/pharmacyfinder
+
+// @externalDocs.description 		OpenAPI
+// @externalDocs.url 				https://swagger.io/resources/open-api
 func main() {
 	// Attempt to load .env files if they exist
 	godotenv.Load("deploy/.env.testing")

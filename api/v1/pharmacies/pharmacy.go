@@ -31,7 +31,19 @@ func (handler *PharmaciesController) GetRoutes() []web.Route {
 	}
 }
 
+// Pharmacy retriever endpoint
+//
 // GET /api/v1/phamacies?sw=lat,lng&ne=lat,lng
+//
+// @Summary			Get all pharmacies in coordinate bounds
+// @Description 	Endpoint for querying all pharmacies in specified coordinate bounds
+// @Tags			Pharmacy
+// @Produce 		json
+// @Success 		200 {array} entity.Pharmacy
+// @Failure			400 {object} types.HttpError
+// @Param			sw query string true "South-west coordinates of the bound, syntax: lat,lng"
+// @Param			ne query string true "North-east coordinates of the bound, syntax: lat,lng"
+// @Router			/api/v1/pharmacies [get]
 func (handler *PharmaciesController) GetPharmacies(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
 	swText := details.Params.Get("sw")
 	neText := details.Params.Get("ne")
