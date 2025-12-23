@@ -2,6 +2,7 @@
     import type { PharmacyInfo } from "$lib/service/pharmacy-info";
     import CloseButton from "../common/icons/CloseButton.svelte";
     import StarRating from "../common/widgets/StarRating.svelte";
+    import {_} from "svelte-i18n";
 
     // Import logos
     import BenuLogo from "$lib/assets/benu-logo.svg"
@@ -10,40 +11,55 @@
     import EuroapteekLogo from "$lib/assets/euroapteek-logo.svg"
     import Loader from "../common/widgets/Loader.svelte";
     import Review from "./PharmacyView/Review.svelte";
-    import { mount, onMount } from "svelte";
-    import { getPharmacyReviews, type PharmacyReview } from "$lib/service/pharmacy-review";
+    import { onDestroy } from "svelte";
+    import { PAGER_LIMIT, PharmacyReview } from "$lib/service/pharmacy-review";
+    import { ratingData, reviewData } from "$lib/stores";
 
-    export let pharmacy: PharmacyInfo;
-    export let visible: boolean;
+    // props
+    let {
+        pharmacy,
+        onClose
+    }: {pharmacy: PharmacyInfo, onClose: () => void} = $props();
 
-    let showMoreAverageScores: boolean = false;
-    let fetchDone: boolean = false;
-    let reviews: PharmacyReview[] = []
+    let showMoreAverageScores: boolean = $state(false);
 
-    let key: number | null = null;
-    let uniqueKey: number | null = null;
+    let key: number | undefined = $state(undefined);
+    let uniqueKey: number | undefined = $state(undefined);
+    let fetchDone: boolean = $state(false);
 
-    let reviewContainer: HTMLElement;
+    let reviews: PharmacyReview[] | undefined = $state(undefined);
+    let overAllRating: number | undefined = $state(undefined);
+    let eRating: number | undefined = $state(undefined);
+    let tRating: number | undefined = $state(undefined);
 
-    async function checkAndUpdateReviews(_: Event) {
-        if (reviewContainer.scrollHeight <= reviewContainer.scrollTop + reviewContainer.clientHeight && pharmacy.id !== undefined) {
-            reviews = await getPharmacyReviews(pharmacy.id, key, uniqueKey)
-            if (reviews.length == 0)
-                fetchDone = true
-            else if (reviews[reviews.length - 1].id != uniqueKey && reviews[reviews.length - 1].updatedAt != key) {
-                uniqueKey = reviews[reviews.length-1].updatedAt || 0;
-                key = reviews[reviews.length - 1].id || 0;
-            } else
-                fetchDone = true;
+    const unsubscribeReviewData = reviewData.subscribe((initialReviews) => {
+        reviews = initialReviews
+        if (reviews != null && reviews.length != 0) {
+            key = reviews[reviews.length-1].updatedAt;
+            uniqueKey = reviews[reviews.length-1].id;
         }
-    }
 
+        if (reviews != null && reviews.length < PAGER_LIMIT)
+            fetchDone = true;
+    });
+
+    const unsubscribeRatingData = ratingData.subscribe((ratings) => {
+        if (ratings != null) {
+            overAllRating = ratings.filter(v => v.hrtKind == null).at(0)?.stars || 0;
+            eRating = ratings.filter(v => v.hrtKind == 'e').at(0)?.stars;
+            tRating = ratings.filter(v => v.hrtKind == 't').at(0)?.stars;
+        }
+    });
+
+    onDestroy(() => {
+        unsubscribeReviewData();
+        unsubscribeRatingData();
+    });
 </script>
 
-{#if visible}
 <div class="phr-view">
     <div class="close">
-        <CloseButton size=32 on:click={(e) => visible = false}/>
+        <CloseButton size=32 on:click={(e) => onClose()}/>
     </div>
 
     {#if pharmacy.chain?.toLowerCase() == "benu"}
@@ -62,30 +78,43 @@
             <h3>{pharmacy.name}</h3>
             <p>{pharmacy.address}, {pharmacy.city}, {pharmacy.county}, {pharmacy.postalCode}</p>
         </div>
-        <!--<span><StarRating value={pharmacy.overallRating || 0} title="Overall rating"/></span>-->
-        {#if !showMoreAverageScores}
-        <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View more...</button>
+        {#if overAllRating == null}
+            <div class="loader-container">
+                <Loader/>
+            </div>
         {:else}
-        <!--<span><StarRating value={pharmacy.acceptanceRating || 0} title="Acceptance rating"/></span>
-        <span><StarRating value={pharmacy.eRating || 0} title="E rating"/></span>
-        <span><StarRating value={pharmacy.tRating || 0} title="T rating"/></span>-->
-        <button on:click|preventDefault={_ => showMoreAverageScores = !showMoreAverageScores}>View less</button>
+            <span><StarRating value={overAllRating} title="Overall rating"/></span>
+            {#if (eRating || tRating) && !showMoreAverageScores}
+            <button onclick={_ => showMoreAverageScores = !showMoreAverageScores}>{$_("map.sidebar.viewMoreRatings")}</button>
+            {:else if (eRating || tRating)}
+                {#if eRating}
+                    <span><StarRating value={eRating || 0} title="E rating"/></span>
+                {/if}
+                {#if tRating}
+                    <span><StarRating value={tRating || 0} title="T rating"/></span>
+                {/if}
+            <button onclick={_ => showMoreAverageScores = !showMoreAverageScores}>{$_("map.sidebar.viewLessRatings")}</button>
+            {/if}
         {/if}
     </div>
 
     <!-- Container for pharmacy reviews -->
-    <div class="phr-reviews" on:scroll={checkAndUpdateReviews} bind:this={reviewContainer}>
-        {#each reviews as review}
-        <Review rating={review.stars || 0} countryCode={review.nationality || "EE"} prescriptionType={review.prescriptionType || ""} review={review.review || ""} regimen={review.hrtKind || ""}/>
-        {/each}
-        {#if !fetchDone}
-        <div class="loader-container">
-            <Loader/>
-        </div>
+    <div class="phr-reviews">
+        {#if reviews == null}
+            <div class="loader-container">
+                <Loader/>
+            </div>
+        {:else}
+            {#if reviews.length == 0}
+                <i>{$_("map.sidebar.noReviews")}</i>
+            {:else}
+                {#each reviews as review}
+                <Review rating={review.stars || 0} countryCode={review.nationality || "EE"} prescriptionType={review.prescriptionType || ""} review={review.review || ""} regimen={review.hrtKind || ""}/>
+                {/each}
+            {/if}
         {/if}
     </div>
 </div>
-{/if}
 
 <style>
     h3, p {
