@@ -12,6 +12,8 @@
     export let review: string | null;
     export let regimen: string | null;
     export let countryCode: string | null;
+    export let onEdit: () => void;
+    export let onDelete: () => void;
 
     let buttonName: string = "Show more...";
     let truncateText: boolean = true;
@@ -36,8 +38,8 @@
     <div class="review-header">
         <span>
             <Stars value={rating} scale={0.75}/>
-            <EditButton size={24}/>
-            <DeleteButton size={24}/>
+            <EditButton size={24} on:click={_ => onEdit()}/>
+            <DeleteButton size={24} on:close={_ => onDelete()}/>
         </span>
         <span style="display: flex; align-items: center">
             {#if countryCode !== null && countryCode in Countries}
