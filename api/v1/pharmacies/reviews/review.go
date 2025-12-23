@@ -64,7 +64,7 @@ func (handler *PharmacyReviewController) generateModificationCode() string {
 // @Description		Endpoint for querying paged resultset of reviews for given pharmacy
 // @Tags			Reviews
 // @Produce 		json
-// @Param			id path string true "Pharmacy ID"
+// @Param			id path integer true "Pharmacy ID"
 // @Param			uk query int false "ID of the latest review in previous query set"
 // @Param			k query int false "Timestamp of the latest review in previous query set (unix millis)"
 // @Param			l query int false "Limit of the query set (defaults to 50)"
@@ -124,6 +124,7 @@ func (handler *PharmacyReviewController) GetPharmacyReviews(details *web.HttpReq
 // @Success			201 {object} entity.PharmacyReview
 // @Failure			400 {object} types.HttpError
 // @Param			request body dto.PharmacyReviewCreationDTO true "Review creation request body"
+// @Param			id path int true "Pharmacy ID"
 // @Router			/api/v1/pharmacies/{id}/reviews [post]
 func (handler *PharmacyReviewController) PostPharmacyReview(details *web.HttpRequestDetails[dto.PharmacyReviewCreationDTO]) (int, interface{}, error) {
 	idStr := details.PathVars["id"]

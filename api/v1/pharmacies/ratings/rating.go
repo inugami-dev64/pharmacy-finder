@@ -26,7 +26,9 @@ func ProvidePharmacyRatingController(repo db.PharmacyRepository) []web.Route {
 }
 
 func (handler *PharmacyRatingController) GetRoutes() []web.Route {
-	return []web.Route{}
+	return []web.Route{
+		web.NewRequestsHandler[PharmacyRatingController](handler.GetPharmacyRatings, "/pharmacies/{id}/ratings", []string{"GET"}),
+	}
 }
 
 // Pharmacy ratings endpoint - aggregated average score
@@ -39,7 +41,7 @@ func (handler *PharmacyRatingController) GetRoutes() []web.Route {
 // @Produce 		json
 // @Success			200 {array} dto.PharmacyRatingDTO
 // @Failure			400 {object} types.HttpError
-// @Param			id path string true "Pharmacy ID"
+// @Param			id path integer true "Pharmacy ID"
 // @Router			/api/v1/pharmacies/{id}/ratings [get]
 func (handler *PharmacyRatingController) GetPharmacyRatings(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
 	idStr := details.PathVars["id"]

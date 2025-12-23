@@ -72,6 +72,11 @@ func NewHTTPServer(lc fx.Lifecycle, mux *mux.Router) *http.Server {
 // @contact.name					Karmen Ott
 // @contact.url 					https://github.com/inugami-dev64/pharmacyfinder
 
+// @securityDefinitions.apiKey	Bearer
+// @in 							header
+// @name 						Authorization
+// @description 				Review deletion authorization token
+
 // @externalDocs.description 		OpenAPI
 // @externalDocs.url 				https://swagger.io/resources/open-api
 func main() {
