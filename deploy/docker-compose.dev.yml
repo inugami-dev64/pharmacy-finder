@@ -18,6 +18,7 @@ services:
   backend:
     build:
       context: ..
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     environment:
       POSTGRES_HOST: "${POSTGRES_HOST}"
@@ -33,11 +34,23 @@ services:
       MAX_LOG_AGE: "${MAX_LOG_AGE}"
     volumes:
       - ./_volumes/logs:/var/log/backend
+      - ./_volumes/docs:/app/docs
     networks:
       - db-net
       - nginx-net
     depends_on:
       - postgres
+
+  swagger:
+    image: swaggerapi/swagger-ui:v5.31.0
+    restart: always
+    environment:
+      - BASE_URL=/docs/swagger-ui
+      - URL=http://localhost:9999/docs/openapi-spec
+    networks:
+      - nginx-net
+    depends_on:
+      - backend
 
   frontend:
     image: node:24-alpine3.21
@@ -55,6 +68,7 @@ services:
       - "127.0.0.1:9999:9999"
     volumes:
       - ./nginx:/etc/nginx/conf.d
+      - ./_volumes/docs:/var/www/docs
     depends_on:
       - backend
       - frontend
