@@ -1,8 +1,9 @@
 <script lang="ts">
     export let title: string | null = null;
+    export let hoverColor: string = "#10a7ff";
 </script>
 
-<button type="button" on:click aria-label="icon-btn" title={title}>
+<button style="--hover-color: {hoverColor}" type="button" on:click aria-label="icon-btn" title={title}>
     <slot></slot>
 </button>
 
@@ -22,7 +23,7 @@
     }
 
     :global(.svg-btn:hover) {
-        fill: #10a7ff;
+        fill: var(--hover-color);
         cursor: pointer;
     }
 </style>
