@@ -25,7 +25,7 @@ export class PharmacyReview {
      * @returns a promise to PharmacyReview array (meow :3)
      */
     public static async readReviews(id: number, key: number | undefined, uniqueKey: number | undefined): Promise<PharmacyReview[]> {
-        return await fetch(`/api/v1/pharmacies/${id}/reviews?l=${PAGER_LIMIT}${key != null ? `&k=${key}` : ""}${uniqueKey != null ? `&uk=${uniqueKey}` : ""}`)
+        return await fetch(`/api/v1/pharmacies/${id}/reviews?l=${PAGER_LIMIT}${key != null ? `&k=${key}` : ""}${uniqueKey != null ? `&uk=${uniqueKey}` : ""}&desc=1`)
             .then(async res => {
                 if (res.status != 200) {
                     let err: HttpError = await res.json();
@@ -107,15 +107,11 @@ export class PharmacyReview {
                 if (res.status != 200) {
                     let err: HttpError = await res.json();
                     console.log(err);
-                    throw new Error(`Failed to create a new post`);
+                    throw new Error(`Failed to update post`);
                 }
 
                 let data: PharmacyReview = await res.json();
                 return data;
-            })
-            .catch(e => {
-                console.log(e);
-                return new PharmacyReview;
             })
     }
 }
