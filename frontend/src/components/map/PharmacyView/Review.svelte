@@ -5,6 +5,7 @@
     import { onMount } from "svelte";
     import EditButton from "../../common/icons/EditButton.svelte";
     import Countries from "$lib/assets/countries.json"
+    import DeleteButton from "../../common/icons/DeleteButton.svelte";
 
     export let rating: number;
     export let prescriptionType: string;
@@ -35,7 +36,8 @@
     <div class="review-header">
         <span>
             <Stars value={rating} scale={0.75}/>
-            <EditButton size={24}></EditButton>
+            <EditButton size={24}/>
+            <DeleteButton size={24}/>
         </span>
         <span style="display: flex; align-items: center">
             {#if countryCode !== null && countryCode in Countries}
