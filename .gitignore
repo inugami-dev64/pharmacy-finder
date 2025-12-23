@@ -30,7 +30,7 @@ vite.config.ts.timestamp-*
 main
 pharma
 vendor
-/deploy/volumes
+/deploy/_volumes
 /pharmafinder
 /pharmafinder-dbg
 __debug_*

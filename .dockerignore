@@ -1,5 +1,7 @@
-deploy/_volumes
+deploy
 pharmafinder*
 frontend/.svelte-kit
 frontend/build
 frontend/node_modules
+docs
+run-db.sh
