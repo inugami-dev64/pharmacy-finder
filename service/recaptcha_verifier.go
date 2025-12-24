@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"pharmafinder/utils"
@@ -39,7 +40,7 @@ type RecaptchaVerifierImpl struct {
 	logger zerolog.Logger
 }
 
-func ProvideRecaptchaVerifier(client utils.HttpClient) RecaptchaVerifierImpl {
+func ProvideRecaptchaVerifier(client utils.HttpClient) RecaptchaVerifier {
 	return RecaptchaVerifierImpl{
 		client: client,
 		logger: utils.GetLogger("SERVICE"),
@@ -52,13 +53,8 @@ func (verifier RecaptchaVerifierImpl) Verify(response string) bool {
 		Response: response,
 	}
 
-	reqJson, err := json.Marshal(reqBody)
-	if err != nil {
-		verifier.logger.Error().Msgf("Failed to marshal request body for reCaptcha verification: %v", err)
-		return false
-	}
-
-	req, err := http.NewRequest("POST", RECAPTCHA_VERIFY_ENDPOINT, bytes.NewReader(reqJson))
+	req, err := http.NewRequest("POST", RECAPTCHA_VERIFY_ENDPOINT, bytes.NewReader([]byte(fmt.Sprintf("secret=%s&response=%s", reqBody.Secret, reqBody.Response))))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	if err != nil {
 		verifier.logger.Error().Msgf("Failed to create a new http.Request instance for verifying reCaptcha response: %v", err)
 		return false
