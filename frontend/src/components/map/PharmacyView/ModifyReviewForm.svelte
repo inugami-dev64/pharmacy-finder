@@ -6,6 +6,7 @@
     import PrimaryButton from "../../common/widgets/buttons/PrimaryButton.svelte";
     import StarPicker from "../../common/widgets/stars/StarPicker.svelte";
     import ModalWindow from "../../common/ModalWindow.svelte";
+    import Recaptcha from "../../common/Recaptcha.svelte";
 
     let {
         pharmacy,
@@ -113,13 +114,14 @@
             <Loader/>
         </div>
         {:else if invalidModCode}
-        <p style="color: red">Invalid modification code</p>
+            <p style="color: red">Invalid modification code</p>
         {:else if newReview.modCode}
-        <p>Your modification code is: <span style="color: green">{newReview.modCode}</span></p>
+            <p>Your modification code is: <span style="color: green">{newReview.modCode}</span></p>
         {:else}
-        <PrimaryButton>
-            {review == null ? "Create a review" : "Modify review"}
-        </PrimaryButton>
+            <Recaptcha/>
+            <PrimaryButton>
+                {review == null ? "Create a review" : "Modify review"}
+            </PrimaryButton>
         {/if}
     </form>
 </ModalWindow>
@@ -133,14 +135,11 @@
 
     form {
         display: flex;
+        overflow: auto;
         width: 100%;
         flex: 1;
         flex-direction: column;
         justify-content: space-between;
-    }
-
-    .form-contents {
-        overflow: auto;
     }
 
     .form-contents > label {
@@ -151,7 +150,7 @@
     .form-contents > textarea {
         resize: none;
         width: calc(100%);
-        height: 200px;
+        height: 150px;
         box-sizing: border-box;
     }
 </style>
