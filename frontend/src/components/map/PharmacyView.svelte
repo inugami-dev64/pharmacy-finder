@@ -16,6 +16,7 @@
     import EuroapteekLogo from "$lib/assets/euroapteek-logo.svg"
     import ModifyReviewForm from "./PharmacyView/ModifyReviewForm.svelte";
     import TitleBar from "../common/TitleBar.svelte";
+    import DeleteReviewForm from "./PharmacyView/DeleteReviewForm.svelte";
 
     // props
     let {
@@ -25,6 +26,7 @@
 
     let showMoreAverageScores: boolean = $state(false);
     let showModifyReview: boolean = $state(false);
+    let showDeleteReview: boolean = $state(false);
 
     let key: number | undefined = $state(undefined);
     let uniqueKey: number | undefined = $state(undefined);
@@ -135,7 +137,10 @@
                 {#each reviews as review}
                 <Review
                     review={review}
-                    onDelete={() => {}}
+                    onDelete={() => {
+                        pendingReview = review;
+                        showDeleteReview = true;
+                    }}
                     onEdit={() => {
                         pendingReview = review;
                         showModifyReview = true;
@@ -162,6 +167,17 @@
 {#if showModifyReview}
     <ModifyReviewForm pharmacy={pharmacy} review={pendingReview} onClose={async () => {
         showModifyReview = false;
+        key = undefined;
+        uniqueKey = undefined;
+        pendingReview = undefined;
+        reviews = [];
+        await updateReviewList();
+    }}/>
+{/if}
+
+{#if showDeleteReview}
+    <DeleteReviewForm pharmacy={pharmacy} review={pendingReview ?? new PharmacyReview} onClose={async () => {
+        showDeleteReview = false;
         key = undefined;
         uniqueKey = undefined;
         pendingReview = undefined;
