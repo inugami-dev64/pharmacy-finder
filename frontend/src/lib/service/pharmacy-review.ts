@@ -123,12 +123,16 @@ export class PharmacyReview {
      * @returns the deleted PharmacyReview instance
      */
     public async deleteReview(id: number): Promise<PharmacyReview> {
+        let newReview = new PharmacyReview;
+        newReview.__gRecaptchaResponse = this.__gRecaptchaResponse;
+        newReview.modCode = this.modCode;
+
         return await fetch(`/api/v1/pharmacies/${id}/reviews/${this.id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${this.modCode}`
-            }
+            },
+            body: JSON.stringify(newReview)
         })
             .then(async res => {
                 if (res.status != 200) {
