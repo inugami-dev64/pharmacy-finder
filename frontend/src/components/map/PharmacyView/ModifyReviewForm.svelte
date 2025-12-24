@@ -15,6 +15,7 @@
     }: {pharmacy: PharmacyInfo, onClose: () => void, review?: PharmacyReview} = $props();
 
     // stateful values
+    let missingCaptcha: boolean = $state(false);
     let pendingSubmission: boolean = $state(false);
     let invalidModCode: boolean = $state(false);
     let newReview: PharmacyReview = $state(new PharmacyReview);
@@ -36,6 +37,13 @@
         const hrtKind = data.get("hrt-kind");
         const prescriptionType = data.get("prescription-type");
         const modCode = data.get("mod-code");
+        const recaptchaResponse = data.get("g-recaptcha-response");
+
+        if (recaptchaResponse == null || recaptchaResponse.toString() === "") {
+            pendingSubmission = false;
+            missingCaptcha = true;
+            return;
+        }
 
         newReview.stars = Number.parseInt(stars?.toString() ?? "5");
         newReview.nationality = nationality?.toString() ?? "EE";
@@ -43,6 +51,7 @@
         newReview.hrtKind = hrtKind?.toString();
         newReview.prescriptionType = prescriptionType?.toString();
         newReview.modCode = modCode?.toString();
+        newReview.__gRecaptchaResponse = recaptchaResponse.toString();
 
         if (review?.id) {
             newReview.id = review.id;
@@ -118,6 +127,9 @@
         {:else if newReview.modCode}
             <p>Your modification code is: <span style="color: green">{newReview.modCode}</span></p>
         {:else}
+            {#if missingCaptcha}
+                <p style="color: red">Please solve the captcha challenge to continue</p>
+            {/if}
             <Recaptcha/>
             <PrimaryButton>
                 {review == null ? "Create a review" : "Modify review"}
