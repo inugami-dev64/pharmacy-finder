@@ -58,6 +58,8 @@ services:
     image: node:24-alpine3.21
     user: node
     command: sh -c "cd /app && npm ci && npm run dev"
+    environment:
+      RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY}
     restart: always
     volumes:
       - ../frontend:/app
