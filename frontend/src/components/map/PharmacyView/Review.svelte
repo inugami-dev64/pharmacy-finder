@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Stars from "../../common/widgets/Stars.svelte";
+    import Stars from "../../common/widgets/stars/Stars.svelte";
     import Estrogen from "$lib/assets/regimen/estrogen.webp";
     import Testosterone from "$lib/assets/regimen/testosterone.webp";
     import { onMount } from "svelte";
@@ -43,7 +43,7 @@
         </span>
         <span style="display: flex; align-items: center">
             {#if countryCode !== null && countryCode in Countries}
-            <span style="font-size: 20px" title={Countries[countryCode].name}>{Countries[countryCode].emoji}</span>
+            <span style="font-size: 20px" title={Countries[countryCode as keyof typeof Countries].name}>{Countries[countryCode as keyof typeof Countries].emoji}</span>
             {/if}
             {#if regimen == 'e'}
             <img src="{Estrogen}" alt="e" title="Estrogen based prescription">
