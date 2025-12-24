@@ -85,6 +85,10 @@
         text-wrap: wrap;
     }
 
+    #content {
+        white-space: pre;
+    }
+
     .phr-review > div  {
         display: flex;
         justify-content: space-between;
