@@ -108,20 +108,20 @@
                 <Loader/>
             </div>
         {:else}
-            <span><StarRating value={overAllRating} title="Overall rating"/></span>
+            <span><StarRating value={overAllRating} title={$_("map.sidebar.ratings.overallRating")}/></span>
             {#if (eRating || tRating) && !showMoreAverageScores}
                 <button onclick={_ => showMoreAverageScores = !showMoreAverageScores}>{$_("map.sidebar.viewMoreRatings")}</button>
             {:else if (eRating || tRating)}
                 {#if eRating}
-                    <span><StarRating value={eRating || 0} title="E rating"/></span>
+                    <span><StarRating value={eRating || 0} title={$_("map.sidebar.ratings.eRating")}/></span>
                 {/if}
                 {#if tRating}
-                    <span><StarRating value={tRating || 0} title="T rating"/></span>
+                    <span><StarRating value={tRating || 0} title={$_("map.sidebar.ratings.tRating")}/></span>
                 {/if}
             <button onclick={_ => showMoreAverageScores = !showMoreAverageScores}>{$_("map.sidebar.viewLessRatings")}</button>
             {/if}
         {/if}
-        <button onclick={_ => showModifyReview = true}>Write a review</button>
+        <button onclick={_ => showModifyReview = true}>{$_("map.sidebar.createReviewBtnTitle")}</button>
     </div>
 
     <!-- Container for pharmacy reviews -->

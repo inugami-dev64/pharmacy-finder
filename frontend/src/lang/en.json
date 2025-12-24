@@ -11,7 +11,19 @@
         "sidebar": {
             "noReviews": "No reviews for this pharmacy",
             "viewMoreRatings": "View more...",
-            "viewLessRatings": "View less"
+            "viewLessRatings": "View less",
+            "createReviewBtnTitle": "Write a review",
+            "ratings": {
+                "overallRating": "Overall rating",
+                "eRating": "E rating",
+                "tRating": "T rating"
+            },
+            "review": {
+                "showMore": "Show more...",
+                "showLess": "Show less",
+                "eBased": "Estrogen based prescription",
+                "tBased": "Testosterone based prescription"
+            }
         },
         "reviewForm": {
             "ratingTitle": "Your rating",

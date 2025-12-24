@@ -11,7 +11,19 @@
         "sidebar": {
             "noReviews": "Sellel apteegil puuduvad arvustused",
             "viewMoreRatings": "Vaata rohkem...",
-            "viewLessRatings": "Vaata vähem..."
+            "viewLessRatings": "Vaata vähem...",
+            "createReviewBtnTitle": "Kirjuta arvustus",
+            "ratings": {
+                "overallRating": "Üldine reiting",
+                "eRating": "E reiting",
+                "tRating": "T reiting"
+            },
+            "review": {
+                "showMore": "Näita rohkem...",
+                "showLess": "Näita vähem",
+                "eBased": "Östradiooli retsept",
+                "tBased": "Testosterooni retsept"
+            }
         },
         "reviewForm": {
             "ratingTitle": "Hinnang",

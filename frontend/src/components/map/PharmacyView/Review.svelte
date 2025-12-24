@@ -9,12 +9,12 @@
     import type { PharmacyReview } from "$lib/service/pharmacy-review";
     import ImagoLogo from "../../common/icons/logos/ImagoLogo.svelte";
     import GenderGPLogo from "../../common/icons/logos/GenderGPLogo.svelte";
+    import { _ } from "svelte-i18n";
 
     export let review: PharmacyReview;
     export let onEdit: () => void;
     export let onDelete: () => void;
 
-    let buttonName: string = "Show more...";
     let truncateText: boolean = true;
     let textElement: HTMLElement;
     let truncatable: boolean = false;
@@ -25,11 +25,6 @@
 
     function toggleReadMore(_: Event) {
         truncateText = !truncateText;
-        if (truncateText) {
-            buttonName = "Show more..."
-        } else {
-            buttonName = "Show less"
-        }
     }
 </script>
 
@@ -45,9 +40,9 @@
             <span style="font-size: 20px" title={Countries[review.nationality as keyof typeof Countries].name}>{Countries[review.nationality as keyof typeof Countries].emoji}</span>
             {/if}
             {#if review.hrtKind === 'e'}
-            <img src="{Estrogen}" alt="e" title="Estrogen based prescription">
+            <img src="{Estrogen}" alt="e" title={$_("map.sidebar.review.eBased")}>
             {:else if review.hrtKind === 't'}
-            <img src="{Testosterone}" alt="t" title="Testosterone based prescription">
+            <img src="{Testosterone}" alt="t" title={$_("map.sidebar.review.tBased")}>
             {/if}
         </span>
     </div>
@@ -68,7 +63,7 @@
     </div>
 
     {#if truncatable}
-    <button on:click|preventDefault={toggleReadMore} aria-label="Toggle Read More" id="toggleBtn">{buttonName}</button>
+    <button on:click|preventDefault={toggleReadMore} aria-label="Toggle Read More" id="toggleBtn">{truncateText ? $_("map.sidebar.review.showMore") : $_("map.sidebar.review.showLess")}</button>
     {/if}
 </div>
 
@@ -87,6 +82,7 @@
 
     #content {
         white-space: pre;
+        text-wrap: wrap;
     }
 
     .phr-review > div  {
