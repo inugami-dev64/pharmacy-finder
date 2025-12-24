@@ -4,6 +4,7 @@
     import { PharmacyReview } from "$lib/service/pharmacy-review";
     import { ratingData, reviewData } from "$lib/stores";
     import type { PageProps } from "../$types";
+    import LanguageSwitcher from "../../components/common/LanguageSwitcher.svelte";
     import LeafletMap from "../../components/map/LeafletMap.svelte";
     import PharmacyView from "../../components/map/PharmacyView.svelte";
 
@@ -32,6 +33,9 @@
 </svelte:head>
 
 <main>
+    <div class="language-switcher-container">
+        <LanguageSwitcher/>
+    </div>
     {#if activePharmacy != null && visible}
     <PharmacyView pharmacy={<PharmacyInfo>activePharmacy} onClose={() => visible = false}/>
     {/if}
@@ -39,4 +43,11 @@
 </main>
 
 <style>
+    .language-switcher-container {
+        display: block;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 10000;
+    }
 </style>
