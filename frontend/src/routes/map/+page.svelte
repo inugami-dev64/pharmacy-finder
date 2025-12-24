@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-    <title>Pharmacy finder</title>
+    <title>Pharmacy finder | Map</title>
 </svelte:head>
 
 <main>
