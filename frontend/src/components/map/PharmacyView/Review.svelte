@@ -6,12 +6,11 @@
     import EditButton from "../../common/icons/EditButton.svelte";
     import Countries from "$lib/assets/countries.json"
     import DeleteButton from "../../common/icons/DeleteButton.svelte";
+    import type { PharmacyReview } from "$lib/service/pharmacy-review";
+    import ImagoLogo from "../../common/icons/logos/ImagoLogo.svelte";
+    import GenderGPLogo from "../../common/icons/logos/GenderGPLogo.svelte";
 
-    export let rating: number;
-    export let prescriptionType: string;
-    export let review: string | null;
-    export let regimen: string | null;
-    export let countryCode: string | null;
+    export let review: PharmacyReview;
     export let onEdit: () => void;
     export let onDelete: () => void;
 
@@ -37,24 +36,35 @@
 <div class="phr-review">
     <div class="review-header">
         <span>
-            <Stars value={rating} scale={0.75}/>
+            <Stars value={review.stars ?? 5} scale={0.75}/>
             <EditButton size={24} on:click={_ => onEdit()}/>
-            <DeleteButton size={24} on:close={_ => onDelete()}/>
+            <DeleteButton size={22} on:close={_ => onDelete()}/>
         </span>
         <span style="display: flex; align-items: center">
-            {#if countryCode !== null && countryCode in Countries}
-            <span style="font-size: 20px" title={Countries[countryCode as keyof typeof Countries].name}>{Countries[countryCode as keyof typeof Countries].emoji}</span>
+            {#if review.nationality != null && review.nationality in Countries}
+            <span style="font-size: 20px" title={Countries[review.nationality as keyof typeof Countries].name}>{Countries[review.nationality as keyof typeof Countries].emoji}</span>
             {/if}
-            {#if regimen == 'e'}
+            {#if review.hrtKind === 'e'}
             <img src="{Estrogen}" alt="e" title="Estrogen based prescription">
-            {:else if regimen == 't'}
+            {:else if review.hrtKind === 't'}
             <img src="{Testosterone}" alt="t" title="Testosterone based prescription">
             {/if}
         </span>
     </div>
-    <b>{prescriptionType}</b>
+    <time>{new Date(review.updatedAt ?? 0).toLocaleDateString()} {new Date(review.updatedAt ?? 0).toLocaleTimeString()}</time>
+    <!-- Prescription type -->
+    <span style="text-align: center">
+        {#if review.prescriptionType === "Imago"}
+            <ImagoLogo size={24}/>
+        {:else if review.prescriptionType === "GenderGP"}
+            <GenderGPLogo size={22}/>
+        {:else if review.prescriptionType === "National"}
+            🇪🇪
+        {/if}
+        <b>{review.prescriptionType}</b>
+    </span>
     <div id="content">
-        <p class="{truncateText ? "hide-content" : ""}" bind:this={textElement}>{review}</p>
+        <p class="{truncateText ? "hide-content" : ""}" bind:this={textElement}>{review.review}</p>
     </div>
 
     {#if truncatable}
@@ -63,11 +73,19 @@
 </div>
 
 <style>
+    time {
+        display: block;
+        margin-bottom: 0.25em;
+    }
+
+    .content {
+
+    }
+
     .phr-review {
         margin-right: 15px;
         padding-bottom: 0.25em;
         border-bottom: 1px solid #cfcfcf;
-        white-space: pre;
         text-wrap: wrap;
     }
 

@@ -134,11 +134,7 @@
             {:else}
                 {#each reviews as review}
                 <Review
-                    rating={review.stars || 0}
-                    countryCode={review.nationality || "EE"}
-                    prescriptionType={review.prescriptionType || ""}
-                    review={review.review || ""}
-                    regimen={review.hrtKind || ""}
+                    review={review}
                     onDelete={() => {}}
                     onEdit={() => {
                         pendingReview = review;
