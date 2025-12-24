@@ -10,6 +10,7 @@ import (
 	"pharmafinder/api/v1/pharmacies/reviews"
 	"pharmafinder/bg"
 	"pharmafinder/db"
+	"pharmafinder/service"
 	"pharmafinder/utils"
 	"pharmafinder/web"
 	"time"
@@ -100,6 +101,9 @@ func main() {
 
 			// Utilities
 			utils.ProvideHTTPClient,
+
+			// Services
+			service.ProvideRecaptchaVerifier,
 
 			// Background workers
 			fx.Annotate(

@@ -9,6 +9,7 @@ import (
 	"pharmafinder/db"
 	"pharmafinder/db/dto"
 	"pharmafinder/db/entity"
+	"pharmafinder/service"
 	"pharmafinder/types"
 	"pharmafinder/utils"
 	"pharmafinder/web"
@@ -20,14 +21,16 @@ import (
 )
 
 type PharmacyReviewController struct {
-	repo   db.PharmacyReviewRepository
-	logger zerolog.Logger
+	repo            db.PharmacyReviewRepository
+	captchaVerifier service.RecaptchaVerifier
+	logger          zerolog.Logger
 }
 
-func ProvidePharmacyReviewController(repo db.PharmacyReviewRepository) []web.Route {
+func ProvidePharmacyReviewController(repo db.PharmacyReviewRepository, captchaVerifier service.RecaptchaVerifier) []web.Route {
 	controller := &PharmacyReviewController{
-		repo:   repo,
-		logger: utils.GetLogger("API"),
+		repo:            repo,
+		captchaVerifier: captchaVerifier,
+		logger:          utils.GetLogger("API"),
 	}
 	return controller.GetRoutes()
 }
@@ -123,6 +126,7 @@ func (handler *PharmacyReviewController) GetPharmacyReviews(details *web.HttpReq
 // @Produce 		json
 // @Success			201 {object} entity.PharmacyReview
 // @Failure			400 {object} types.HttpError
+// @Failure			403	{object} types.HttpError
 // @Param			request body dto.PharmacyReviewCreationDTO true "Review creation request body"
 // @Param			id path int true "Pharmacy ID"
 // @Router			/api/v1/pharmacies/{id}/reviews [post]
@@ -132,6 +136,12 @@ func (handler *PharmacyReviewController) PostPharmacyReview(details *web.HttpReq
 	if err != nil {
 		handler.logger.Warn().Msgf("Malformed ID path variable '%s'", idStr)
 		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed ID path variable"), nil
+	}
+
+	// reCaptcha check :3
+	if !handler.captchaVerifier.Verify(details.Body.RecaptchaResponse) {
+		handler.logger.Warn().Msg("Invalid captcha response")
+		return http.StatusForbidden, types.NewHttpError(http.StatusForbidden, "Invalid captcha response"), nil
 	}
 
 	modCode := handler.generateModificationCode()
@@ -174,6 +184,7 @@ func (handler *PharmacyReviewController) PostPharmacyReview(details *web.HttpReq
 // @Param				request body dto.PharmacyReviewModificationDTO true "Review modififcation request body"
 // @Success				200 {object} dto.PharmacyReviewsetResultDTO
 // @Failure				400 {object} types.HttpError
+// @Failure				403	{object} types.HttpError
 // @Router				/api/v1/pharmacies/{pharmaID}/reviews/{reviewID} [patch]
 func (handler *PharmacyReviewController) PatchPharmacyReview(details *web.HttpRequestDetails[dto.PharmacyReviewModificationDTO]) (int, interface{}, error) {
 	pharmaIDStr := details.PathVars["pharmaID"]
@@ -190,6 +201,12 @@ func (handler *PharmacyReviewController) PatchPharmacyReview(details *web.HttpRe
 		handler.logger.Warn().Msgf("Malformed review ID path variable '%s'", pharmaIDStr)
 		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed review ID path variable"), nil
 
+	}
+
+	// reCaptcha check :3
+	if !handler.captchaVerifier.Verify(details.Body.RecaptchaResponse) {
+		handler.logger.Warn().Msg("Invalid captcha response")
+		return http.StatusForbidden, types.NewHttpError(http.StatusForbidden, "Invalid captcha response"), nil
 	}
 
 	review, err := handler.repo.FindReviewByID(pharmaID, reviewID).Query()
@@ -242,12 +259,12 @@ func (handler *PharmacyReviewController) PatchPharmacyReview(details *web.HttpRe
 // @Produce 		json
 // @Param			pharmaID path int true "Pharmacy ID"
 // @Param			reviewID path int true "ID of the review to delete"
-// @Security		Bearer
+// @Param			request body dto.PharmacyReviewDeletionDTO true "Review deletion request body"
 // @Success 		200 {object} dto.PharmacyReviewsetResultDTO
 // @Failure			400 {object} types.HttpError
 // @Failure			403	{object} types.HttpError
 // @Router			/api/v1/pharmacies/{pharmaID}/reviews/{reviewID} [delete]
-func (handler *PharmacyReviewController) DeletePharmacyReview(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
+func (handler *PharmacyReviewController) DeletePharmacyReview(details *web.HttpRequestDetails[dto.PharmacyReviewDeletionDTO]) (int, interface{}, error) {
 	pharmaIDStr := details.PathVars["pharmaID"]
 	reviewIDStr := details.PathVars["reviewID"]
 
@@ -264,6 +281,12 @@ func (handler *PharmacyReviewController) DeletePharmacyReview(details *web.HttpR
 
 	}
 
+	// reCaptcha check :3
+	if !handler.captchaVerifier.Verify(details.Body.RecaptchaResponse) {
+		handler.logger.Warn().Msg("Invalid captcha response")
+		return http.StatusForbidden, types.NewHttpError(http.StatusForbidden, "Invalid captcha response"), nil
+	}
+
 	review, err := handler.repo.FindReviewByID(pharmaID, reviewID).Query()
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
@@ -271,16 +294,9 @@ func (handler *PharmacyReviewController) DeletePharmacyReview(details *web.HttpR
 		return http.StatusNotFound, types.NewHttpError(http.StatusNotFound, "Not found"), nil
 	}
 
-	auth := details.Header.Get("Authorization")
-	splits := strings.Split(auth, " ")
-	var bearer string
-	if len(splits) > 1 {
-		bearer = strings.Trim(splits[1], " \t")
-	}
-
 	// check if provided modifcation code matches the one in the database
 	h := sha256.New()
-	h.Write([]byte(bearer))
+	h.Write([]byte(details.Body.ModificationCode))
 	checksum := h.Sum(nil)
 
 	if hex.EncodeToString(checksum) != review.ModificationCode {
