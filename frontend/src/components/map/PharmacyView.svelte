@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { PharmacyInfo } from "$lib/service/pharmacy-info";
-    import CloseButton from "../common/icons/CloseButton.svelte";
-    import StarRating from "../common/widgets/StarRating.svelte";
+    import StarRating from "../common/widgets/stars/StarRating.svelte";
     import {_} from "svelte-i18n";
     import Loader from "../common/widgets/Loader.svelte";
     import Review from "./PharmacyView/Review.svelte";
@@ -150,13 +149,12 @@
                 {#if !fetchDone}
                     <IntersectionObserver
                         {element}
-                        on:observe={(e) => {
-                            if (e.detail.isIntersecting)
-                                updateReviewList().then();
+                        on:intersect={(e: CustomEvent<IntersectionObserverEntry>) => {
+                            updateReviewList().then();
                         }}
                     >
-                        <div bind:this={element}>
-                            Loading...
+                        <div class="loader-container" bind:this={element}>
+                            <Loader/>
                         </div>
                     </IntersectionObserver>
                 {/if}
