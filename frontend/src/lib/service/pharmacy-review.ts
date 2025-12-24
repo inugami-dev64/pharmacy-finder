@@ -1,4 +1,3 @@
-import { pushState } from "$app/navigation";
 import type { HttpError } from "$lib/http-error";
 
 export const PAGER_LIMIT = 10
