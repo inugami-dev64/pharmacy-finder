@@ -5,3 +5,4 @@ frontend/build
 frontend/node_modules
 docs
 run-db.sh
+*.log
