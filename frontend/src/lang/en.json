@@ -12,6 +12,30 @@
             "noReviews": "No reviews for this pharmacy",
             "viewMoreRatings": "View more...",
             "viewLessRatings": "View less"
+        },
+        "reviewForm": {
+            "ratingTitle": "Your rating",
+            "commentTitle": "Comment",
+            "commentPlaceholder": "Enter your comment here",
+            "nationalityTitle": "Nationality",
+            "hrtKindTitle": "HRT Kind",
+            "hrtKind": {
+                "estrogen": "Estrogen",
+                "testosterone": "Testosterone"
+            },
+            "prescriptionIssuerTitle": "Prescription issuer",
+            "modCodeTitle": "Modification code",
+            "responses": {
+                "modSuccess": "Successfully modified!",
+                "invalidModCode": "Invalid modification code!",
+                "newModCode": "Your modification code is",
+                "missingCaptcha": "Please solve the captcha challenge to continue"
+            },
+            "actions": {
+                "createReview": "Create a review",
+                "modifyReview": "Modify review",
+                "deleteReview": "Delete review"
+            }
         }
     }
 }

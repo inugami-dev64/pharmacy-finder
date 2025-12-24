@@ -5,6 +5,7 @@
     import Recaptcha from "../../common/Recaptcha.svelte";
     import DangerButton from "../../common/widgets/buttons/DangerButton.svelte";
     import Loader from "../../common/widgets/Loader.svelte";
+    import { _ } from "svelte-i18n";
 
     let {
         pharmacy,
@@ -31,7 +32,6 @@
             missingCaptcha = true;
             return;
         }
-        pendingSubmission = false;
 
         let newReview: PharmacyReview = new PharmacyReview;
         Object.assign(newReview, review);
@@ -41,12 +41,13 @@
 
         try {
             await newReview.deleteReview(pharmacy.id ?? 0);
+            onClose();
         } catch (e) {
+            pendingSubmission = false;
             invalidModCode = true;
             setTimeout(() => onClose(), 2000);
         }
 
-        pendingSubmission = false;
     }
 </script>
 
@@ -54,7 +55,7 @@
     <h3>{pharmacy.name}</h3>
     <form onsubmit={submitForm}>
         <div>
-            <label for="mod-code">Modification code*:</label><br>
+            <label for="mod-code">{$_("map.reviewForm.modCodeTitle")}*:</label><br>
             <input type="text" name="mod-code" required/>
         </div>
 
@@ -64,13 +65,13 @@
                     <Loader/>
                 </div>
             {:else if invalidModCode}
-                <p style="color: red">Invalid modification code</p>
+                <p style="color: red">{$_("map.reviewForm.responses.invalidModCode")}</p>
             {:else}
                 {#if missingCaptcha}
-                    <p style="color: red">Please solve the captcha challenge to continue</p>
+                    <p style="color: red">{$_("map.reviewForm.responses.missingCaptcha")}</p>
                 {/if}
                 <Recaptcha/>
-                <DangerButton>Delete review</DangerButton>
+                <DangerButton>{$_("map.reviewForm.actions.deleteReview")}</DangerButton>
             {/if}
         </div>
     </form>

@@ -7,6 +7,7 @@
     import StarPicker from "../../common/widgets/stars/StarPicker.svelte";
     import ModalWindow from "../../common/ModalWindow.svelte";
     import Recaptcha from "../../common/Recaptcha.svelte";
+    import { _ } from "svelte-i18n";
 
     let {
         pharmacy,
@@ -17,6 +18,7 @@
     // stateful values
     let missingCaptcha: boolean = $state(false);
     let pendingSubmission: boolean = $state(false);
+    let successfullyModified: boolean = $state(false);
     let invalidModCode: boolean = $state(false);
     let newReview: PharmacyReview = $state(new PharmacyReview);
 
@@ -51,7 +53,7 @@
         newReview.hrtKind = hrtKind?.toString();
         newReview.prescriptionType = prescriptionType?.toString();
         newReview.modCode = modCode?.toString();
-        newReview.__gRecaptchaResponse = recaptchaResponse.toString();
+        newReview.__gRecaptchaResponse = recaptchaResponse as string ?? "";
 
         if (review?.id) {
             newReview.id = review.id;
@@ -59,6 +61,7 @@
             // TODO: Better error handling
             try {
                 newReview = await newReview.updateReview(pharmacy.id ?? 0);
+                successfullyModified = true;
             } catch (e) {
                 invalidModCode = true;
                 setTimeout(() => onClose(), 2000);
@@ -75,15 +78,15 @@
     <h3>{pharmacy.name}</h3>
     <form onsubmit={submitForm}>
         <div class="form-contents">
-            <label for="stars">Your rating*:</label>
+            <label for="stars">{$_("map.reviewForm.ratingTitle")}*:</label>
             <StarPicker name="stars" defaultChecked={review?.stars ?? 5}/>
-            <label for="review-comment">Comment:</label>
+            <label for="review-comment">{$_("map.reviewForm.commentTitle")}:</label>
             <textarea
                 name="review-comment"
-                placeholder="Enter your comment here"
+                placeholder="{$_("map.reviewForm.commentPlaceholder")}"
             >{review?.review}</textarea>
             <div>
-                <label for="nationality">Nationality*:</label>
+                <label for="nationality">{$_("map.reviewForm.nationalityTitle")}*:</label>
                 <select name="nationality" required>
                     {#each Object.keys(Countries).sort() as key}
                         {#if review == null && key === "EE" || review != null && key === review.nationality}
@@ -95,14 +98,14 @@
                 </select>
             </div>
             <div>
-                <label for="hrt-kind">HRT kind*:</label>
+                <label for="hrt-kind">{$_("map.reviewForm.hrtKindTitle")}*:</label>
                 <select name="hrt-kind" required>
-                    <option value="e" selected={review != null && review.hrtKind === 'e'}>Estrogen</option>
-                    <option value="t" selected={review != null && review.hrtKind === 't'}>Testosterone</option>
+                    <option value="e" selected={review != null && review.hrtKind === 'e'}>{$_("map.reviewForm.hrtKind.estrogen")}</option>
+                    <option value="t" selected={review != null && review.hrtKind === 't'}>{$_("map.reviewForm.hrtKind.testosterone")}</option>
                 </select>
             </div>
             <div>
-                <label for="prescription-type">Prescription type*:</label>
+                <label for="prescription-type">{$_("map.reviewForm.prescriptionIssuerTitle")}*:</label>
                 <select name="prescription-type" required>
                     <option value="Imago" selected={review != null && review.prescriptionType === "Imago"}>Imago</option>
                     <option value="GenderGP" selected={review != null && review.prescriptionType === "GenderGP"}>GenderGP</option>
@@ -112,27 +115,29 @@
 
             {#if review != null}
                 <div>
-                    <label for="mod-code">Modification code*:</label>
+                    <label for="mod-code">{$_("map.reviewForm.modCodeTitle")}*:</label>
                     <input type="text" name="mod-code" required>
                 </div>
             {/if}
         </div>
 
         {#if pendingSubmission}
-        <div style="display: flex; justify-content: center; width: 100%">
-            <Loader/>
-        </div>
+            <div style="display: flex; justify-content: center; width: 100%">
+                <Loader/>
+            </div>
+        {:else if successfullyModified}
+            <p style="color: green">{$_("map.reviewForm.responses.modSuccess")}</p>
         {:else if invalidModCode}
-            <p style="color: red">Invalid modification code</p>
+            <p style="color: red">{$_("map.reviewForm.responses.invalidModCode")}</p>
         {:else if newReview.modCode}
-            <p>Your modification code is: <span style="color: green">{newReview.modCode}</span></p>
+            <p>{$_("map.reviewForm.responses.newModCode")}: <span style="color: green">{newReview.modCode}</span></p>
         {:else}
             {#if missingCaptcha}
-                <p style="color: red">Please solve the captcha challenge to continue</p>
+                <p style="color: red">{$_("map.reviewForm.responses.missingCaptcha")}</p>
             {/if}
             <Recaptcha/>
             <PrimaryButton>
-                {review == null ? "Create a review" : "Modify review"}
+                {review == null ? $_("map.reviewForm.actions.createReview") : $_("map.reviewForm.actions.modifyReview")}
             </PrimaryButton>
         {/if}
     </form>
