@@ -8,7 +8,7 @@
 </script>
 
 <div class="modal-container" style="--zIndex: {zIndex}">
-    <div class="modal-window" style="--minWidth: {minWidth}; --minHeight: {minHeight}">
+    <div class="modal-window" style="--minWidth: {minWidth}px; --minHeight: {minHeight}px">
         <TitleBar onClose={onClose}/>
         <slot/>
     </div>
