@@ -13,6 +13,7 @@ export class PharmacyReview {
     modCode: string | undefined;
     createdAt: number | undefined;
     updatedAt: number | undefined;
+    __gRecaptchaResponse: string | undefined;
 
     // TODO: Fix error handling because right now exceptions are caught in data methods
 
@@ -108,6 +109,32 @@ export class PharmacyReview {
                     let err: HttpError = await res.json();
                     console.log(err);
                     throw new Error(`Failed to update post`);
+                }
+
+                let data: PharmacyReview = await res.json();
+                return data;
+            })
+    }
+
+    /**
+     * Delete the pharmacy review
+     *
+     * @param id specifies the ID of the pharmacy whose review to delete
+     * @returns the deleted PharmacyReview instance
+     */
+    public async deleteReview(id: number): Promise<PharmacyReview> {
+        return await fetch(`/api/v1/pharmacies/${id}/reviews/${this.id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${this.modCode}`
+            }
+        })
+            .then(async res => {
+                if (res.status != 200) {
+                    let err: HttpError = await res.json();
+                    console.log(err);
+                    throw new Error(`Failed to delete post`);
                 }
 
                 let data: PharmacyReview = await res.json();
