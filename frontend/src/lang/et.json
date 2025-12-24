@@ -12,6 +12,30 @@
             "noReviews": "Sellel apteegil puuduvad arvustused",
             "viewMoreRatings": "Vaata rohkem...",
             "viewLessRatings": "Vaata vähem..."
+        },
+        "reviewForm": {
+            "ratingTitle": "Hinnang",
+            "commentTitle": "Kommentaar",
+            "commentPlaceholder": "Sisesta oma kommentaar",
+            "nationalityTitle": "Rahvus",
+            "hrtKindTitle": "HAR tüüp",
+            "hrtKind": {
+                "estrogen": "Östradiool",
+                "testosterone": "Testosteroon"
+            },
+            "prescriptionIssuerTitle": "Retsepti väljastaja",
+            "modCodeTitle": "Muudatuskood",
+            "responses": {
+                "modSuccess": "Edukalt uuendatud!",
+                "invalidModCode": "Vale muudatuskood!",
+                "newModCode": "Sinu muudatuskood on",
+                "missingCaptcha": "Jätkamiseks palun lahendage captcha"
+            },
+            "actions": {
+                "createReview": "Loo arvustus",
+                "modifyReview": "Muuda arvustust",
+                "deleteReview": "Kustuta arvustus"
+            }
         }
     }
 }
