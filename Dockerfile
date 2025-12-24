@@ -3,9 +3,17 @@ FROM golang:1.25.1-alpine3.22 AS builder
 # Install npm and friends
 RUN apk add npm nodejs make
 
-# Copy files over
+# Copy go.mod and go.sum so that we could cache dependencies
 WORKDIR /app/build
+COPY go.mod go.sum ./
+
+RUN go mod download
+RUN go mod verify
+
+# Copy files over
 COPY . .
+
+ARG RECAPTCHA_SITE_KEY
 
 # Build the backend
 RUN make release
