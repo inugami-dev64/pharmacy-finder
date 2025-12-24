@@ -38,7 +38,7 @@
         <span>
             <Stars value={review.stars ?? 5} scale={0.75}/>
             <EditButton size={24} on:click={_ => onEdit()}/>
-            <DeleteButton size={22} on:close={_ => onDelete()}/>
+            <DeleteButton size={22} on:click={_ => onDelete()}/>
         </span>
         <span style="display: flex; align-items: center">
             {#if review.nationality != null && review.nationality in Countries}
@@ -76,10 +76,6 @@
     time {
         display: block;
         margin-bottom: 0.25em;
-    }
-
-    .content {
-
     }
 
     .phr-review {
