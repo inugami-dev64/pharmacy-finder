@@ -68,7 +68,7 @@
         <form onsubmit={submitForm}>
             <div class="form-contents">
                 <label for="stars">Your rating*:</label>
-                <StarPicker name="stars" defaultChecked={5}/>
+                <StarPicker name="stars" defaultChecked={review?.stars ?? 5}/>
                 <label for="review-comment">Comment:</label>
                 <textarea
                     name="review-comment"
