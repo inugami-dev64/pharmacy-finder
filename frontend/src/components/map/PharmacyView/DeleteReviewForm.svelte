@@ -2,7 +2,7 @@
     import type { PharmacyInfo } from "$lib/service/pharmacy-info";
     import { PharmacyReview } from "$lib/service/pharmacy-review";
     import { modifyReviewZIndex } from "$lib/utils/z-indices";
-    import ModalWindow from "../../common/ModalWindow.svelte";
+    import ModalWindow from "../ModalWindow.svelte";
     import Recaptcha from "../../common/Recaptcha.svelte";
     import DangerButton from "../../common/widgets/buttons/DangerButton.svelte";
     import Loader from "../../common/widgets/Loader.svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import Overlay from "./Overlay.svelte";
-import TitleBar from "./TitleBar.svelte";
+    import Overlay from "../common/Overlay.svelte";
+import TitleBar from "../common/TitleBar.svelte";
 
     export let zIndex: number;
     export let onClose: () => void;

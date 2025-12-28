@@ -5,7 +5,7 @@
     import Loader from "../../common/widgets/Loader.svelte";
     import PrimaryButton from "../../common/widgets/buttons/PrimaryButton.svelte";
     import StarPicker from "../../common/widgets/stars/StarPicker.svelte";
-    import ModalWindow from "../../common/ModalWindow.svelte";
+    import ModalWindow from "../ModalWindow.svelte";
     import Recaptcha from "../../common/Recaptcha.svelte";
     import { _ } from "svelte-i18n";
     import { modifyReviewZIndex } from "$lib/utils/z-indices";
