@@ -3,8 +3,8 @@
 
     export let zIndex: number;
     export let onClose: () => void;
-    export let minWidth: number = 600;
-    export let minHeight: number = 600;
+    export let minWidth: number = 360;
+    export let minHeight: number = 500;
 </script>
 
 <div class="modal-container" style="--zIndex: {zIndex}">
@@ -23,8 +23,8 @@
         left: 0;
         top: 0;
         z-index: var(--zIndex);
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         background-color: rgb(0 0 0 / 50%);
     }
 
