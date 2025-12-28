@@ -5,12 +5,13 @@
     import { ratingData, reviewData } from "$lib/stores";
     import { navBarZIndex } from "$lib/utils/z-indices";
     import type { PageProps } from "../$types";
-    import LanguageButton from "../../components/common/icons/LanguageButton.svelte";
-    import SearchButton from "../../components/common/icons/SearchButton.svelte";
-    import ShinyStarButton from "../../components/common/icons/ShinyStarButton.svelte";
-    import SourceCodeButton from "../../components/common/icons/SourceCodeButton.svelte";
+    import LanguageButton from "../../components/common/icons/buttons/LanguageButton.svelte";
+    import SearchButton from "../../components/common/icons/buttons/SearchButton.svelte";
+    import ShinyStarButton from "../../components/common/icons/buttons/ShinyStarButton.svelte";
+    import SourceCodeButton from "../../components/common/icons/buttons/SourceCodeButton.svelte";
     import NavBar from "../../components/common/widgets/navbar/NavBar.svelte";
     import LeafletMap from "../../components/map/LeafletMap.svelte";
+    import SearchModal from "../../components/map/NavBar/SearchModal.svelte";
     import PharmacyView from "../../components/map/PharmacyView.svelte";
 
     let { data }: PageProps = $props();
@@ -49,6 +50,9 @@
     </div>
     {#if activePharmacy != null && pharmacyViewVisible}
     <PharmacyView pharmacy={<PharmacyInfo>activePharmacy} onClose={() => pharmacyViewVisible = false}/>
+    {/if}
+    {#if searchVisible}
+    <SearchModal pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies} onSelect={(v) => {}} onClose={() => searchVisible = false}/>
     {/if}
     <LeafletMap pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies} callback={showPharmacyView}/>
 </main>
