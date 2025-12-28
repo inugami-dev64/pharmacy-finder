@@ -1,26 +1,32 @@
 <script lang="ts">
     import type { PharmacyInfo } from '$lib/service/pharmacy-info';
-    import type { Icon, LatLngExpression } from 'leaflet';
+    import type { Icon, LatLngBoundsExpression, LatLngExpression, Map as LeafletMap } from 'leaflet';
     import { onMount, onDestroy } from 'svelte';
+    import { leafletZIndex } from '$lib/utils/z-indices';
 
     // Pharmacy icons
     import ApothekaMarker from "$lib/assets/markers/apotheka.png";
     import SudameapteekMarker from "$lib/assets/markers/sudameapteek.png";
     import BenuMarker from "$lib/assets/markers/benu.png";
     import EuroapteekMarker from "$lib/assets/markers/euroapteek.png";
-    import { leafletZIndex } from '$lib/utils/z-indices';
 
-    export let pharmacies: PharmacyInfo[];
-    export let callback: (pharmacy: PharmacyInfo) => Promise<void>;
-
+    let {
+        pharmacies,
+        callback,
+        selectedPharmacy,
+    } : {
+        pharmacies: PharmacyInfo[],
+        callback: (pharmacy: PharmacyInfo) => Promise<void>,
+        selectedPharmacy?: PharmacyInfo
+    } = $props()
 
     let mapElement: HTMLElement;
-    let map: any;
+    let map: LeafletMap | undefined;
 
     onMount(async () => {
         // Some specific map values
         const MAP_CENTER: LatLngExpression = [58.822, 25.472];
-        const MAP_BOUNDS = [
+        const MAP_BOUNDS: LatLngBoundsExpression = [
             [57.45, 21.149],
             [60.245, 28.575]
         ];
@@ -35,7 +41,7 @@
         ]);
 
         map = leaflet.map(mapElement, { zoomControl: false }).setView(MAP_CENTER, 13);
-        map.fitBounds(MAP_BOUNDS)
+        map.fitBounds(MAP_BOUNDS);
         leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
@@ -49,6 +55,11 @@
                 on('click', e => callback(pharmacy));
         }
     });
+
+    $effect(() => {
+        if (selectedPharmacy)
+            map?.panTo([selectedPharmacy.lat ?? 0, selectedPharmacy.lng ?? 0]);
+    })
 
     onDestroy(async () => {
         if(map) {
