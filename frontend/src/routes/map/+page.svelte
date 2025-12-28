@@ -74,7 +74,7 @@
     <SearchModal
         pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies}
         onSelect={(v) => {
-            activePharmacy = v;
+            showPharmacyView(v);
             searchVisible = false;
         }}
         onClose={() => searchVisible = false}
