@@ -8,6 +8,11 @@
         }
     },
     "map": {
+        "navbar": {
+            "search": "Otsi apteeke",
+            "language": "Vali keel",
+            "source": "Vaata lähtekoodi"
+        },
         "sidebar": {
             "noReviews": "Sellel apteegil puuduvad arvustused",
             "viewMoreRatings": "Vaata rohkem...",

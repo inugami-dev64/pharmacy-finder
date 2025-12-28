@@ -8,6 +8,11 @@
         }
     },
     "map": {
+        "navbar": {
+            "search": "Search pharmacies",
+            "language": "Select language",
+            "source": "View source code"
+        },
         "sidebar": {
             "noReviews": "No reviews for this pharmacy",
             "viewMoreRatings": "View more...",

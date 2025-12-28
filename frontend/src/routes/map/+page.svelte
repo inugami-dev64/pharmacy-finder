@@ -15,6 +15,7 @@
     import SearchModal from "../../components/map/NavBar/SearchModal.svelte";
     import PharmacyView from "../../components/map/PharmacyView.svelte";
     import { languages } from "$lib/utils/languages";
+    import { _ } from "svelte-i18n";
 
     let { data }: PageProps = $props();
 
@@ -46,10 +47,10 @@
 <main>
     <div class="navbar-container" style="--zIndex: {navBarZIndex}">
         <NavBar size={48}>
-            <SearchButton size={32} on:click={() => searchVisible = true}/>
+            <SearchButton size={32} on:click={() => searchVisible = true} title={$_("map.navbar.search")}/>
             <!--<ShinyStarButton size={32}/>-->
             <div>
-                <LanguageButton size={32} on:click={_ => langSelector.showPicker()}/>
+                <LanguageButton size={32} on:click={_ => langSelector.showPicker()} title={$_("map.navbar.language")}/>
                 <select
                     bind:this={langSelector}
                     onchange={e => {
@@ -63,7 +64,7 @@
                     {/each}
                 </select>
             </div>
-            <SourceCodeButton size={32}/>
+            <SourceCodeButton size={32} title={$_("map.navbar.source")}/>
         </NavBar>
     </div>
     {#if activePharmacy != null && pharmacyViewVisible}
