@@ -4,7 +4,11 @@
     import { PharmacyReview } from "$lib/service/pharmacy-review";
     import { ratingData, reviewData } from "$lib/stores";
     import type { PageProps } from "../$types";
-    import LanguageSwitcher from "../../components/common/LanguageSwitcher.svelte";
+    import LanguageButton from "../../components/common/icons/LanguageButton.svelte";
+    import SearchButton from "../../components/common/icons/SearchButton.svelte";
+    import ShinyStarButton from "../../components/common/icons/ShinyStarButton.svelte";
+    import SourceCodeButton from "../../components/common/icons/SourceCodeButton.svelte";
+    import NavBar from "../../components/common/widgets/navbar/NavBar.svelte";
     import LeafletMap from "../../components/map/LeafletMap.svelte";
     import PharmacyView from "../../components/map/PharmacyView.svelte";
 
@@ -33,8 +37,13 @@
 </svelte:head>
 
 <main>
-    <div class="language-switcher-container">
-        <LanguageSwitcher/>
+    <div class="navbar-container">
+        <NavBar size={48}>
+            <SearchButton size={32}/>
+            <ShinyStarButton size={32}/>
+            <LanguageButton size={32}/>
+            <SourceCodeButton size={32}/>
+        </NavBar>
     </div>
     {#if activePharmacy != null && visible}
     <PharmacyView pharmacy={<PharmacyInfo>activePharmacy} onClose={() => visible = false}/>
@@ -48,11 +57,12 @@
         height: 100%;
     }
 
-    .language-switcher-container {
-        display: block;
+    .navbar-container {
+        display: flex;
+        flex-direction: row;
         position: absolute;
-        right: 0;
-        top: 0;
+        right: 10px;
+        top: 10px;
         z-index: 10000;
     }
 </style>
