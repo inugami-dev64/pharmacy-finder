@@ -4,6 +4,7 @@
     import { PharmacyReview } from "$lib/service/pharmacy-review";
     import { ratingData, reviewData } from "$lib/stores";
     import { navBarZIndex } from "$lib/utils/z-indices";
+    import { locale } from "svelte-i18n";
     import type { PageProps } from "../$types";
     import LanguageButton from "../../components/common/icons/buttons/LanguageButton.svelte";
     import SearchButton from "../../components/common/icons/buttons/SearchButton.svelte";
@@ -13,6 +14,7 @@
     import LeafletMap from "../../components/map/LeafletMap.svelte";
     import SearchModal from "../../components/map/NavBar/SearchModal.svelte";
     import PharmacyView from "../../components/map/PharmacyView.svelte";
+    import { languages } from "$lib/utils/languages";
 
     let { data }: PageProps = $props();
 
@@ -33,6 +35,8 @@
             ratingData.set(await PharmacyRating.readPharmacyRatings(pharmacy.id));
         }
     }
+
+    let langSelector: HTMLSelectElement;
 </script>
 
 <svelte:head>
@@ -43,8 +47,22 @@
     <div class="navbar-container" style="--zIndex: {navBarZIndex}">
         <NavBar size={48}>
             <SearchButton size={32} on:click={() => searchVisible = true}/>
-            <ShinyStarButton size={32}/>
-            <LanguageButton size={32}/>
+            <!--<ShinyStarButton size={32}/>-->
+            <div>
+                <LanguageButton size={32} on:click={_ => langSelector.showPicker()}/>
+                <select
+                    bind:this={langSelector}
+                    onchange={e => {
+                        e.preventDefault();
+                        const value = (e.target as HTMLSelectElement).value;
+                        locale.set(value);
+                    }}
+                >
+                    {#each languages as selection}
+                    <option value={selection.code}>{selection.language}</option>
+                    {/each}
+                </select>
+            </div>
             <SourceCodeButton size={32}/>
         </NavBar>
     </div>
@@ -65,6 +83,20 @@
 </main>
 
 <style>
+    select {
+        all: unset;
+        display: block;
+        width: 0;
+        height: 0;
+        padding: 0;
+        margin: 0;
+    }
+
+    select option {
+        font-size: 14px;
+        color: black;
+    }
+
     main {
         width: 100%;
         height: 100%;
