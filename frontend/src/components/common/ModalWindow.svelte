@@ -1,5 +1,6 @@
 <script lang="ts">
-    import TitleBar from "./TitleBar.svelte";
+    import Overlay from "./Overlay.svelte";
+import TitleBar from "./TitleBar.svelte";
 
     export let zIndex: number;
     export let onClose: () => void;
@@ -7,27 +8,14 @@
     export let minHeight: number = 500;
 </script>
 
-<div class="modal-container" style="--zIndex: {zIndex}">
+<Overlay zIndex={zIndex}>
     <div class="modal-window" style="--minWidth: {minWidth}px; --minHeight: {minHeight}px">
         <TitleBar onClose={onClose}/>
         <slot/>
     </div>
-</div>
+</Overlay>
 
 <style>
-    .modal-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: var(--zIndex);
-        width: 100%;
-        height: 100%;
-        background-color: rgb(0 0 0 / 50%);
-    }
-
     .modal-window {
         display: flex;
         flex-direction: column;
