@@ -3,9 +3,9 @@
     import Estrogen from "$lib/assets/regimen/estrogen.webp";
     import Testosterone from "$lib/assets/regimen/testosterone.webp";
     import { onMount } from "svelte";
-    import EditButton from "../../common/icons/EditButton.svelte";
+    import EditButton from "../../common/icons/buttons/EditButton.svelte";
     import Countries from "$lib/assets/countries.json"
-    import DeleteButton from "../../common/icons/DeleteButton.svelte";
+    import DeleteButton from "../../common/icons/buttons/DeleteButton.svelte";
     import type { PharmacyReview } from "$lib/service/pharmacy-review";
     import ImagoLogo from "../../common/icons/logos/ImagoLogo.svelte";
     import GenderGPLogo from "../../common/icons/logos/GenderGPLogo.svelte";
