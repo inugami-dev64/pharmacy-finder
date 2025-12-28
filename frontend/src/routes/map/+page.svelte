@@ -52,9 +52,16 @@
     <PharmacyView pharmacy={<PharmacyInfo>activePharmacy} onClose={() => pharmacyViewVisible = false}/>
     {/if}
     {#if searchVisible}
-    <SearchModal pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies} onSelect={(v) => {}} onClose={() => searchVisible = false}/>
+    <SearchModal
+        pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies}
+        onSelect={(v) => {
+            activePharmacy = v;
+            searchVisible = false;
+        }}
+        onClose={() => searchVisible = false}
+        />
     {/if}
-    <LeafletMap pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies} callback={showPharmacyView}/>
+    <LeafletMap selectedPharmacy={activePharmacy} pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies} callback={showPharmacyView}/>
 </main>
 
 <style>
