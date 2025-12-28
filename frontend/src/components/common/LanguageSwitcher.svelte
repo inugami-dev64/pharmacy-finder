@@ -1,16 +1,6 @@
 <script lang="ts">
+    import { languages } from '$lib/utils/languages';
     import { locale } from 'svelte-i18n';
-
-    let languageSelections = $state([
-        {
-            code: "en",
-            language: "🇬🇧 English"
-        },
-        {
-            code: "et",
-            language: "🇪🇪 Eesti"
-        }
-    ])
 
     let selectedValue: string | undefined = $state()
 
@@ -26,7 +16,7 @@
     onchange={changeLanguage}
     name="langSelect"
 >
-    {#each languageSelections as selection}
+    {#each languages as selection}
     <option value="{selection.code}">{selection.language}</option>
     {/each}
 </select>
