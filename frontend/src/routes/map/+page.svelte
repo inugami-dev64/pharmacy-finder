@@ -43,6 +43,11 @@
 </main>
 
 <style>
+    main {
+        width: 100%;
+        height: 100%;
+    }
+
     .language-switcher-container {
         display: block;
         position: absolute;
