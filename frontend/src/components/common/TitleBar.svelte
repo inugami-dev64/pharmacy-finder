@@ -1,5 +1,5 @@
 <script lang="ts">
-    import CloseButton from "./icons/CloseButton.svelte";
+    import CloseButton from "./icons/buttons/CloseButton.svelte";
 
     export let onClose: () => void;
 </script>
