@@ -205,11 +205,11 @@
         flex-direction: column;
         position: fixed;
         left: 1em;
-        top: 1em;
+        top: 3em;
         width: calc(25% - 2em);
-        min-width: 380px;
+        min-width: 360px;
         max-width: 420px;
-        max-height: calc(100vh - 3em);
+        max-height: calc(100% - 5em);
         padding: 1em;
         z-index: 1000;
         background-color: #ffffff;
