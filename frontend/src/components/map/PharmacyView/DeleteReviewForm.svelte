@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { PharmacyInfo } from "$lib/service/pharmacy-info";
     import { PharmacyReview } from "$lib/service/pharmacy-review";
+    import { modifyReviewZIndex } from "$lib/utils/z-indices";
     import ModalWindow from "../../common/ModalWindow.svelte";
     import Recaptcha from "../../common/Recaptcha.svelte";
     import DangerButton from "../../common/widgets/buttons/DangerButton.svelte";
@@ -51,7 +52,7 @@
     }
 </script>
 
-<ModalWindow zIndex={10000} onClose={onClose} minHeight={400}>
+<ModalWindow zIndex={modifyReviewZIndex} onClose={onClose} minHeight={400}>
     <h3>{pharmacy.name}</h3>
     <form onsubmit={submitForm}>
         <div>

@@ -17,6 +17,7 @@
     import ModifyReviewForm from "./PharmacyView/ModifyReviewForm.svelte";
     import TitleBar from "../common/TitleBar.svelte";
     import DeleteReviewForm from "./PharmacyView/DeleteReviewForm.svelte";
+    import { pharmacyViewZIndex } from "$lib/utils/z-indices";
 
     // props
     let {
@@ -84,7 +85,7 @@
     }
 </script>
 
-<div class="phr-view">
+<div class="phr-view" style="--zIndex: {pharmacyViewZIndex}">
     <TitleBar onClose={onClose}/>
 
     {#if pharmacy.chain?.toLowerCase() == "benu"}
@@ -211,7 +212,7 @@
         max-width: 420px;
         max-height: calc(100% - 2em - 64px);
         padding: 1em;
-        z-index: 1000;
+        z-index: var(--zIndex);
         background-color: #ffffff;
         border: 1px solid #aaaaaa;
         border-radius: 1.25em;

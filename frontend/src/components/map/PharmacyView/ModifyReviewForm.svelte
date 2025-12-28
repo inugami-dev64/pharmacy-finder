@@ -8,6 +8,7 @@
     import ModalWindow from "../../common/ModalWindow.svelte";
     import Recaptcha from "../../common/Recaptcha.svelte";
     import { _ } from "svelte-i18n";
+    import { modifyReviewZIndex } from "$lib/utils/z-indices";
 
     let {
         pharmacy,
@@ -74,7 +75,7 @@
     }
 </script>
 
-<ModalWindow zIndex={10000} onClose={onClose}>
+<ModalWindow zIndex={modifyReviewZIndex} onClose={onClose}>
     <h3>{pharmacy.name}</h3>
     <form onsubmit={submitForm}>
         <div class="form-contents">

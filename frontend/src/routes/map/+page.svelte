@@ -3,6 +3,7 @@
     import { PharmacyRating } from "$lib/service/pharmacy-rating";
     import { PharmacyReview } from "$lib/service/pharmacy-review";
     import { ratingData, reviewData } from "$lib/stores";
+    import { navBarZIndex } from "$lib/utils/z-indices";
     import type { PageProps } from "../$types";
     import LanguageButton from "../../components/common/icons/LanguageButton.svelte";
     import SearchButton from "../../components/common/icons/SearchButton.svelte";
@@ -15,7 +16,8 @@
     let { data }: PageProps = $props();
 
     let activePharmacy: PharmacyInfo | undefined = $state();
-    let visible: boolean = $state(false);
+    let pharmacyViewVisible: boolean = $state(false);
+    let searchVisible: boolean = $state(false);
 
     async function showPharmacyView(pharmacy: PharmacyInfo) {
         // empty the reviewData store
@@ -23,7 +25,7 @@
         ratingData.set(undefined)
 
         activePharmacy = pharmacy;
-        visible = true;
+        pharmacyViewVisible = true;
 
         if (pharmacy.id != null) {
             reviewData.set(await PharmacyReview.readReviews(pharmacy.id, undefined, undefined));
@@ -37,16 +39,16 @@
 </svelte:head>
 
 <main>
-    <div class="navbar-container">
+    <div class="navbar-container" style="--zIndex: {navBarZIndex}">
         <NavBar size={48}>
-            <SearchButton size={32}/>
+            <SearchButton size={32} on:click={() => searchVisible = true}/>
             <ShinyStarButton size={32}/>
             <LanguageButton size={32}/>
             <SourceCodeButton size={32}/>
         </NavBar>
     </div>
-    {#if activePharmacy != null && visible}
-    <PharmacyView pharmacy={<PharmacyInfo>activePharmacy} onClose={() => visible = false}/>
+    {#if activePharmacy != null && pharmacyViewVisible}
+    <PharmacyView pharmacy={<PharmacyInfo>activePharmacy} onClose={() => pharmacyViewVisible = false}/>
     {/if}
     <LeafletMap pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies} callback={showPharmacyView}/>
 </main>
@@ -63,6 +65,6 @@
         position: absolute;
         right: 10px;
         top: 10px;
-        z-index: 10000;
+        z-index: var(--zIndex);
     }
 </style>

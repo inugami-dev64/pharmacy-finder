@@ -8,6 +8,7 @@
     import SudameapteekMarker from "$lib/assets/markers/sudameapteek.png";
     import BenuMarker from "$lib/assets/markers/benu.png";
     import EuroapteekMarker from "$lib/assets/markers/euroapteek.png";
+    import { leafletZIndex } from '$lib/utils/z-indices';
 
     export let pharmacies: PharmacyInfo[];
     export let callback: (pharmacy: PharmacyInfo) => Promise<void>;
@@ -57,12 +58,13 @@
     });
 </script>
 
-<div bind:this={mapElement}></div>
+<div bind:this={mapElement} style="--zIndex: {leafletZIndex}"></div>
 
 <style>
     div {
         width: 100%;
         height: 100%;
+        z-index: var(--zIndex);
     }
 </style>
 
