@@ -10,6 +10,7 @@
     "map": {
         "navbar": {
             "search": "Search pharmacies",
+            "ratingTierList": "Best rated pharmacies",
             "language": "Select language",
             "source": "View source code"
         },

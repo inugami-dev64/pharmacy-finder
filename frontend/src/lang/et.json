@@ -10,6 +10,7 @@
     "map": {
         "navbar": {
             "search": "Otsi apteeke",
+            "ratingTierList": "Parima reitinguga apteegid",
             "language": "Vali keel",
             "source": "Vaata lähtekoodi"
         },
