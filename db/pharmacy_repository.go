@@ -12,6 +12,7 @@ type PharmacyRepository interface {
 	FindPharmaciesInCoordinateBounds(sw types.Point, ne types.Point) Query[entity.Pharmacy]
 	FindPharmaciesByChain(chain entity.PharmacyChain) Query[entity.Pharmacy]
 	FindPharmacyRatingsByID(id int64) Query[dto.PharmacyRatingDTO]
+	FindPharmacyRatings(sw types.Point, ne types.Point) Query[dto.PharmacyTierRatingDTO]
 	StoreAll(pharmacies []entity.Pharmacy) error
 	Trx(conn any) PharmacyRepository
 }
@@ -78,6 +79,59 @@ func (repo PharmacyRepositorySQLX) FindPharmacyRatingsByID(id int64) Query[dto.P
 	return &SQLXQuery[dto.PharmacyRatingDTO]{
 		uniqueKey: "hrt_kind",
 		key:       "id",
+		trx:       repo.conn,
+		q:         q,
+		args:      args,
+	}
+}
+
+func (repo PharmacyRepositorySQLX) FindPharmacyRatings(sw types.Point, ne types.Point) Query[dto.PharmacyTierRatingDTO] {
+	q := `SELECT
+			p.id,
+			p."name",
+			COALESCE(AVG(pr."stars"), 0) AS avg_rating,
+			COALESCE(AVG(epr."stars"), 0) AS avg_e_rating,
+			COALESCE(AVG(tpr."stars"), 0) AS avg_t_rating
+		FROM
+			pharmacies p
+		LEFT JOIN
+			pharmacy_reviews pr
+		ON
+			pr.pharmacy_id = p.id
+		LEFT JOIN
+			pharmacy_reviews epr
+		ON
+			epr.pharmacy_id = p.id
+		AND
+			epr.hrt_kind = 'e'
+		LEFT JOIN
+			pharmacy_reviews tpr
+		ON
+			tpr.pharmacy_id = p.id
+		AND
+			tpr.hrt_kind = 't'
+		WHERE
+			p.latitude >= $1
+		AND
+			p.latitude <= $2
+		AND
+			p.longitude >= $3
+		AND
+			p.longitude <= $4
+		GROUP BY
+			p.id,
+			p."name"
+		ORDER BY
+			COALESCE(AVG(pr."stars"), 0) DESC,
+			COALESCE(AVG(epr."stars"), 0) DESC,
+			COALESCE(AVG(tpr."stars"), 0) DESC,
+			p."name"`
+
+	args := []interface{}{sw.Lat, ne.Lat, sw.Lng, ne.Lng}
+
+	return &SQLXQuery[dto.PharmacyTierRatingDTO]{
+		uniqueKey: "id",
+		key:       "name",
 		trx:       repo.conn,
 		q:         q,
 		args:      args,
