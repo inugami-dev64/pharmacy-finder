@@ -42,6 +42,7 @@
 
     async function showTierRatingList() {
         tierRatingData.set(undefined);
+        pharmacyViewVisible = false;
         tierListVisible = true;
         tierRatingData.set(await PharmacyTierRating.readPharmacyTierRatings());
     }
