@@ -45,24 +45,14 @@
 
     .rainbow {
         font-weight: 900;
-        background: linear-gradient(
-            270deg,
-            #ff0000,
-            #ff9900,
-            #ffff00,
-            #33cc33,
-            #0066ff,
-            #6600cc,
-            #ff3399,
-            #ff0000
-        );
+        background: linear-gradient(-90deg in hsl longer hue, red, red, red);
 
-        background-size: 200% 200%;
+        background-size: 300% 300%;
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
 
-        animation: rainbowMove 0.5s linear infinite;
+        animation: rainbowMove 1.75s linear infinite;
         text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         filter: drop-shadow(2px 2px 2px gray)
     }
@@ -72,7 +62,7 @@
             background-position: 0% 50%;
         }
         100% {
-            background-position: 100% 50%;
+            background-position: 150% 50%;
         }
     }
 
