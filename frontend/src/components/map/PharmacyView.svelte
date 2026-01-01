@@ -86,17 +86,17 @@
     }
 </script>
 
-<Sidepanel zIndex={pharmacyViewZIndex} rightAlign={true}>
+<Sidepanel zIndex={pharmacyViewZIndex}>
     <TitleBar onClose={onClose}/>
 
     {#if pharmacy.chain?.toLowerCase() == "benu"}
-        <img alt="Benu logo" src="{BenuLogo}">
+        <img alt="Benu logo" src="{BenuLogo}" class="logo">
     {:else if pharmacy.chain?.toLowerCase() == "apotheka" }
-        <img alt="Apotheka logo" src={ApothekaLogo}>
+        <img alt="Apotheka logo" src={ApothekaLogo} class="logo">
     {:else if pharmacy.chain?.toLowerCase() == "südameapteek"}
-        <img alt="Südameapteek logo" src="{SudameapteekLogo}">
+        <img alt="Südameapteek logo" src="{SudameapteekLogo}" class="logo">
     {:else if pharmacy.chain?.toLowerCase() == "euroapteek"}
-        <img alt="Euroapteek logo" src="{EuroapteekLogo}">
+        <img alt="Euroapteek logo" src="{EuroapteekLogo}" class="logo">
     {/if}
 
     <div class="phr-info">
@@ -135,7 +135,7 @@
         {:else}
             {#if reviews.length == 0}
                 <i>{$_("map.sidebar.noReviews")}</i>
-            {:else</Sidepanel>}
+            {:else}
                 {#each reviews as review}
                 <Review
                     review={review}
@@ -202,7 +202,7 @@
         height: fit-content;
     }
 
-    .phr-view > img {
+    .logo {
         margin-bottom: 2em;
         width: 100%;
     }
