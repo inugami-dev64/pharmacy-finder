@@ -18,6 +18,7 @@
     import TitleBar from "../common/TitleBar.svelte";
     import DeleteReviewForm from "./PharmacyView/DeleteReviewForm.svelte";
     import { pharmacyViewZIndex } from "$lib/utils/z-indices";
+    import Sidepanel from "./Sidepanel.svelte";
 
     // props
     let {
@@ -85,7 +86,7 @@
     }
 </script>
 
-<div class="phr-view" style="--zIndex: {pharmacyViewZIndex}">
+<Sidepanel zIndex={pharmacyViewZIndex} rightAlign={true}>
     <TitleBar onClose={onClose}/>
 
     {#if pharmacy.chain?.toLowerCase() == "benu"}
@@ -134,7 +135,7 @@
         {:else}
             {#if reviews.length == 0}
                 <i>{$_("map.sidebar.noReviews")}</i>
-            {:else}
+            {:else</Sidepanel>}
                 {#each reviews as review}
                 <Review
                     review={review}
@@ -163,7 +164,7 @@
             {/if}
         {/if}
     </div>
-</div>
+</Sidepanel>
 
 {#if showModifyReview}
     <ModifyReviewForm pharmacy={pharmacy} review={pendingReview} onClose={async () => {
@@ -199,24 +200,6 @@
         width: 100%;
         margin-top: 1em;
         height: fit-content;
-    }
-
-    .phr-view {
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        left: 1em;
-        top: 64px;
-        width: calc(25% - 2em);
-        min-width: 360px;
-        max-width: 420px;
-        max-height: calc(100% - 2em - 64px);
-        padding: 1em;
-        z-index: var(--zIndex);
-        background-color: #ffffff;
-        border: 1px solid #aaaaaa;
-        border-radius: 1.25em;
-        box-sizing: border-box;
     }
 
     .phr-view > img {
