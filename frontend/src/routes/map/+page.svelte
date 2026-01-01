@@ -1,8 +1,8 @@
 <script lang="ts">
     import type { PharmacyInfo } from "$lib/service/pharmacy-info";
-    import { PharmacyRating } from "$lib/service/pharmacy-rating";
+    import { PharmacyRating, PharmacyTierRating } from "$lib/service/pharmacy-rating";
     import { PharmacyReview } from "$lib/service/pharmacy-review";
-    import { ratingData, reviewData } from "$lib/stores";
+    import { ratingData, reviewData, tierRatingData } from "$lib/stores";
     import { navBarZIndex } from "$lib/utils/z-indices";
     import { locale } from "svelte-i18n";
     import type { PageProps } from "../$types";
@@ -16,12 +16,14 @@
     import PharmacyView from "../../components/map/PharmacyView.svelte";
     import { languages } from "$lib/utils/languages";
     import { _ } from "svelte-i18n";
+    import RatingList from "../../components/map/RatingList.svelte";
 
     let { data }: PageProps = $props();
 
     let activePharmacy: PharmacyInfo | undefined = $state();
     let pharmacyViewVisible: boolean = $state(false);
     let searchVisible: boolean = $state(false);
+    let tierListVisible: boolean = $state(false);
 
     async function showPharmacyView(pharmacy: PharmacyInfo) {
         // empty the reviewData store
@@ -29,12 +31,19 @@
         ratingData.set(undefined)
 
         activePharmacy = pharmacy;
+        tierListVisible = false;
         pharmacyViewVisible = true;
 
         if (pharmacy.id != null) {
             reviewData.set(await PharmacyReview.readReviews(pharmacy.id, undefined, undefined));
             ratingData.set(await PharmacyRating.readPharmacyRatings(pharmacy.id));
         }
+    }
+
+    async function showTierRatingList() {
+        tierRatingData.set(undefined);
+        tierListVisible = true;
+        tierRatingData.set(await PharmacyTierRating.readPharmacyTierRatings());
     }
 
     let langSelector: HTMLSelectElement;
@@ -48,7 +57,7 @@
     <div class="navbar-container" style="--zIndex: {navBarZIndex}">
         <NavBar size={48}>
             <SearchButton size={32} on:click={() => searchVisible = true} title={$_("map.navbar.search")}/>
-            <!--<ShinyStarButton size={32}/>-->
+            <ShinyStarButton size={32} on:click={showTierRatingList} title={$_("map.navbar.ratingTierList")}/>
             <div>
                 <LanguageButton size={32} on:click={_ => langSelector.showPicker()} title={$_("map.navbar.language")}/>
                 <select
@@ -68,7 +77,19 @@
         </NavBar>
     </div>
     {#if activePharmacy != null && pharmacyViewVisible}
-    <PharmacyView pharmacy={<PharmacyInfo>activePharmacy} onClose={() => pharmacyViewVisible = false}/>
+    <PharmacyView
+        pharmacy={<PharmacyInfo>activePharmacy}
+        onClose={() => pharmacyViewVisible = false}
+    />
+    {/if}
+    {#if tierListVisible}
+    <RatingList
+        onSelectPharmacy={(id: number) => {
+            showPharmacyView((<{pharmacies: PharmacyInfo[]}>data).pharmacies.filter((v) => v.id == id)[0])
+            tierListVisible = false;
+        }}
+        onClose={() => tierListVisible = false}
+    />
     {/if}
     {#if searchVisible}
     <SearchModal
@@ -80,7 +101,11 @@
         onClose={() => searchVisible = false}
         />
     {/if}
-    <LeafletMap selectedPharmacy={activePharmacy} pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies} callback={showPharmacyView}/>
+    <LeafletMap 
+        selectedPharmacy={activePharmacy} 
+        pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies} 
+        callback={showPharmacyView}
+    />
 </main>
 
 <style>
@@ -107,7 +132,7 @@
         display: flex;
         flex-direction: row;
         position: absolute;
-        right: 10px;
+        right: 1em;
         top: 10px;
         z-index: var(--zIndex);
     }
