@@ -15,10 +15,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/anaskhan96/soup"
 	"github.com/rs/zerolog"
 )
 
-const EUROAPTEEK_API = "https://www.euroapteek.ee/public/api/pharmacies"
+const EUROAPTEEK_WEBSITE = "https://www.euroapteek.ee/apteegid"
 
 type EuroapteekScraper struct {
 	repo       db.PharmacyRepository
@@ -110,7 +111,7 @@ func (scraper *EuroapteekScraper) Scrape() {
 		return
 	}
 
-	req, err := http.NewRequest("GET", EUROAPTEEK_API, nil)
+	req, err := http.NewRequest("GET", EUROAPTEEK_WEBSITE, nil)
 	if err != nil {
 		scraper.logger.Error().Msg("Failed to create a request object for Euroapteek API")
 		return
