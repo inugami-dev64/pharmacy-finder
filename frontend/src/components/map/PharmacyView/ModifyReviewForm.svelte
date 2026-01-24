@@ -9,6 +9,7 @@
     import Recaptcha from "../../common/Recaptcha.svelte";
     import { _ } from "svelte-i18n";
     import { modifyReviewZIndex } from "$lib/utils/z-indices";
+    import LimitedTextarea from "../../common/widgets/LimitedTextarea.svelte";
 
     let {
         pharmacy,
@@ -82,10 +83,12 @@
             <label for="stars">{$_("map.reviewForm.ratingTitle")}*:</label>
             <StarPicker name="stars" defaultChecked={review?.stars ?? 5}/>
             <label for="review-comment">{$_("map.reviewForm.commentTitle")}:</label>
-            <textarea
+            <LimitedTextarea
                 name="review-comment"
-                placeholder="{$_("map.reviewForm.commentPlaceholder")}"
-            >{review?.review}</textarea>
+                placeholder={$_("map.reviewForm.commentPlaceholder")}
+                text={review?.review || undefined}
+                maxLength={1024}
+            />
             <div>
                 <label for="nationality">{$_("map.reviewForm.nationalityTitle")}*:</label>
                 <select name="nationality" required>
@@ -117,7 +120,7 @@
             {#if review != null}
                 <div>
                     <label for="mod-code">{$_("map.reviewForm.modCodeTitle")}*:</label>
-                    <input type="text" name="mod-code" required>
+                    <input type="password" name="mod-code" required autocomplete="off">
                 </div>
             {/if}
         </div>
@@ -163,12 +166,5 @@
     .form-contents > label {
         display: block;
         padding: 0.5em 0;
-    }
-
-    .form-contents > textarea {
-        resize: none;
-        width: calc(100%);
-        height: 150px;
-        box-sizing: border-box;
     }
 </style>
