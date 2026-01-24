@@ -183,14 +183,24 @@ func (scraper *EuroapteekScraper) Scrape() {
 		return
 	}
 
-	var apiPharmacies []euroapteekPharmacy
-	err = json.Unmarshal(body, &apiPharmacies)
-	if err != nil {
-		scraper.logger.Error().Msgf("Failed to unmarshal JSON from Euroapteek API response: %v", err)
+	scripts := soup.HTMLParse(string(body)).FindAll("script")
+	if len(scripts) < 46 {
+		scraper.logger.Error().Msgf("Failed to find the required script tag for Euroapteek HTML")
 		return
 	}
 
-	pharmacies := scraper.mapToPharmacies(existingPharmacies, apiPharmacies)
+	script := scripts[45]
+	scriptTxt := strings.ReplaceAll(strings.TrimSpace(script.Text()), "\n", " ")
+	re := regexp.MustCompile(`self\.__next_f\.push\(\[\d+,( |\t)*"\d+:(.*)"( |\t)*\]\)`)
+	data := strings.ReplaceAll(re.FindStringSubmatch(scriptTxt)[2], "\\n", "")
+	data = strings.ReplaceAll(data, "\\", "")
+	scrapedPharmacies, err := scraper.extractEuroapteekPharmaciesFromJson(data)
+	if err != nil {
+		scraper.logger.Error().Msgf("Failed to create pharmacy entities from provided Euroapteek json")
+		return
+	}
+
+	pharmacies := scraper.mapToPharmacies(existingPharmacies, scrapedPharmacies)
 	err = scraper.repo.StoreAll(pharmacies)
 	if err != nil {
 		scraper.logger.Error().Msgf("Failed to persist Euroapteek pharmacies: %v", err)
