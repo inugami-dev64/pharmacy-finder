@@ -102,6 +102,55 @@ func (scraper EuroapteekScraper) mapToPharmacies(existingPharmacies []entity.Pha
 	return pharmacies
 }
 
+func (scraper *EuroapteekScraper) extractEuroapteekPharmaciesFromJson(data string) ([]euroapteekPharmacy, error) {
+	var pharmacies []interface{}
+	err := json.Unmarshal([]byte(data), &pharmacies)
+	if err != nil {
+		scraper.logger.Error().Msgf("Failed to unmarshal Euroapteek json: %v", err)
+		return nil, err
+	}
+
+	pharmacyMaps, ok := pharmacies[3].(map[string]interface{})["children"].([]interface{})[3].(map[string]interface{})["children"].([]interface{})[2].([]interface{})[3].(map[string]interface{})["pharmacies"].([]interface{})
+	if !ok {
+		scraper.logger.Error().Msg("Failed to extract pharmacy list from Euroapteek JSON")
+		return nil, fmt.Errorf("failed to extract pharmacies array from JSON")
+	}
+
+	var candidatePharmacies []euroapteekPharmacy
+	for _, pharmacyInterface := range pharmacyMaps {
+		if pharmacy, ok := pharmacyInterface.(map[string]interface{}); ok {
+			ok := make([]bool, 7)
+			var name, phoneNumber, address, city, county, latitude, longitude string
+			name, ok[0] = pharmacy["name"].(string)
+			phoneNumber, ok[1] = pharmacy["phoneNumber"].(string)
+			address, ok[2] = pharmacy["address"].(string)
+			city, ok[3] = pharmacy["city"].(string)
+			county, ok[4] = pharmacy["country"].(string)
+			latitude, ok[5] = pharmacy["lat"].(string)
+			longitude, ok[6] = pharmacy["lng"].(string)
+
+			if !ok[0] || !ok[1] || !ok[2] || !ok[3] ||
+				!ok[4] || !ok[5] || !ok[6] {
+				continue
+			}
+
+			candidatePharmacies = append(candidatePharmacies, euroapteekPharmacy{
+				Name:        name,
+				PhoneNumber: phoneNumber,
+				Address:     address,
+				City:        city,
+				County:      county,
+				Latitude:    latitude,
+				Longitude:   longitude,
+			})
+		} else {
+			continue
+		}
+	}
+
+	return candidatePharmacies, nil
+}
+
 func (scraper *EuroapteekScraper) Scrape() {
 	scraper.logger.Info().Msg("Scraping Euroapteek pharmacy locations...")
 
