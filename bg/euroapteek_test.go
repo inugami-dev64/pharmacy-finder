@@ -17,8 +17,8 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-//go:embed _embeds/euroapteek.json
-var euroapteekJson embed.FS
+//go:embed _embeds/euroapteek.html
+var euroapteekHtml embed.FS
 
 var euroapteekPharmacies map[int64]entity.Pharmacy = map[int64]entity.Pharmacy{
 	int64(-7238096502453610823): {
@@ -78,7 +78,7 @@ func TestEuroapteekScraper_EmptyDB(t *testing.T) {
 				}
 			}
 
-			file, _ := euroapteekJson.Open("_embeds/euroapteek.json")
+			file, _ := euroapteekHtml.Open("_embeds/euroapteek.html")
 			return &http.Response{
 				StatusCode: 200,
 				Body:       io.NopCloser(file),
@@ -149,7 +149,7 @@ func TestEuroapteekScraper_Existing(t *testing.T) {
 				}
 			}
 
-			file, _ := euroapteekJson.Open("_embeds/euroapteek.json")
+			file, _ := euroapteekHtml.Open("_embeds/euroapteek.html")
 			return &http.Response{
 				StatusCode: 200,
 				Body:       io.NopCloser(file),
