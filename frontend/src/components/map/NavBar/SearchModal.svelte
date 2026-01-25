@@ -28,6 +28,7 @@
 
     // stateful values
     let filteredPharmacies: PharmacyInfo[] = $state([]);
+    let currentKeyBoardFocusIndex: number = -1;
 
     function onInput(e: Event & { currentTarget: EventTarget & HTMLInputElement; }) {
         e.preventDefault()
@@ -56,10 +57,32 @@
 
     }
 
+    // When SearchModal is rendered, make the searchText visible
+    let searchText: HTMLInputElement;
+    $effect(() => searchText.focus());
+
+    // Suggestions container
+    let suggestions: HTMLDivElement;
+
     function onKeyDownEvent(e: KeyboardEvent & {currentTarget: EventTarget & Window}) {
         if (e.key == "Escape") {
             onClose();
+        } else if (e.key == "ArrowDown") {
+            currentKeyBoardFocusIndex++;
+        } else if (e.key == "ArrowUp") {
+            currentKeyBoardFocusIndex--;
         }
+
+        // clip values
+        if (currentKeyBoardFocusIndex < -1)
+            currentKeyBoardFocusIndex = -1
+        if (currentKeyBoardFocusIndex >= suggestions.children.length)
+            currentKeyBoardFocusIndex = suggestions.children.length - 1;
+
+        if (currentKeyBoardFocusIndex == -1)
+            searchText.focus();
+        else
+            (suggestions.children.item(currentKeyBoardFocusIndex) as HTMLButtonElement).focus();
     }
 </script>
 
@@ -67,26 +90,28 @@
     <div class="search-modal" style="--minWidth: {minWidth}px; --minHeight: {minHeight}">
         <div class="search-box">
             <SearchIcon size={32}/>
-            <input type="text" placeholder="Search" oninput={onInput}/>
+            <input type="text" placeholder="Search" oninput={onInput} bind:this={searchText}/>
             <CloseButton size={32} on:click={onClose}/>
         </div>
 
-        {#each filteredPharmacies as pharmacy}
-            <button type="button" class="suggestion" onclick={(_) => onSelect(pharmacy)} tabindex="0">
-                {#if pharmacy.chain === "Apotheka"}
-                    <img src="{ApothekaMarker}" alt="Apotheka">
-                {:else if pharmacy.chain === "Südameapteek"}
-                    <img src="{SudameapteekMarker}" alt="Südameapteek">
-                {:else if pharmacy.chain === "Benu"}
-                    <img src="{BenuMarker}" alt="Benu">
-                {:else if pharmacy.chain === "Euroapteek"}
-                    <img src="{EuroapteekMarker}" alt="Euroapteek">
-                {/if}
-                <div class="pharmacy-name">
-                    <h3>{pharmacy.name}</h3>
-                </div>
-            </button>
-        {/each}
+        <div bind:this={suggestions}>
+            {#each filteredPharmacies as pharmacy}
+                <button type="button" class="suggestion" onclick={(_) => onSelect(pharmacy)} tabindex="0">
+                    {#if pharmacy.chain === "Apotheka"}
+                        <img src="{ApothekaMarker}" alt="Apotheka">
+                    {:else if pharmacy.chain === "Südameapteek"}
+                        <img src="{SudameapteekMarker}" alt="Südameapteek">
+                    {:else if pharmacy.chain === "Benu"}
+                        <img src="{BenuMarker}" alt="Benu">
+                    {:else if pharmacy.chain === "Euroapteek"}
+                        <img src="{EuroapteekMarker}" alt="Euroapteek">
+                    {/if}
+                    <div class="pharmacy-name">
+                        <h3>{pharmacy.name}</h3>
+                    </div>
+                </button>
+            {/each}
+        </div>
     </div>
 </Overlay>
 
@@ -131,7 +156,7 @@
         padding-left: 0.5em;
         transition: all 0.2s ease-in-out;
 
-        &:hover {
+        &:hover, &:focus {
             cursor: pointer;
             background-color: #cccccc;
         }

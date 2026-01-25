@@ -100,7 +100,7 @@
             searchVisible = false;
         }}
         onClose={() => searchVisible = false}
-        />
+    />
     {/if}
     <LeafletMap
         selectedPharmacy={activePharmacy}
