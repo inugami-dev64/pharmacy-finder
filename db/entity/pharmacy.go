@@ -5,10 +5,11 @@ import "pharmafinder/types"
 type PharmacyChain string
 
 const (
-	CHAIN_APOTHEKA     PharmacyChain = PharmacyChain("Apotheka")
-	CHAIN_SUDAMEAPTEEK               = PharmacyChain("Südameapteek")
-	CHAIN_BENU                       = PharmacyChain("Benu")
-	CHAIN_EUROAPTEEK                 = PharmacyChain("Euroapteek")
+	CHAIN_APOTHEKA        PharmacyChain = PharmacyChain("Apotheka")
+	CHAIN_SUDAMEAPTEEK                  = PharmacyChain("Südameapteek")
+	CHAIN_BENU                          = PharmacyChain("Benu")
+	CHAIN_EUROAPTEEK                    = PharmacyChain("Euroapteek")
+	CHAIN_KALAMAJA_APTEEK               = PharmacyChain("Kalamaja")
 )
 
 type Pharmacy struct {
