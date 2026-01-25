@@ -57,7 +57,7 @@
     <form onsubmit={submitForm}>
         <div>
             <label for="mod-code">{$_("map.reviewForm.modCodeTitle")}*:</label><br>
-            <input type="text" name="mod-code" required/>
+            <input type="password" name="mod-code" required autocomplete="off"/>
         </div>
 
         <div class="btn-captcha">
