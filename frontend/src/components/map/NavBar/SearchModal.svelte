@@ -55,6 +55,12 @@
         }).slice(0, 5);
 
     }
+
+    function onKeyDownEvent(e: KeyboardEvent & {currentTarget: EventTarget & Window}) {
+        if (e.key == "Escape") {
+            onClose();
+        }
+    }
 </script>
 
 <Overlay zIndex={searchViewZIndex}>
@@ -83,6 +89,8 @@
         {/each}
     </div>
 </Overlay>
+
+<svelte:window on:keydown|stopPropagation={onKeyDownEvent}/>
 
 <style>
     .search-modal {

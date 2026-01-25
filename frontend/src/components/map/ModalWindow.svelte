@@ -1,11 +1,17 @@
 <script lang="ts">
     import Overlay from "../common/Overlay.svelte";
-import TitleBar from "../common/TitleBar.svelte";
+    import TitleBar from "../common/TitleBar.svelte";
 
     export let zIndex: number;
     export let onClose: () => void;
     export let minWidth: number = 360;
     export let minHeight: number = 500;
+
+    function onKeyDownEvent(e: KeyboardEvent & {currentTarget: EventTarget & Window}) {
+        if (e.key == "Escape") {
+            onClose();
+        }
+    }
 </script>
 
 <Overlay zIndex={zIndex}>
@@ -14,6 +20,8 @@ import TitleBar from "../common/TitleBar.svelte";
         <slot/>
     </div>
 </Overlay>
+
+<svelte:window on:keydown|stopPropagation={onKeyDownEvent}/>
 
 <style>
     .modal-window {
