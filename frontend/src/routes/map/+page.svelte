@@ -102,9 +102,9 @@
         onClose={() => searchVisible = false}
         />
     {/if}
-    <LeafletMap 
-        selectedPharmacy={activePharmacy} 
-        pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies} 
+    <LeafletMap
+        selectedPharmacy={activePharmacy}
+        pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies}
         callback={showPharmacyView}
     />
 </main>
