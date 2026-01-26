@@ -47,7 +47,7 @@ func ProvideEuroapteekScraper(repo db.PharmacyRepository, client utils.HttpClien
 	}
 }
 
-func (scraper EuroapteekScraper) mapToPharmacies(existingPharmacies []entity.Pharmacy, scrapedPharmacies []euroapteekPharmacy) []entity.Pharmacy {
+func (scraper *EuroapteekScraper) mapToPharmacies(existingPharmacies []entity.Pharmacy, scrapedPharmacies []euroapteekPharmacy) []entity.Pharmacy {
 	pharmacies := make([]entity.Pharmacy, 0)
 	for _, scraped := range scrapedPharmacies {
 		var existingPharmacy *entity.Pharmacy
