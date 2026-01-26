@@ -10,10 +10,12 @@
     import IntersectionObserver from "svelte-intersection-observer";
 
     // Import logos
-    import BenuLogo from "$lib/assets/benu-logo.svg"
-    import ApothekaLogo from "$lib/assets/apotheka-logo.svg"
-    import SudameapteekLogo from "$lib/assets/sudameapteek-logo.svg"
-    import EuroapteekLogo from "$lib/assets/euroapteek-logo.svg"
+    import BenuLogo from "$lib/assets/benu-logo.svg";
+    import ApothekaLogo from "$lib/assets/apotheka-logo.svg";
+    import SudameapteekLogo from "$lib/assets/sudameapteek-logo.svg";
+    import EuroapteekLogo from "$lib/assets/euroapteek-logo.svg";
+    import KalamajaApteekLogo from "$lib/assets/kalamajaapteek-logo.webp";
+
     import ModifyReviewForm from "./PharmacyView/ModifyReviewForm.svelte";
     import TitleBar from "../common/TitleBar.svelte";
     import DeleteReviewForm from "./PharmacyView/DeleteReviewForm.svelte";
@@ -97,6 +99,8 @@
         <img alt="Südameapteek logo" src="{SudameapteekLogo}" class="logo">
     {:else if pharmacy.chain?.toLowerCase() == "euroapteek"}
         <img alt="Euroapteek logo" src="{EuroapteekLogo}" class="logo">
+    {:else if pharmacy.chain?.toLowerCase() == "kalamaja"}
+        <img alt="Kalamaja apteek logo" src="{KalamajaApteekLogo}" class="logo">
     {/if}
 
     <div class="phr-info">
