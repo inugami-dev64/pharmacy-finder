@@ -11,6 +11,7 @@
     import SudameapteekMarker from "$lib/assets/markers/sudameapteek.png";
     import BenuMarker from "$lib/assets/markers/benu.png";
     import EuroapteekMarker from "$lib/assets/markers/euroapteek.png";
+    import KalamajaMarker from "$lib/assets/markers/kalamajaapteek.png";
 
     let {
         onSelect,
@@ -105,6 +106,8 @@
                         <img src="{BenuMarker}" alt="Benu">
                     {:else if pharmacy.chain === "Euroapteek"}
                         <img src="{EuroapteekMarker}" alt="Euroapteek">
+                    {:else if pharmacy.chain === "Kalamaja"}
+                        <img src="{KalamajaMarker}" alt="Kalamaja">
                     {/if}
                     <div class="pharmacy-name">
                         <h3>{pharmacy.name}</h3>

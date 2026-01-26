@@ -9,6 +9,7 @@
     import SudameapteekMarker from "$lib/assets/markers/sudameapteek.png";
     import BenuMarker from "$lib/assets/markers/benu.png";
     import EuroapteekMarker from "$lib/assets/markers/euroapteek.png";
+    import KalamajaMarker from "$lib/assets/markers/kalamajaapteek.png";
 
     let {
         pharmacies,
@@ -37,7 +38,8 @@
             ["apotheka", leaflet.icon({iconUrl: ApothekaMarker, iconSize: [32, 32], iconAnchor: [16, 16]})],
             ["südameapteek", leaflet.icon({iconUrl: SudameapteekMarker, iconSize: [32, 32], iconAnchor: [16, 16]})],
             ["benu", leaflet.icon({iconUrl: BenuMarker, iconSize: [32, 32], iconAnchor: [16, 16]})],
-            ["euroapteek", leaflet.icon({iconUrl: EuroapteekMarker, iconSize: [32, 32], iconAnchor: [16, 16]})]
+            ["euroapteek", leaflet.icon({iconUrl: EuroapteekMarker, iconSize: [32, 32], iconAnchor: [16, 16]})],
+            ["kalamaja", leaflet.icon({iconUrl: KalamajaMarker, iconSize: [32, 32], iconAnchor: [16, 16]})]
         ]);
 
         map = leaflet.map(mapElement, { zoomControl: false }).setView(MAP_CENTER, 13);
