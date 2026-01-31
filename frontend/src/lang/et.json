@@ -7,6 +7,14 @@
             "title": "kaardile"
         }
     },
+    "mod": {
+        "login": {
+            "formTitle": "Sisene moderatsiooni paneeli",
+            "usernamePlaceholder": "Kasutajanimi",
+            "passwordPlaceholder": "Parool",
+            "submitTitle": "Logi sisse"
+        }
+    },
     "map": {
         "navbar": {
             "search": "Otsi apteeke",

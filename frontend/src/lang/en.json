@@ -7,6 +7,14 @@
             "title": "map"
         }
     },
+    "mod": {
+        "login": {
+            "formTitle": "Login to moderation panel",
+            "usernamePlaceholder": "Username",
+            "passwordPlaceholder": "Password",
+            "submitTitle": "Login"
+        }
+    },
     "map": {
         "navbar": {
             "search": "Search pharmacies",
