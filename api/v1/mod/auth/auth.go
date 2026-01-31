@@ -40,8 +40,7 @@ func ProvideModeratorAuthContorller(
 func (handler *ModeratorAuthController) GetRoutes() []web.Route {
 	return []web.Route{
 		web.NewRequestsHandler[ModeratorAuthController](handler.ModeratorLogin, "/mod/auth/login", []string{"POST"}),
-		web.NewSecureRequestsHandler[ModeratorAuthController](handler.AdminRegistration, "/mod/auth/register/admin", []string{"POST"}, web.NewSecurityChain[dto.ModeratorUserRegistrationDTO]().RuleWhenNoAdminUser(handler.repo)),
-		web.NewSecureRequestsHandler[ModeratorAuthController](handler.ModeratorRegistration, "/mod/auth/register/moderator", []string{"POST"}, web.NewSecurityChain[dto.ModeratorUserRegistrationDTO]().RuleWhenNoAdminUser(handler.repo)),
+		web.NewSecureRequestsHandler[ModeratorAuthController](handler.AdminRegistration, "/mod/auth/register", []string{"POST"}, web.NewSecurityChain[dto.ModeratorUserRegistrationDTO]().RuleWhenNoAdminUser(handler.repo)),
 	}
 }
 
@@ -94,7 +93,7 @@ func (handler *ModeratorAuthController) ModeratorLogin(details *web.HttpRequestD
 
 // First time admin user registration endpoint
 //
-// Path /api/v1/mod/auth/register/admin
+// Path: `POST /api/v1/mod/auth/register/admin“
 //
 // @Summary 		Register the initial admin account
 // @Description		Endpoint which can be used to register the initial administrator account when admin accounts are not present
@@ -104,7 +103,7 @@ func (handler *ModeratorAuthController) ModeratorLogin(details *web.HttpRequestD
 // @Success 		200 {object} dto.AuthenticatedModeratorUserResponseDTO
 // @Failure			400 {object} types.HttpError
 // @Failure			403 {object} types.HttpError
-// @Router			/api/v1/mod/auth/register/admin [post]
+// @Router			/api/v1/mod/auth/register [post]
 func (handler *ModeratorAuthController) AdminRegistration(details *web.HttpRequestDetails[dto.ModeratorUserRegistrationDTO]) (int, interface{}, error) {
 	pwdHash, err := handler.hasher.CreatePasswordHash(details.Body.Password)
 	if err == service.ErrPasswordTooLong {
@@ -149,8 +148,4 @@ func (handler *ModeratorAuthController) AdminRegistration(details *web.HttpReque
 	}
 
 	return http.StatusOK, userDTO, nil
-}
-
-func (handler *ModeratorAuthController) ModeratorRegistration(details *web.HttpRequestDetails[dto.ModeratorUserRegistrationDTO]) (int, interface{}, error) {
-	return http.StatusOK, []string{}, nil
 }
