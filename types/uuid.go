@@ -1,6 +1,7 @@
 package types
 
 import (
+	"database/sql/driver"
 	"errors"
 	"fmt"
 
@@ -27,12 +28,16 @@ func (u *UUID) UnmarshalText(text []byte) error {
 	return nil
 }
 
+func (u UUID) Value() (driver.Value, error) {
+	return driver.Value(u.String()), nil
+}
+
 func (u *UUID) Scan(value interface{}) error {
-	val, ok := value.(string)
+	val, ok := value.([]byte)
 	if !ok {
-		return errors.New(fmt.Sprintf("failed to unmarshal flight ID:", value))
+		return errors.New(fmt.Sprintf("failed to unmarshal UUID: %T", value))
 	}
 
-	*u = UUID(uuid.MustParse(val))
+	*u = UUID(val)
 	return nil
 }
