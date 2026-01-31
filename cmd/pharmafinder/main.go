@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"pharmafinder"
+	"pharmafinder/api/v1/mod/auth"
 	"pharmafinder/api/v1/pharmacies"
 	"pharmafinder/api/v1/pharmacies/ratings"
 	"pharmafinder/api/v1/pharmacies/reviews"
@@ -104,6 +105,8 @@ func main() {
 			utils.ProvideHTTPClient,
 
 			// Services
+			service.ProvideSessionManager,
+			service.ProvidePasswordHasher,
 			service.ProvideRecaptchaVerifier,
 
 			// Background workers
@@ -147,6 +150,12 @@ func main() {
 			// /pharmacies/{id}/ratings controller
 			fx.Annotate(
 				ratings.ProvidePharmacyRatingController,
+				fx.ResultTags(`group:"routes"`),
+			),
+
+			// /mod/auth/* controller
+			fx.Annotate(
+				auth.ProvideModeratorAuthContorller,
 				fx.ResultTags(`group:"routes"`),
 			),
 		),
