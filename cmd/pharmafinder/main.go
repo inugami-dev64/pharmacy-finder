@@ -98,6 +98,7 @@ func main() {
 			db.ProvideDatabaseHandle,
 			db.ProvidePharmacyRepository,
 			db.ProvidePharmacyReviewRepository,
+			db.ProvideModeratorUserRepository,
 
 			// Utilities
 			utils.ProvideHTTPClient,
