@@ -22,7 +22,7 @@ type ModeratorAuthController struct {
 	logger         zerolog.Logger
 }
 
-func ProvideModeratorAuthContorller(
+func ProvideModeratorAuthController(
 	repo db.ModeratorUserRepository,
 	hasher service.PasswordHasher,
 	sessionManager service.SessionManager,
