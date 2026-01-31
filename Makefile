@@ -4,6 +4,8 @@ GOPATH := $(shell go env GOPATH)
 GOSRC := $(shell find . -type f -name "*.go" ! -regex '.*_mock.go' -o -name "*.sql" 2>/dev/null)
 
 MOCKGEN_DST := mock/pharmacy_repository_mock.go \
+			   mock/moderator_user_repository_mock.go \
+			   mock/session_manager_mock.go \
 			   mock/http_mock.go \
 			   mock/db_mock.go
 
@@ -32,6 +34,12 @@ release: ./frontend/build ./pharmafinder
 # Repositories
 mock/pharmacy_repository_mock.go: db/pharmacy_repository.go
 	${GOPATH}/bin/mockgen -source=db/pharmacy_repository.go -destination=mock/pharmacy_repository_mock.go -package=mock
+
+mock/moderator_user_repository_mock.go: db/moderator_user_repository.go
+	${GOPATH}/bin/mockgen -source=db/moderator_user_repository.go -destination=mock/moderator_user_repository_mock.go -package=mock
+
+mock/session_manager_mock.go: service/session_manager.go
+	${GOPATH}/bin/mockgen -source=service/session_manager.go -destination=mock/session_manager_mock.go -package=mock
 
 mock/http_mock.go: utils/http.go
 	${GOPATH}/bin/mockgen -source=utils/http.go -destination=mock/http_mock.go -package=mock
