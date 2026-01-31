@@ -27,14 +27,14 @@ type ModeratorUserListResponseDTO struct {
 }
 
 type ModeratorUserRegistrationDTO struct {
-	Username  string `json:"username"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
+	Username  string `json:"username" validate:"required,lte=32"`
+	Email     string `json:"email" validate:"required,email,lte=64"`
+	Password  string `json:"password" validate:"required,lte=72"`
+	FirstName string `json:"firstName" validate:"required,lte=64"`
+	LastName  string `json:"lastName" validate:"required,lte=64"`
 }
 
 type ModeratorUserLoginDTO struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required,lte=32"`
+	Password string `json:"password" validate:"required,lte=72"`
 }
