@@ -112,7 +112,7 @@ func (repo ModeratorUserRepositorySQLX) HasAdministrator() Query[bool] {
 func (repo ModeratorUserRepositorySQLX) Store(user *entity.ModeratorUser) error {
 	var rows *sqlx.Rows
 	var err error
-	if user.ID == types.UUID(uuid.Nil) {
+	if user.ID != types.UUID(uuid.Nil) {
 		rows, err = repo.conn.NamedQuery(
 			`UPDATE moderator_users SET
 				username = :username,
