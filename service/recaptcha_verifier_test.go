@@ -1,10 +1,11 @@
-package service
+package service_test
 
 import (
 	"io"
 	"net/http"
 	"os"
 	"pharmafinder/mock"
+	"pharmafinder/service"
 	"strings"
 	"testing"
 
@@ -26,7 +27,7 @@ func TestRecaptchaVerification_SuccessTrue(t *testing.T) {
 			}, nil
 		})
 
-	verifier := ProvideRecaptchaVerifier(httpMock)
+	verifier := service.ProvideRecaptchaVerifier(httpMock)
 	assert.True(t, verifier.Verify("xD"))
 
 	os.Clearenv()
@@ -46,7 +47,7 @@ func TestRecaptchaVerification_SuccessFalse(t *testing.T) {
 			}, nil
 		})
 
-	verifier := ProvideRecaptchaVerifier(httpMock)
+	verifier := service.ProvideRecaptchaVerifier(httpMock)
 	assert.False(t, verifier.Verify("xD"))
 
 	os.Clearenv()
@@ -66,7 +67,7 @@ func TestRecaptchaVerification_Non200StatusCode(t *testing.T) {
 			}, nil
 		})
 
-	verifier := ProvideRecaptchaVerifier(httpMock)
+	verifier := service.ProvideRecaptchaVerifier(httpMock)
 	assert.False(t, verifier.Verify("xD"))
 
 	os.Clearenv()
