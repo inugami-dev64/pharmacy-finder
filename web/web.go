@@ -101,7 +101,7 @@ func (handler *HttpRequestHandler[T, B]) Methods() []string {
 	return handler.methods
 }
 
-func (handler *HttpRequestHandler[T, B]) assignBody(r *http.Request, w http.ResponseWriter, details *HttpRequestDetails[B]) {
+func (handler *HttpRequestHandler[T, B]) assignBody(r *http.Request, w http.ResponseWriter, details *HttpRequestDetails[B]) error {
 	// check if given request body should be unmarshalled
 	if _, ok := any(details.Body).(EmptyBody); !ok {
 		badRequestLogEvent := handler.logger.Warn().
@@ -117,7 +117,8 @@ func (handler *HttpRequestHandler[T, B]) assignBody(r *http.Request, w http.Resp
 				Timestamp:  types.Time(time.Now().UTC()),
 				Message:    fmt.Sprintf("Expected content-type is application/json, got %s", r.Header.Get("Content-Type")),
 			})
-			return
+
+			return fmt.Errorf("invalid content-type")
 		}
 
 		var body B
@@ -130,7 +131,8 @@ func (handler *HttpRequestHandler[T, B]) assignBody(r *http.Request, w http.Resp
 				Timestamp:  types.Time(time.Now().UTC()),
 				Message:    "Invalid request body",
 			})
-			return
+
+			return fmt.Errorf("invalid request body")
 		}
 
 		err = json.Unmarshal(bytes, &body)
@@ -142,11 +144,14 @@ func (handler *HttpRequestHandler[T, B]) assignBody(r *http.Request, w http.Resp
 				Timestamp:  types.Time(time.Now().UTC()),
 				Message:    "Malformed JSON body",
 			})
-			return
+
+			return fmt.Errorf("malformed json body")
 		}
 
 		details.Body = body
 	}
+
+	return nil
 }
 
 func (handler *HttpRequestHandler[T, B]) validateBody(r *http.Request, w http.ResponseWriter, body *B) bool {
@@ -196,11 +201,18 @@ func (handler *HttpRequestHandler[T, B]) ServeHTTP(w http.ResponseWriter, r *htt
 			Timestamp:  types.Time(time.Now().UTC()),
 			Message:    "Forbidden",
 		})
+
+		return
 	}
 
 	// in cases where we have a request body provided, we perform json unmarshalling
 	// and data validation
-	handler.assignBody(r, w, &details)
+	err := handler.assignBody(r, w, &details)
+	if err != nil {
+		handler.logger.Warn().Msgf("Failed to assign request body: %v", err)
+		return
+	}
+
 	if !handler.validateBody(r, w, &details.Body) {
 		return
 	}
