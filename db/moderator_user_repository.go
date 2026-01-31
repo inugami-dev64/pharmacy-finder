@@ -11,6 +11,7 @@ import (
 
 type ModeratorUserRepository interface {
 	FindUserByID(id types.UUID) Query[entity.ModeratorUser]
+	FindUserByUsernameOrEmail(usernameOrEmail string) Query[entity.ModeratorUser]
 	FindAllUsers() Query[dto.AuthenticatedModeratorUserResponseDTO]
 	HasAdministrator() Query[bool]
 
@@ -37,6 +38,29 @@ func (repo ModeratorUserRepositorySQLX) FindUserByID(id types.UUID) Query[entity
 	`
 
 	args := []interface{}{id}
+
+	return &SQLXQuery[entity.ModeratorUser]{
+		uniqueKey: "id",
+		key:       "username",
+		trx:       repo.conn,
+		q:         q,
+		args:      args,
+	}
+}
+
+func (repo ModeratorUserRepositorySQLX) FindUserByUsernameOrEmail(usernameOrEmail string) Query[entity.ModeratorUser] {
+	q := `
+	SELECT
+		*
+	FROM
+		moderator_user mu
+	WHERE
+		mu.username = $1
+	OR
+		mu.email = $2
+	`
+
+	args := []interface{}{usernameOrEmail, usernameOrEmail}
 
 	return &SQLXQuery[entity.ModeratorUser]{
 		uniqueKey: "id",
