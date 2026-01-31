@@ -13,6 +13,16 @@
             "usernamePlaceholder": "Username",
             "passwordPlaceholder": "Password",
             "submitTitle": "Login"
+        },
+        "register": {
+            "formTitle": "Register the admin account",
+            "usernamePlaceholder": "Username",
+            "emailPlaceholder": "Email",
+            "passwordPlaceholder": "Password",
+            "confirmPasswordPlaceholder": "Confirm password",
+            "firstName": "First name",
+            "lastName": "Last name",
+            "submitTitle": "Register admin account"
         }
     },
     "map": {

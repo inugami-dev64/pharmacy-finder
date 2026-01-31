@@ -13,6 +13,16 @@
             "usernamePlaceholder": "Kasutajanimi",
             "passwordPlaceholder": "Parool",
             "submitTitle": "Logi sisse"
+        },
+        "register": {
+            "formTitle": "Registreeri administraatori konto",
+            "usernamePlaceholder": "Kasutajanimi",
+            "emailPlaceholder": "Meiliaadress",
+            "passwordPlaceholder": "Parool",
+            "confirmPasswordPlaceholder": "Kinnita parool",
+            "firstName": "Eesnimi",
+            "lastName": "Perekonnanimi",
+            "submitTitle": "Registreeri administraatori konto"
         }
     },
     "map": {
