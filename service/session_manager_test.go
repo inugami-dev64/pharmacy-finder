@@ -1,6 +1,7 @@
 package service_test
 
 import (
+	"os"
 	"pharmafinder/db/entity"
 	"pharmafinder/service"
 	"pharmafinder/types"
@@ -14,7 +15,7 @@ func unwrap[T any](val T, err error) T {
 	return val
 }
 
-var key = []byte("a-string-secret-at-least-256-bit")
+var key = "a-string-secret-at-least-256-bit"
 
 var testUser = entity.ModeratorUser{
 	ID:            types.UUID(uuid.MustParse("b62a0163-5d3b-47c0-b5e7-41517bb5cfc2")),
@@ -26,7 +27,7 @@ var testUser = entity.ModeratorUser{
 }
 
 func TestJWTTokenManager_BasicCreationAndVerification(t *testing.T) {
-	service.InitializeHS256Key(key)
+	os.Setenv("JWT_KEY", string(key))
 	sessionManager := service.ProvideSessionManager()
 
 	token := sessionManager.NewSessionToken(&testUser)
@@ -41,7 +42,7 @@ func TestJWTTokenManager_BasicCreationAndVerification(t *testing.T) {
 
 func TestJWTTokenManager_ExpiredToken(t *testing.T) {
 	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTY5ODYyNDIwLCJuYW1lIjoia2FybWVuIiwic3ViIjoiYjYyYTAxNjMtNWQzYi00N2MwLWI1ZTctNDE1MTdiYjVjZmMyIn0.J_jRG9eBhNAgDrbyTxKpYrKoYoecv_30nfNjBIW6l10"
-	service.InitializeHS256Key(key)
+	os.Setenv("JWT_KEY", string(key))
 	sessionManager := service.ProvideSessionManager()
 
 	data := sessionManager.VerifyToken(token)
@@ -50,7 +51,7 @@ func TestJWTTokenManager_ExpiredToken(t *testing.T) {
 
 func TestJWTTokenManager_MalformedPayloadTypes(t *testing.T) {
 	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6InRydWUiLCJpYXQiOiIxNTY5ODYyNDIwIiwibmFtZSI6Imthcm1lbiIsInN1YiI6ImI2MmEwMTYzLTVkM2ItNDdjMC1iNWU3LTQxNTE3YmI1Y2ZjMiJ9.6On67oyJ6rWDddFnSLGlv21fOcsQf3dQ3kJsHKfVZSk"
-	service.InitializeHS256Key(key)
+	os.Setenv("JWT_KEY", string(key))
 	sessionManager := service.ProvideSessionManager()
 
 	data := sessionManager.VerifyToken(token)
@@ -59,7 +60,7 @@ func TestJWTTokenManager_MalformedPayloadTypes(t *testing.T) {
 
 func TestJWTTokenManager_MalformedUserID(t *testing.T) {
 	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTY5ODYyNDIwLCJuYW1lIjoia2FybWVuIiwic3ViIjoiYjYyYTAxNjMtNWQzYi00N2MwLWI1ZTctNDE1MTdiYjVjZmMyYSJ9.-KHyLhkbWUIffY7ckk-Dku95InTy2HuW8DSz9dxSvL4"
-	service.InitializeHS256Key(key)
+	os.Setenv("JWT_KEY", string(key))
 	sessionManager := service.ProvideSessionManager()
 
 	data := sessionManager.VerifyToken(token)

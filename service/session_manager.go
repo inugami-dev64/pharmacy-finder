@@ -2,6 +2,7 @@ package service
 
 import (
 	"crypto/rand"
+	"encoding/hex"
 	"pharmafinder/db/entity"
 	"pharmafinder/types"
 	"pharmafinder/utils"
@@ -33,14 +34,13 @@ type SessionManager interface {
 	VerifyToken(token string) *SessionUserData
 }
 
-var hs256Key []byte = make([]byte, 32)
-
 // Initializes the HS256 key to use for JWT token signing
 //
 // If provided key value is nil then the key is randomly generated.
 // Otherwise at most 32 bytes of key are used as the HS256 key with
 // zero padding if the key length is less than 32 bytes.
-func InitializeHS256Key(key []byte) {
+func initializeHS256Key(key []byte) []byte {
+	hs256Key := make([]byte, 32)
 	if key == nil {
 		rand.Read(hs256Key)
 	} else {
@@ -48,14 +48,26 @@ func InitializeHS256Key(key []byte) {
 			hs256Key[i] = key[i]
 		}
 	}
+
+	return hs256Key
 }
 
 func ProvideSessionManager() SessionManager {
-	return &JWTSessionManagerImpl{logger: utils.GetLogger("SERVICE")}
+	keyStr := utils.Getenv("JWT_KEY", "")
+	key, err := hex.DecodeString(keyStr)
+	if len(key) == 0 || err != nil {
+		key = initializeHS256Key(nil)
+	}
+
+	return &JWTSessionManagerImpl{
+		hs256Key: initializeHS256Key(key),
+		logger:   utils.GetLogger("SERVICE"),
+	}
 }
 
 type JWTSessionManagerImpl struct {
-	logger zerolog.Logger
+	hs256Key []byte
+	logger   zerolog.Logger
 }
 
 func (sess *JWTSessionManagerImpl) NewSessionToken(user *entity.ModeratorUser) string {
@@ -69,7 +81,7 @@ func (sess *JWTSessionManagerImpl) NewSessionToken(user *entity.ModeratorUser) s
 			"iat":   jwt.NumericDate{Time: time.Now().UTC()},
 		})
 
-	s, err := t.SignedString(hs256Key)
+	s, err := t.SignedString(sess.hs256Key)
 	if err != nil {
 		sess.logger.Error().Msgf("Failed to issue a new token to moderator '%s'", user.Username)
 		return ""
@@ -82,7 +94,7 @@ func (sess *JWTSessionManagerImpl) VerifyToken(token string) *SessionUserData {
 	jwtToken, err := jwt.Parse(
 		token,
 		func(t *jwt.Token) (any, error) {
-			return hs256Key, nil
+			return sess.hs256Key, nil
 		},
 		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}),
 		jwt.WithIssuedAt())
