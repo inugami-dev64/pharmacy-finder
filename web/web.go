@@ -61,6 +61,7 @@ type HttpRequestHandler[T interface{}, B interface{}] struct {
 	pattern  string
 	validate *validator.Validate
 	methods  []string
+	chain    SecurityChain[B]
 	logger   zerolog.Logger
 }
 
@@ -73,6 +74,21 @@ func NewRequestsHandler[T interface{}, B interface{}](
 		pattern:  pattern,
 		validate: validator.New(),
 		methods:  methods,
+		logger:   utils.GetLogger("WEB"),
+	}
+}
+
+func NewSecureRequestsHandler[T interface{}, B interface{}](
+	callback CallbackFunction[T, B],
+	pattern string,
+	methods []string,
+	chain SecurityChain[B]) Route {
+	return &HttpRequestHandler[T, B]{
+		callback: callback,
+		pattern:  pattern,
+		validate: validator.New(),
+		methods:  methods,
+		chain:    chain,
 		logger:   utils.GetLogger("WEB"),
 	}
 }
@@ -146,7 +162,7 @@ func (handler *HttpRequestHandler[T, B]) validateBody(r *http.Request, w http.Re
 				Msgf("Validation error: %s", errs[0].Error())
 
 			createJsonResponse(w, http.StatusBadRequest, types.HttpError{
-				StatusCode: http.StatusInternalServerError,
+				StatusCode: http.StatusBadRequest,
 				Timestamp:  types.Time(time.Now().UTC()),
 				Message:    errs[0].Error(),
 			})
@@ -164,6 +180,22 @@ func (handler *HttpRequestHandler[T, B]) ServeHTTP(w http.ResponseWriter, r *htt
 		Header:   r.Header,
 		Params:   r.URL.Query(),
 		PathVars: mux.Vars(r),
+	}
+
+	// In case we have a security chain present, check if access should be granted
+	if handler.chain != nil && !handler.chain.ShouldPermitAccess(&details) {
+		handler.logger.Warn().
+			Str("method", r.Method).
+			Str("path", r.URL.Path).
+			Str("addr", r.RemoteAddr).
+			Int("code", http.StatusForbidden).
+			Msgf("Access denied based on security chain policies")
+
+		createJsonResponse(w, http.StatusBadRequest, types.HttpError{
+			StatusCode: http.StatusForbidden,
+			Timestamp:  types.Time(time.Now().UTC()),
+			Message:    "Forbidden",
+		})
 	}
 
 	// in cases where we have a request body provided, we perform json unmarshalling
