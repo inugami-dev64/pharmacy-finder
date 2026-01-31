@@ -12,6 +12,8 @@ import (
 type ModeratorUserRepository interface {
 	FindUserByID(id types.UUID) Query[entity.ModeratorUser]
 	FindAllUsers() Query[dto.AuthenticatedModeratorUserResponseDTO]
+	HasAdministrator() Query[bool]
+
 	Store(user *entity.ModeratorUser) error
 	Trx(conn any) ModeratorUserRepository
 }
@@ -65,7 +67,21 @@ func (repo ModeratorUserRepositorySQLX) FindAllUsers() Query[dto.AuthenticatedMo
 		key:       "username",
 		trx:       repo.conn,
 		q:         q,
-		args:      []interface{}{},
+	}
+}
+
+func (repo ModeratorUserRepositorySQLX) HasAdministrator() Query[bool] {
+	q := `
+	SELECT
+		COUNT(*) > 0
+	FROM moderator_users mu
+	WHERE
+		mu.administrator
+	`
+
+	return &SQLXQuery[bool]{
+		trx: repo.conn,
+		q:   q,
 	}
 }
 
