@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"pharmafinder"
 	"pharmafinder/api/v1/mod/auth"
+	"pharmafinder/api/v1/mod/users"
 	"pharmafinder/api/v1/pharmacies"
 	"pharmafinder/api/v1/pharmacies/ratings"
 	"pharmafinder/api/v1/pharmacies/reviews"
@@ -155,7 +156,13 @@ func main() {
 
 			// /mod/auth/* controller
 			fx.Annotate(
-				auth.ProvideModeratorAuthContorller,
+				auth.ProvideModeratorAuthController,
+				fx.ResultTags(`group:"routes"`),
+			),
+
+			// /mod/users controller
+			fx.Annotate(
+				users.ProvideModeratorUserController,
 				fx.ResultTags(`group:"routes"`),
 			),
 		),
