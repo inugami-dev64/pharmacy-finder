@@ -53,7 +53,7 @@ func (repo ModeratorUserRepositorySQLX) FindUserByUsernameOrEmail(usernameOrEmai
 	SELECT
 		*
 	FROM
-		moderator_user mu
+		moderator_users mu
 	WHERE
 		mu.username = $1
 	OR
