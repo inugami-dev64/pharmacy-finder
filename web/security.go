@@ -52,6 +52,8 @@ func (chain SecurityChainImpl[B]) RuleAuthenticated(repo db.ModeratorUserReposit
 			if err != nil || user == nil {
 				return false
 			}
+
+			details.AuthenticatedUser = user
 		}
 
 		return true
@@ -76,6 +78,8 @@ func (chain SecurityChainImpl[B]) RuleAdmin(repo db.ModeratorUserRepository, tok
 			if err != nil || user == nil || !user.Administrator {
 				return false
 			}
+
+			details.AuthenticatedUser = user
 		}
 
 		return true
