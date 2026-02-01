@@ -74,14 +74,16 @@ func (handler *ModeratorAuthController) ModeratorLogin(details *web.HttpRequestD
 	handler.repo.Store(user)
 
 	userDTO := dto.AuthenticatedModeratorUserResponseDTO{
-		ID:                    user.ID,
-		Username:              user.Username,
-		Email:                 user.Email,
-		FirstName:             user.FirstName,
-		LastName:              user.LastName,
-		RegistrationTimestamp: user.RegistrationTimestamp,
-		LastLoginTimestamp:    user.LastLoginTimestamp,
-		Administrator:         user.Administrator,
+		ModeratorUserProfileDTO: dto.ModeratorUserProfileDTO{
+			ID:                    user.ID,
+			Username:              user.Username,
+			Email:                 user.Email,
+			FirstName:             user.FirstName,
+			LastName:              user.LastName,
+			RegistrationTimestamp: user.RegistrationTimestamp,
+			LastLoginTimestamp:    user.LastLoginTimestamp,
+			Administrator:         user.Administrator,
+		},
 		Session: dto.SessionTokenResponseDTO{
 			Token:    handler.sessionManager.NewSessionToken(user),
 			ValidFor: int64(service.SESSION_TTL.Seconds()),
@@ -133,14 +135,16 @@ func (handler *ModeratorAuthController) AdminRegistration(details *web.HttpReque
 	}
 
 	userDTO := dto.AuthenticatedModeratorUserResponseDTO{
-		ID:                    user.ID,
-		Username:              user.Username,
-		Email:                 user.Email,
-		FirstName:             user.FirstName,
-		LastName:              user.LastName,
-		RegistrationTimestamp: user.RegistrationTimestamp,
-		LastLoginTimestamp:    user.LastLoginTimestamp,
-		Administrator:         user.Administrator,
+		ModeratorUserProfileDTO: dto.ModeratorUserProfileDTO{
+			ID:                    user.ID,
+			Username:              user.Username,
+			Email:                 user.Email,
+			FirstName:             user.FirstName,
+			LastName:              user.LastName,
+			RegistrationTimestamp: user.RegistrationTimestamp,
+			LastLoginTimestamp:    user.LastLoginTimestamp,
+			Administrator:         user.Administrator,
+		},
 		Session: dto.SessionTokenResponseDTO{
 			Token:    handler.sessionManager.NewSessionToken(&user),
 			ValidFor: int64(service.SESSION_TTL.Seconds()),

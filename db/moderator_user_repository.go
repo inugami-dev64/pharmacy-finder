@@ -12,7 +12,7 @@ import (
 type ModeratorUserRepository interface {
 	FindUserByID(id types.UUID) Query[entity.ModeratorUser]
 	FindUserByUsernameOrEmail(usernameOrEmail string) Query[entity.ModeratorUser]
-	FindAllUsers() Query[dto.AuthenticatedModeratorUserResponseDTO]
+	FindAllUsers() Query[dto.ModeratorUserProfileDTO]
 	HasAdministrator() Query[bool]
 
 	Store(user *entity.ModeratorUser) error
@@ -71,7 +71,7 @@ func (repo ModeratorUserRepositorySQLX) FindUserByUsernameOrEmail(usernameOrEmai
 	}
 }
 
-func (repo ModeratorUserRepositorySQLX) FindAllUsers() Query[dto.AuthenticatedModeratorUserResponseDTO] {
+func (repo ModeratorUserRepositorySQLX) FindAllUsers() Query[dto.ModeratorUserProfileDTO] {
 	q := `
 	SELECT
 		mu.id,
@@ -84,9 +84,11 @@ func (repo ModeratorUserRepositorySQLX) FindAllUsers() Query[dto.AuthenticatedMo
 		mu.administrator
 	FROM
 		moderator_users mu
+	ORDER BY
+		mu.username
 	`
 
-	return &SQLXQuery[dto.AuthenticatedModeratorUserResponseDTO]{
+	return &SQLXQuery[dto.ModeratorUserProfileDTO]{
 		uniqueKey: "id",
 		key:       "username",
 		trx:       repo.conn,
