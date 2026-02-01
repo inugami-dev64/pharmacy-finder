@@ -20,7 +20,7 @@ type CommentModerationRepositorySQLX struct {
 	conn *sqlx.DB
 }
 
-func ProvideModerationRepository(conn *sqlx.DB) CommentModerationRepository {
+func ProvideCommentModerationRepository(conn *sqlx.DB) CommentModerationRepository {
 	return CommentModerationRepositorySQLX{conn: conn}
 }
 
@@ -45,6 +45,7 @@ func (repo CommentModerationRepositorySQLX) FindCommentModerationsForReview(revi
 	return &SQLXQuery[dto.CommentReviewResultDTO]{
 		uniqueKey: "id",
 		key:       "reviewed_at",
+		trx:       repo.conn,
 		q:         q,
 		args:      args,
 	}
@@ -66,6 +67,7 @@ func (repo CommentModerationRepositorySQLX) FindCommentModerationByReviewAndID(r
 	return &SQLXQuery[entity.CommentReview]{
 		uniqueKey: "id",
 		key:       "reviewed_at",
+		trx:       repo.conn,
 		q:         q,
 		args:      args,
 	}
@@ -116,6 +118,7 @@ func (repo CommentModerationRepositorySQLX) Delete(modID int64) Query[entity.Com
 	return &SQLXQuery[entity.CommentReview]{
 		uniqueKey: "id",
 		key:       "reviewed_at",
+		trx:       repo.conn,
 		q:         q,
 		args:      args,
 	}
