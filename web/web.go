@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"pharmafinder/db/entity"
 	"pharmafinder/types"
 	"pharmafinder/utils"
 	"strings"
@@ -48,6 +49,10 @@ type HttpRequestDetails[B interface{}] struct {
 
 	// URL parameters
 	Params url.Values
+
+	// AuthenticatedUser parameter will be filled if a valid
+	// Authorization header with a correct JWT is provided
+	AuthenticatedUser *entity.ModeratorUser
 
 	// URL path variables
 	// e.g. /api/v1/{var1}/{var2}
@@ -196,7 +201,7 @@ func (handler *HttpRequestHandler[T, B]) ServeHTTP(w http.ResponseWriter, r *htt
 			Int("code", http.StatusForbidden).
 			Msgf("Access denied based on security chain policies")
 
-		createJsonResponse(w, http.StatusBadRequest, types.HttpError{
+		createJsonResponse(w, http.StatusForbidden, types.HttpError{
 			StatusCode: http.StatusForbidden,
 			Timestamp:  types.Time(time.Now().UTC()),
 			Message:    "Forbidden",
