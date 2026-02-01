@@ -129,9 +129,59 @@ func (handler *ReviewModerationController) CreateReviewModeration(details *web.H
 
 // Modify moderation review
 //
-// Path: `PUT /api/v1/mod/reviews/{reviewID}/moderations/{modID}`
+// Path: `PATCH /api/v1/mod/reviews/{reviewID}/moderations/{modID}`
+//
+// @Summary			Modify an existing moderation review
+// @Description		Endpoint for modifying authenticated user's moderation reviews
+// @Tags			Moderation
+// @Produce			json
+// @Security		Bearer
+// @Param			reviewID path int true "ID of the comment whose moderation review will be modified"
+// @Param			modID path int true "ID of the moderation reivew that will be modified"
+// @Param			request body dto.CommentReviewModificationDTO true "Moderation review modification body"
+// @Success			200 {object} entity.CommentReview
+// @Failure			400 {object} types.HttpError
+// @Failure			403 {object} types.HttpError
+// @Failure			404 {object} types.HttpError
+// @Router			/api/v1/mod/reviews/{reviewID}/moderations/{modID} [patch]
 func (handler *ReviewModerationController) ModifyReviewModeration(details *web.HttpRequestDetails[dto.CommentReviewModificationDTO]) (int, interface{}, error) {
-	return http.StatusOK, []string{}, nil
+	reviewID, err := strconv.ParseInt(details.PathVars["reviewID"], 10, 64)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed reviewID variable '%s'", details.PathVars["reviewID"])
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed reviewID variable"), nil
+	}
+
+	modID, err := strconv.ParseInt(details.PathVars["modID"], 10, 64)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed modID variable '%s'", details.PathVars["modID"])
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed modID variable"), nil
+	}
+
+	review, err := handler.modRepo.FindCommentModerationByReviewAndID(reviewID, modID).Query()
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	} else if review == nil {
+		handler.logger.Warn().Msgf(fmt.Sprintf("Moderation with ID '%d' does not exist for review '%d'", modID, reviewID))
+		return http.StatusNotFound, types.NewHttpError(http.StatusNotFound, "Not found"), nil
+	}
+
+	// check if the moderation belongs to the user
+	if review.ModeratorID != details.AuthenticatedUser.ID {
+		handler.logger.Warn().Msgf("User '%s' does not have access to modify moderation review '%d'", details.AuthenticatedUser.Username, modID)
+		return http.StatusForbidden, types.NewHttpError(http.StatusForbidden, "Permission denied"), nil
+	}
+
+	review.Result = details.Body.Result
+	review.ModeratorComment = details.Body.ModeratorComment
+	review.MarkedForDeletion = details.Body.MarkedForDeletion
+	review.ReviewedAt = types.Time(time.Now().UTC())
+
+	err = handler.modRepo.Store(review)
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	return http.StatusOK, review, nil
 }
 
 // Delete moderation review
