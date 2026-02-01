@@ -45,18 +45,52 @@ func (handler *ModeratorUserController) GetRoutes() []web.Route {
 	}
 }
 
-// Get all moderator user details
+// Get all moderator users
 //
 // Path: `GET /api/v1/mod/users`
+//
+// @Summary 		Query a list of all moderator users
+// @Description		Endpoint for listing data about all moderator users
+// @Tags			Users
+// @Security		Bearer
+// @Produce			json
+// @Success			200 {array} dto.ModeratorUserProfileDTO
+// @Failure			403 {object} types.HttpError
+// @Router			/api/v1/mod/users [get]
 func (handler *ModeratorUserController) GetAllUsers(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
-	return http.StatusOK, []string{}, nil
+	data, err := handler.repo.FindAllUsers().QueryAll()
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	return http.StatusOK, data, nil
 }
 
 // Get currently authenticated user's details
 //
 // Path: `GET /api/v1/mod/users/me`
+//
+// @Summary			Query currently authenticated user's profile information
+// @Description		Endpoint for listing profile data about currently authenticated user
+// @Tags			Users
+// @Security		Bearer
+// @Produce 		json
+// @Success			200 {object} dto.ModeratorUserProfileDTO
+// @Failure			403 {object} types.HttpError
+// @Router			/api/v1/mod/users/me [get]
 func (handler *ModeratorUserController) GetAuthenticatedUserProfile(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
-	return http.StatusOK, []string{}, nil
+	dto := dto.ModeratorUserProfileDTO{
+		ID:                    details.AuthenticatedUser.ID,
+		Username:              details.AuthenticatedUser.Username,
+		Email:                 details.AuthenticatedUser.Email,
+		FirstName:             details.AuthenticatedUser.FirstName,
+		LastName:              details.AuthenticatedUser.LastName,
+		RegistrationTimestamp: details.AuthenticatedUser.RegistrationTimestamp,
+		LastLoginTimestamp:    details.AuthenticatedUser.LastLoginTimestamp,
+		Administrator:         details.AuthenticatedUser.Administrator,
+	}
+
+	return http.StatusOK, dto, nil
 }
 
 // Create a new moderator account
