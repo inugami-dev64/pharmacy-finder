@@ -9,8 +9,8 @@ CREATE TABLE comment_reviews (
     mod_comment VARCHAR(1024) NULL,
     marked_for_deletion BOOLEAN NOT NULL DEFAULT FALSE,
     reviewed_at TIMESTAMP NOT NULL DEFAULT now(),
-    CHECK (result = 'APPROVED' AND NOT marked_for_deletion OR result != 'APPROVED'),
-    CHECK (result != 'NONE')
+    CONSTRAINT comment_reviews_approval CHECK (result = 'APPROVED' AND NOT marked_for_deletion OR result != 'APPROVED'),
+    CONSTRAINT comment_reviews_result_not_none CHECK (result != 'NONE')
 );
 
 CREATE INDEX idx_comment_reviews_marked_for_deletion_reviewed_at ON comment_reviews(marked_for_deletion, reviewed_at);
