@@ -12,11 +12,11 @@ const (
 )
 
 type CommentReview struct {
-	ID                int64               `db:"id"`
-	CommentID         int64               `db:"comment_id"`
-	ModeratorID       types.UUID          `db:"moderator_id"`
-	Result            CommentReviewResult `db:"result"`
-	ModeratorComment  *string             `db:"mod_comment"`
-	MarkedForDeletion bool                `db:"marked_for_deletion"`
-	ReviewedAt        types.Time          `db:"reviewed_at"`
+	ID                int64               `db:"id" json:"id"`
+	CommentID         int64               `db:"comment_id" json:"commentId"`
+	ModeratorID       types.UUID          `db:"moderator_id" json:"moderatorId"`
+	Result            CommentReviewResult `db:"result" json:"result"`
+	ModeratorComment  *string             `db:"mod_comment" json:"moderatorComment"`
+	MarkedForDeletion bool                `db:"marked_for_deletion" json:"markedForDeletion"`
+	ReviewedAt        types.Time          `db:"reviewed_at" json:"reviewedAt"`
 }
