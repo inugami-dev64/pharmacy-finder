@@ -187,6 +187,53 @@ func (handler *ReviewModerationController) ModifyReviewModeration(details *web.H
 // Delete moderation review
 //
 // Path: `DELETE /api/v1/mod/reviews/{reviewID}/moderations/{modID}`
+//
+// @Summary			Delete a comment moderation review
+// @Description		Endpoint for deleting comment moderation reviews. Administrators are allowed to delete reviews belonging to other users, whilst regular moderators are only allowed to delete their own reviews.
+// @Tags			Moderation
+// @Produce 		json
+// @Security		Bearer
+// @Param			reviewID path int true "ID of the comment whose moderation review will be modified"
+// @Param			modID path int true "ID of the moderation reivew that will be modified"
+// @Success 		200 {object} entity.CommentReview
+// @Failure			400 {object} types.HttpError
+// @Failure			403 {object} types.HttpError
+// @Failure			404 {object} types.HttpError
+// @Router			/api/v1/mod/reviews/{reviewID}/moderations/{modID} [delete]
 func (handler *ReviewModerationController) DeleteReviewModeration(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
-	return http.StatusOK, []string{}, nil
+	reviewID, err := strconv.ParseInt(details.PathVars["reviewID"], 10, 64)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed reviewID variable '%s'", details.PathVars["reviewID"])
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed reviewID variable"), nil
+	}
+
+	modID, err := strconv.ParseInt(details.PathVars["modID"], 10, 64)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed modID variable '%s'", details.PathVars["modID"])
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed modID variable"), nil
+	}
+
+	review, err := handler.modRepo.FindCommentModerationByReviewAndID(reviewID, modID).Query()
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	} else if review == nil {
+		handler.logger.Warn().Msgf(fmt.Sprintf("Moderation with ID '%d' does not exist for review '%d'", modID, reviewID))
+		return http.StatusNotFound, types.NewHttpError(http.StatusNotFound, "Not found"), nil
+	}
+
+	// Check if the moderation review belongs to authenticated user
+	// and if it doesn't then
+	//   - if the authenticated user is an administrator, the deletion can proceed
+	//   - if the authenticated user is not and administrator, then 403 is returned
+	if review.ModeratorID != details.AuthenticatedUser.ID && !details.AuthenticatedUser.Administrator {
+		handler.logger.Warn().Msgf("User '%s' does not have access to delete moderation review '%d'", details.AuthenticatedUser.Username, modID)
+		return http.StatusForbidden, types.NewHttpError(http.StatusForbidden, "Permission denied"), nil
+	}
+
+	review, err = handler.modRepo.Delete(modID).Query()
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	return http.StatusOK, review, nil
 }
