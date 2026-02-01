@@ -1,13 +1,19 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
 	"pharmafinder/db"
 	"pharmafinder/db/dto"
+	"pharmafinder/db/entity"
 	"pharmafinder/service"
+	"pharmafinder/types"
 	"pharmafinder/utils"
 	"pharmafinder/web"
+	"time"
 
+	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"github.com/rs/zerolog"
 )
 
@@ -96,8 +102,57 @@ func (handler *ModeratorUserController) GetAuthenticatedUserProfile(details *web
 // Create a new moderator account
 //
 // Path: `POST /api/v1/mod/users`
+//
+// @Summary 		Create a new moderator account
+// @Description		Endpoint which allows administrator accounts to create new moderator accounts
+// @Tags			Users
+// @Security		Bearer
+// @Produce 		json
+// @Param			request body dto.ModeratorUserRegistrationDTO true "Moderator user registration body"
+// @Success			201 {object} dto.ModeratorUserProfileDTO
+// @Failure			400 {object} types.HttpError
+// @Router			/api/v1/mod/users [post]
 func (handler *ModeratorUserController) CreateNewModeratorUser(details *web.HttpRequestDetails[dto.ModeratorUserRegistrationDTO]) (int, interface{}, error) {
-	return http.StatusOK, []string{}, nil
+	pwdHash, err := handler.hasher.CreatePasswordHash(details.Body.Password)
+	if err == service.ErrPasswordTooLong {
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Password is too long"), nil
+	} else if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	user := entity.ModeratorUser{
+		Username:              details.Body.Username,
+		Email:                 details.Body.Email,
+		Password:              pwdHash,
+		FirstName:             details.Body.FirstName,
+		LastName:              details.Body.LastName,
+		RegistrationTimestamp: types.Time(time.Now().UTC()),
+		LastLoginTimestamp:    types.Time(time.Now().UTC()),
+		Administrator:         false,
+	}
+
+	err = handler.repo.Store(&user)
+	if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23505" {
+		handler.logger.Warn().Msgf("User with username '%s' and email '%s' already exists", details.Body.Username, details.Body.Email)
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Username or email is already in use"), nil
+	} else if err != nil {
+		handler.logger.Warn().Msgf("Failed to register an admin account: %v", err)
+		return http.StatusInternalServerError, nil, err
+	}
+
+	userDTO := dto.ModeratorUserProfileDTO{
+		ID:                    user.ID,
+		Username:              user.Username,
+		Email:                 user.Email,
+		FirstName:             user.FirstName,
+		LastName:              user.LastName,
+		RegistrationTimestamp: user.RegistrationTimestamp,
+		LastLoginTimestamp:    user.LastLoginTimestamp,
+		Administrator:         user.Administrator,
+	}
+
+	return http.StatusCreated, userDTO, nil
+}
 }
 
 // Modify currently authenticated moderators account
