@@ -17,14 +17,22 @@ type PharmacyReviewDeletionDTO struct {
 }
 
 type PharmacyReviewsetResultDTO struct {
-	ID               int64      `json:"id"`
-	PrescriptionType string     `json:"prescriptionType"`
-	Stars            int        `json:"stars"`
-	HRTKind          string     `json:"hrtKind"`
-	Nationality      *string    `json:"nationality"`
-	Review           *string    `json:"review"`
-	CreatedAt        types.Time `json:"createdAt"`
-	UpdatedAt        types.Time `json:"updatedAt"`
+	ID               int64      `db:"id" json:"id"`
+	PrescriptionType string     `db:"prescription_type" json:"prescriptionType"`
+	Stars            int        `db:"stars" json:"stars"`
+	HRTKind          string     `db:"hrt_kind" json:"hrtKind"`
+	Nationality      *string    `db:"nationality" json:"nationality"`
+	Review           *string    `db:"review" json:"review"`
+	CreatedAt        types.Time `db:"created_at" json:"createdAt"`
+	UpdatedAt        types.Time `db:"updated_at" json:"updatedAt"`
+}
+
+type ModerationPharmacyReview struct {
+	PharmacyReviewsetResultDTO
+	PharmacyID          int64       `db:"pharmacy_id" json:"pharmacyId"`
+	CommentReviewResult string      `db:"result" json:"commentReviewResult"`
+	MarkedForDeletion   bool        `db:"marked_for_deletion" json:"markedForDeletion"`
+	ReviewedAt          *types.Time `db:"reviewed_at" json:"reviewedAt,omitempty"`
 }
 
 type PharmacyReviewModificationDTO struct {
