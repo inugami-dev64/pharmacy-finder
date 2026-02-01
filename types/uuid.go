@@ -33,11 +33,16 @@ func (u UUID) Value() (driver.Value, error) {
 }
 
 func (u *UUID) Scan(value interface{}) error {
-	val, ok := value.([]byte)
+	val, ok := value.([]uint8)
 	if !ok {
 		return errors.New(fmt.Sprintf("failed to unmarshal UUID: %T", value))
 	}
 
-	*u = UUID(val)
+	uuidVal, err := uuid.Parse(string(val))
+	if err != nil {
+		return err
+	}
+
+	*u = UUID(uuidVal)
 	return nil
 }
