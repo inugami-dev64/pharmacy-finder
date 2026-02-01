@@ -46,7 +46,7 @@ func (handler *ModeratorUserController) GetRoutes() []web.Route {
 		web.NewSecureRequestsHandler[ModeratorUserController](handler.CreateNewModeratorUser, "/mod/users", []string{"POST"}, web.NewSecurityChain[dto.ModeratorUserRegistrationDTO]().RuleAdmin(handler.repo, handler.tokenManager)),
 		web.NewSecureRequestsHandler[ModeratorUserController](handler.UpdateCurrentModeratorUser, "/mod/users/me", []string{"PATCH"}, web.NewSecurityChain[dto.ModeratorUserUpdateDTO]().RuleAuthenticated(handler.repo, handler.tokenManager)),
 		web.NewSecureRequestsHandler[ModeratorUserController](handler.UpdateModeratorUser, "/mod/users/{id}", []string{"PATCH"}, web.NewSecurityChain[dto.AdminUserUpdateDTO]().RuleAdmin(handler.repo, handler.tokenManager)),
-		web.NewSecureRequestsHandler[ModeratorUserController](handler.DeleteCurrentModeratorUser, "/mod/users/me", []string{"DELETE"}, web.NewSecurityChain[web.EmptyBody]().RuleAuthenticated(handler.repo, handler.tokenManager)),
+		web.NewSecureRequestsHandler[ModeratorUserController](handler.DeleteCurrentModeratorUser, "/mod/users/me", []string{"DELETE"}, web.NewSecurityChain[dto.ModeratorUserDeletionDTO]().RuleAuthenticated(handler.repo, handler.tokenManager)),
 		web.NewSecureRequestsHandler[ModeratorUserController](handler.DeleteModeratorUser, "/mod/users/{id}", []string{"DELETE"}, web.NewSecurityChain[web.EmptyBody]().RuleAdmin(handler.repo, handler.tokenManager)),
 	}
 }
@@ -267,13 +267,81 @@ func (handler *ModeratorUserController) UpdateModeratorUser(details *web.HttpReq
 // Delete my user account
 //
 // Path: `DELETE /api/v1/mod/users/me`
-func (handler *ModeratorUserController) DeleteCurrentModeratorUser(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
-	return http.StatusOK, []string{}, nil
+//
+// @Summary			Delete currently authenticated moderator account
+// @Description 	Endpoint for deleting currently authenticated user's account
+// @Tags			Users
+// @Security		Bearer
+// @Produce 		json
+// @Param			request body dto.ModeratorUserDeletionDTO true "User deletion request body"
+// @Success			200 {object} dto.ModeratorUserProfileDTO
+// @Failure			400 {object} types.HttpError
+// @Router 			/api/v1/mod/users/me [delete]
+func (handler *ModeratorUserController) DeleteCurrentModeratorUser(details *web.HttpRequestDetails[dto.ModeratorUserDeletionDTO]) (int, interface{}, error) {
+	if !handler.hasher.Verify(details.Body.CurrentPassword, details.AuthenticatedUser.Password) {
+		handler.logger.Warn().Msgf("User '%s' tried to delete their account with invalid password", details.AuthenticatedUser.Username)
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Invalid password"), nil
+	}
+
+	// TODO: Verify that if user is admin, that they are not the only one
+
+	user, err := handler.repo.Delete(details.AuthenticatedUser.ID).Query()
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	userDTO := dto.ModeratorUserProfileDTO{
+		ID:                    user.ID,
+		Username:              user.Username,
+		Email:                 user.Email,
+		FirstName:             user.FirstName,
+		LastName:              user.LastName,
+		RegistrationTimestamp: user.RegistrationTimestamp,
+		LastLoginTimestamp:    user.LastLoginTimestamp,
+		Administrator:         user.Administrator,
+	}
+
+	return http.StatusOK, userDTO, nil
 }
 
 // Delete someones user account
 //
 // Path: `DELETE /api/v1/mod/users/{id}`
+//
+// @Summary 		Delete someone's moderator account
+// @Description 	Endpoint for administrators so that they could delete someone else's moderator accounts
+// @Tags			Users
+// @Security		Bearer
+// @Produce			json
+// @Param			id path string true "User ID to delete"
+// @Success			200 {object} dto.ModeratorUserProfileDTO
+// @Failure			404 {object} types.HttpError
+// @Router			/api/v1/mod/users/{id} [delete]
 func (handler *ModeratorUserController) DeleteModeratorUser(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
-	return http.StatusOK, []string{}, nil
+	idStr := details.PathVars["id"]
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed ID parameter '%s'", idStr)
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed ID parameter"), nil
+	}
+
+	user, err := handler.repo.Delete(types.UUID(id)).Query()
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	} else if user == nil {
+		return http.StatusNotFound, types.NewHttpError(http.StatusNotFound, "Not found"), nil
+	}
+
+	userDTO := dto.ModeratorUserProfileDTO{
+		ID:                    user.ID,
+		Username:              user.Username,
+		Email:                 user.Email,
+		FirstName:             user.FirstName,
+		LastName:              user.LastName,
+		RegistrationTimestamp: user.RegistrationTimestamp,
+		LastLoginTimestamp:    user.LastLoginTimestamp,
+		Administrator:         user.Administrator,
+	}
+
+	return http.StatusOK, userDTO, nil
 }
