@@ -153,20 +153,115 @@ func (handler *ModeratorUserController) CreateNewModeratorUser(details *web.Http
 
 	return http.StatusCreated, userDTO, nil
 }
+
+func (handler *ModeratorUserController) updateUser(user *entity.ModeratorUser, body *dto.AdminUserUpdateDTO, me bool) (int, interface{}, error) {
+	// Update password if present
+	if body.Password != "" {
+		var err error
+		user.Password, err = handler.hasher.CreatePasswordHash(body.Password)
+
+		if err == service.ErrPasswordTooLong {
+			if me {
+				handler.logger.Warn().Msgf("User '%s' tried to change their password to something too long", user.Username)
+			} else {
+				handler.logger.Warn().Msgf("Requested password update for user '%s' failed, password too long", user.Username)
+			}
+			return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Password is too long"), nil
+		} else if err != nil {
+			return http.StatusInternalServerError, nil, err
+		}
+	}
+
+	// Update other data fields
+	user.Email = body.Email
+	user.FirstName = body.FirstName
+	user.LastName = body.LastName
+	if !me && body.Administrator != nil {
+		user.Administrator = *body.Administrator
+	}
+
+	err := handler.repo.Store(user)
+	if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23505" {
+		if me {
+			handler.logger.Warn().Msgf("User '%s' tried to change their email to '%s', which is already in use", user.Username, user.Email)
+		} else {
+			handler.logger.Warn().Msgf("Requested email change for user '%s' failed, email already in use")
+		}
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Email address is already in use"), nil
+	} else if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	userDTO := dto.ModeratorUserProfileDTO{
+		ID:                    user.ID,
+		Username:              user.Username,
+		Email:                 user.Email,
+		FirstName:             user.FirstName,
+		LastName:              user.LastName,
+		RegistrationTimestamp: user.RegistrationTimestamp,
+		LastLoginTimestamp:    user.LastLoginTimestamp,
+		Administrator:         user.Administrator,
+	}
+
+	return http.StatusOK, userDTO, nil
 }
 
 // Modify currently authenticated moderators account
 //
 // Path: `PATCH /api/v1/mod/users/me`
+//
+// @Summary			Modify currently authenticated user's details
+// @Description		Endpoint for modifying currently authenticated user's details (requires password verification)
+// @Tags			Users
+// @Security		Bearer
+// @Produce 		json
+// @Param			request body dto.ModeratorUserUpdateDTO true "Moderator user update request body"
+// @Success			200 {object} dto.ModeratorUserProfileDTO
+// @Failure			400 {object} types.HttpError
+// @Failure			403 {object} types.HttpError
+// @Router			/api/v1/mod/users/me [patch]
 func (handler *ModeratorUserController) UpdateCurrentModeratorUser(details *web.HttpRequestDetails[dto.ModeratorUserUpdateDTO]) (int, interface{}, error) {
-	return http.StatusOK, []string{}, nil
+	user := details.AuthenticatedUser
+	if !handler.hasher.Verify(details.Body.CurrentPassword, user.Password) {
+		handler.logger.Warn().Msgf("User '%s' tried to modify their profile with invalid password", user.Username)
+		return http.StatusForbidden, types.NewHttpError(http.StatusForbidden, "Invalid password"), nil
+	}
+
+	return handler.updateUser(user, &details.Body.AdminUserUpdateDTO, true)
 }
 
-// Modify someones user account
+// Modify someone's user account
 //
 // Path: `PATCH /api/v1/mod/users/{id}`
+//
+// @Summary 		Modify other user's data
+// @Description		Endpoint for administrators so that they could update data for other users
+// @Tags			Users
+// @Security		Bearer
+// @Produce 		json
+// @Param			request body dto.AdminUserUpdateDTO true "User update request body"
+// @Param			id path string true "User ID"
+// @Success			200 {object} dto.ModeratorUserProfileDTO
+// @Failure			400 {object} types.HttpError
+// @Failure			404 {object} types.HttpError
+// @Router			/api/v1/mod/users/{id} [patch]
 func (handler *ModeratorUserController) UpdateModeratorUser(details *web.HttpRequestDetails[dto.AdminUserUpdateDTO]) (int, interface{}, error) {
-	return http.StatusOK, []string{}, nil
+	idStr := details.PathVars["id"]
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed ID path variable '%s'", idStr)
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed ID path variable"), nil
+	}
+
+	user, err := handler.repo.FindUserByID(types.UUID(id)).Query()
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	} else if user == nil {
+		handler.logger.Warn().Msgf("User with ID '%s' was not found", id.String())
+		return http.StatusNotFound, types.NewHttpError(http.StatusNotFound, fmt.Sprintf("User with ID '%s' does not exist", id.String())), nil
+	}
+
+	return handler.updateUser(user, &details.Body, false)
 }
 
 // Delete my user account
