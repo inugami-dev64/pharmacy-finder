@@ -16,6 +16,7 @@ type ModeratorUserRepository interface {
 	HasAdministrator() Query[bool]
 
 	Store(user *entity.ModeratorUser) error
+	Delete(id types.UUID) Query[entity.ModeratorUser]
 	Trx(conn any) ModeratorUserRepository
 }
 
@@ -146,6 +147,25 @@ func (repo ModeratorUserRepositorySQLX) Store(user *entity.ModeratorUser) error 
 	}
 
 	return nil
+}
+
+func (repo ModeratorUserRepositorySQLX) Delete(id types.UUID) Query[entity.ModeratorUser] {
+	q := `
+	DELETE
+	FROM
+		moderator_users mu
+	WHERE
+		mu.id = $1
+	RETURNING *
+	`
+
+	args := []interface{}{id}
+
+	return &SQLXQuery[entity.ModeratorUser]{
+		trx:  repo.conn,
+		q:    q,
+		args: args,
+	}
 }
 
 func (repo ModeratorUserRepositorySQLX) Trx(conn any) ModeratorUserRepository {
