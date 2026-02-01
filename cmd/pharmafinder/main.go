@@ -103,6 +103,7 @@ func main() {
 			db.ProvidePharmacyRepository,
 			db.ProvidePharmacyReviewRepository,
 			db.ProvideModeratorUserRepository,
+			db.ProvideCommentModerationRepository,
 
 			// Utilities
 			utils.ProvideHTTPClient,
