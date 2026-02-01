@@ -32,11 +32,11 @@ type ModeratorUserRegistrationDTO struct {
 }
 
 type AdminUserUpdateDTO struct {
-	Email         string  `json:"email" validate:"required,email,lte=64"`
-	FirstName     string  `json:"firstName" validate:"required,lte=64"`
-	LastName      string  `json:"lastName" validate:"required,lte=64"`
-	Password      *string `json:"password" validate:"lte=72"`
-	Administrator *bool   `json:"administrator"`
+	Email         string `json:"email" validate:"required,email,lte=64"`
+	FirstName     string `json:"firstName" validate:"required,lte=64"`
+	LastName      string `json:"lastName" validate:"required,lte=64"`
+	Password      string `json:"password" validate:"lte=72"`
+	Administrator *bool  `json:"administrator"`
 }
 
 type ModeratorUserUpdateDTO struct {
