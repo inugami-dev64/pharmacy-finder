@@ -6,6 +6,7 @@ GOSRC := $(shell find . -type f -name "*.go" ! -regex '.*_mock.go' -o -name "*.s
 MOCKGEN_DST := mock/pharmacy_repository_mock.go \
 			   mock/moderator_user_repository_mock.go \
 			   mock/session_manager_mock.go \
+			   mock/scrape_stat_collector_mock.go \
 			   mock/http_mock.go \
 			   mock/db_mock.go
 
@@ -40,6 +41,9 @@ mock/moderator_user_repository_mock.go: db/moderator_user_repository.go
 
 mock/session_manager_mock.go: service/session_manager.go
 	${GOPATH}/bin/mockgen -source=service/session_manager.go -destination=mock/session_manager_mock.go -package=mock
+
+mock/scrape_stat_collector_mock.go: service/scrape_stat_collector.go
+	${GOPATH}/bin/mockgen -source=service/scrape_stat_collector.go -destination=mock/scraper_stat_mock.go -package=mock
 
 mock/http_mock.go: utils/http.go
 	${GOPATH}/bin/mockgen -source=utils/http.go -destination=mock/http_mock.go -package=mock
