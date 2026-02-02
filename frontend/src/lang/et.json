@@ -8,7 +8,8 @@
         }
     },
     "universalErrors": {
-        "internalServerError": "Serveripoolne viga :("
+        "internalServerError": "Serveripoolne viga :(",
+        "forbidden": "Tegevus pole lubatud"
     },
     "mod": {
         "login": {
@@ -34,6 +35,13 @@
                 "passwordsDoNotMatch": "Paroolid ei kattu",
                 "passwordTooLong": "Parool on liiga pikk",
                 "usernameOrEmailExists": "Selle kasutajanime või meiliaadressiga konto on juba registreeritud"
+            }
+        },
+        "users": {
+            "errors": {
+                "invalidUserId": "Vale kasutajatunnus",
+                "userNotFound": "Antud kasutajatunnusega kasutajat ei leitud",
+                "emailInUse": "Meiliaadress on juba kasutusel"
             }
         }
     },

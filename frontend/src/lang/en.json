@@ -8,7 +8,8 @@
         }
     },
     "universalErrors": {
-        "internalServerError": "Server side error :("
+        "internalServerError": "Server side error :(",
+        "forbidden": "Access denied"
     },
     "mod": {
         "login": {
@@ -34,6 +35,13 @@
                 "passwordsDoNotMatch": "Passwords do not match",
                 "passwordTooLong": "Password is too long",
                 "usernameOrEmailExists": "Username or email already exists"
+            }
+        },
+        "users": {
+            "errors": {
+                "invalidUserId": "Invalid user identifier",
+                "userNotFound": "User with provided ID does not exist",
+                "emailInUse": "Email is already in use"
             }
         }
     },
