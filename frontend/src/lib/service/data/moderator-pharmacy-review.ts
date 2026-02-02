@@ -27,7 +27,7 @@ export class ModeratorPharmacyReview extends PharmacyReview {
      * @param showUnmoderated specifies whether unmoderated reviews should be shown (default: true)
      * @param showModerated specifies whether moderated reviews should be shown (default: false)
      */
-    protected static async getModeratoryPharmacyReviews(
+    public static async getModeratoryPharmacyReviews(
         key?: number,
         uniqueKey?: number,
         desc?: boolean,

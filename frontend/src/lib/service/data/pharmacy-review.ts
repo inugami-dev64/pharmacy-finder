@@ -23,7 +23,7 @@ export class PharmacyReview {
      * @param uniqueKey pager unique key values. In this case, the ID of the last review
      * @returns a promise to PharmacyReview array (meow :3)
      */
-    protected static async readReviews(id: number, key: number | undefined, uniqueKey: number | undefined): Promise<PharmacyReview[]> {
+    public static async readReviews(id: number, key: number | undefined, uniqueKey: number | undefined): Promise<PharmacyReview[]> {
         return await fetch(`/api/v1/pharmacies/${id}/reviews?l=${PAGER_LIMIT}${key != null ? `&k=${key}` : ""}${uniqueKey != null ? `&uk=${uniqueKey}` : ""}&desc=1`)
             .then(async res => {
                 if (res.status != 200) {
@@ -47,7 +47,7 @@ export class PharmacyReview {
      * @param id ID of the pharmacy whose review is going to be submitted
      * @returns a promise to created PharmacyReview instance
      */
-    protected async createReview(id: number): Promise<PharmacyReview> {
+    public async createReview(id: number): Promise<PharmacyReview> {
         // undefine fields which we do not want to submit
         let copy = new PharmacyReview;
         Object.assign(copy, this);
@@ -86,7 +86,7 @@ export class PharmacyReview {
      * @param id specifies the pharmacy ID whose review to update
      * @returns an updated PharmacyReview instance
      */
-    protected async updateReview(id: number): Promise<PharmacyReview> {
+    public async updateReview(id: number): Promise<PharmacyReview> {
         // undefine fields which we do not want to submit
         let copy = new PharmacyReview;
         Object.assign(copy, this);
@@ -120,7 +120,7 @@ export class PharmacyReview {
      * @param id specifies the ID of the pharmacy whose review to delete
      * @returns the deleted PharmacyReview instance
      */
-    protected async deleteReview(id: number): Promise<PharmacyReview> {
+    public async deleteReview(id: number): Promise<PharmacyReview> {
         let newReview = new PharmacyReview;
         newReview.__gRecaptchaResponse = this.__gRecaptchaResponse;
         newReview.modCode = this.modCode;
