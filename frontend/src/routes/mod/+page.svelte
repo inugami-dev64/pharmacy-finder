@@ -7,3 +7,4 @@
 </svelte:head>
 
 <h1>Yooooo!</h1>
+<p>Welcome to moderation panel lol!</p>

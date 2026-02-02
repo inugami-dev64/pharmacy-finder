@@ -54,60 +54,58 @@
     <title>Pharmacy finder | Map</title>
 </svelte:head>
 
-<main>
-    <div class="navbar-container" style="--zIndex: {navBarZIndex}">
-        <NavBar size={48}>
-            <SearchButton size={32} on:click={() => searchVisible = true} title={$_("map.navbar.search")}/>
-            <ShinyStarButton size={32} on:click={showTierRatingList} title={$_("map.navbar.ratingTierList")}/>
-            <div>
-                <LanguageButton size={32} on:click={_ => langSelector.showPicker()} title={$_("map.navbar.language")}/>
-                <select
-                    bind:this={langSelector}
-                    onchange={e => {
-                        e.preventDefault();
-                        const value = (e.target as HTMLSelectElement).value;
-                        locale.set(value);
-                    }}
-                >
-                    {#each languages as selection}
-                    <option value={selection.code}>{selection.language}</option>
-                    {/each}
-                </select>
-            </div>
-            <SourceCodeButton size={32} title={$_("map.navbar.source")}/>
-        </NavBar>
-    </div>
-    {#if activePharmacy != null && pharmacyViewVisible}
-    <PharmacyView
-        pharmacy={<PharmacyInfo>activePharmacy}
-        onClose={() => pharmacyViewVisible = false}
-    />
-    {/if}
-    {#if tierListVisible}
-    <RatingList
-        onSelectPharmacy={(id: number) => {
-            showPharmacyView((<{pharmacies: PharmacyInfo[]}>data).pharmacies.filter((v) => v.id == id)[0])
-            tierListVisible = false;
-        }}
-        onClose={() => tierListVisible = false}
-    />
-    {/if}
-    {#if searchVisible}
-    <SearchModal
-        pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies}
-        onSelect={(v) => {
-            showPharmacyView(v);
-            searchVisible = false;
-        }}
-        onClose={() => searchVisible = false}
-    />
-    {/if}
-    <LeafletMap
-        selectedPharmacy={activePharmacy}
-        pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies}
-        callback={showPharmacyView}
-    />
-</main>
+<div class="navbar-container" style="--zIndex: {navBarZIndex}">
+    <NavBar size={48}>
+        <SearchButton size={32} on:click={() => searchVisible = true} title={$_("map.navbar.search")}/>
+        <ShinyStarButton size={32} on:click={showTierRatingList} title={$_("map.navbar.ratingTierList")}/>
+        <div>
+            <LanguageButton size={32} on:click={_ => langSelector.showPicker()} title={$_("map.navbar.language")}/>
+            <select
+                bind:this={langSelector}
+                onchange={e => {
+                    e.preventDefault();
+                    const value = (e.target as HTMLSelectElement).value;
+                    locale.set(value);
+                }}
+            >
+                {#each languages as selection}
+                <option value={selection.code}>{selection.language}</option>
+                {/each}
+            </select>
+        </div>
+        <SourceCodeButton size={32} title={$_("map.navbar.source")}/>
+    </NavBar>
+</div>
+{#if activePharmacy != null && pharmacyViewVisible}
+<PharmacyView
+    pharmacy={<PharmacyInfo>activePharmacy}
+    onClose={() => pharmacyViewVisible = false}
+/>
+{/if}
+{#if tierListVisible}
+<RatingList
+    onSelectPharmacy={(id: number) => {
+        showPharmacyView((<{pharmacies: PharmacyInfo[]}>data).pharmacies.filter((v) => v.id == id)[0])
+        tierListVisible = false;
+    }}
+    onClose={() => tierListVisible = false}
+/>
+{/if}
+{#if searchVisible}
+<SearchModal
+    pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies}
+    onSelect={(v) => {
+        showPharmacyView(v);
+        searchVisible = false;
+    }}
+    onClose={() => searchVisible = false}
+/>
+{/if}
+<LeafletMap
+    selectedPharmacy={activePharmacy}
+    pharmacies={(<{pharmacies: PharmacyInfo[]}>data).pharmacies}
+    callback={showPharmacyView}
+/>
 
 <style>
     select {
@@ -122,11 +120,6 @@
     select option {
         font-size: 14px;
         color: black;
-    }
-
-    main {
-        width: 100%;
-        height: 100%;
     }
 
     .navbar-container {

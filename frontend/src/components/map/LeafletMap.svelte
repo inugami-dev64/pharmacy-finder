@@ -71,12 +71,15 @@
     });
 </script>
 
-<div bind:this={mapElement} style="--zIndex: {leafletZIndex}"></div>
+<div class="map" bind:this={mapElement} style="--zIndex: {leafletZIndex}"></div>
 
 <style>
-    div {
-        width: 100%;
-        height: 100%;
+    .map {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
         z-index: var(--zIndex);
     }
 </style>

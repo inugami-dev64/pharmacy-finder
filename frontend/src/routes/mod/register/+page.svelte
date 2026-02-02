@@ -54,7 +54,7 @@
     <title>Register - Pharmacy Finder</title>
 </svelte:head>
 
-<main>
+<div class="container">
     <div class="lang-container">
         <LanguageSwitcher/>
     </div>
@@ -72,7 +72,7 @@
         <input type="text" name="firstName" placeholder={$_("mod.register.firstName")} required maxlength="64">
         <input type="text" name="lastName" placeholder={$_("mod.register.lastName")} required maxlength="64">
     </UserForm>
-</main>
+</div>
 
 <style>
     :global(body) {
@@ -85,7 +85,7 @@
         left: 0;
     }
 
-    main {
+    .container {
         width: 100%;
         height: 100%;
         display: flex;

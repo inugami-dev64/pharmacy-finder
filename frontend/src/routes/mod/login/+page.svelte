@@ -10,7 +10,7 @@
     <title>Login - Pharmacy Finder</title>
 </svelte:head>
 
-<main>
+<div class="container">
     <div class="lang-container">
         <LanguageSwitcher/>
     </div>
@@ -21,7 +21,7 @@
         <input type="text" name="username" placeholder={$_("mod.login.usernamePlaceholder")} required maxlength="32">
         <input type="password" name="password" placeholder={$_("mod.login.passwordPlaceholder")} required>
     </UserForm>
-</main>
+</div>
 
 <style>
     :global(body) {
@@ -34,7 +34,7 @@
         left: 0;
     }
 
-    main {
+    .container {
         width: 100%;
         height: 100%;
         display: flex;

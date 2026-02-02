@@ -8,19 +8,17 @@
     <title>Pharmacy finder</title>
 </svelte:head>
 
-<div class="wrapper">
-    <LanguageSwitcher/>
-    <div class="intro-container">
-        <img src="banner.svg" alt="banner" class="banner">
-        <h1>{$_("mainPage.title")}</h1>
-        <p>{$_("mainPage.introduction")}</p>
-        <h2>{$_("mainPage.gotoMap.pretext")}<a href="/map">👉️<span class="rainbow">{$_("mainPage.gotoMap.title")}</span>👈️</a></h2>
-    </div>
-
-    <footer>
-        <span>Made with <TransHeart width=32 height=32/> by Karmen aka <a href="https://github.com/inugami-dev64">inugami-dev64</a></span>
-    </footer>
+<LanguageSwitcher/>
+<div class="intro-container">
+    <img src="banner.svg" alt="banner" class="banner">
+    <h1>{$_("mainPage.title")}</h1>
+    <p>{$_("mainPage.introduction")}</p>
+    <h2>{$_("mainPage.gotoMap.pretext")}<a href="/map">👉️<span class="rainbow">{$_("mainPage.gotoMap.title")}</span>👈️</a></h2>
 </div>
+
+<footer>
+    <span>Made with <TransHeart width=32 height=32/> by Karmen aka <a href="https://github.com/inugami-dev64">inugami-dev64</a></span>
+</footer>
 
 <style>
     :global(body) {
@@ -35,12 +33,6 @@
 
     h2 > a, h2 > a > span {
         font-size: var(--h2-size);
-    }
-
-    .wrapper {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
     }
 
     .rainbow {

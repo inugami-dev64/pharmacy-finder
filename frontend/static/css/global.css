@@ -15,12 +15,26 @@
     --secondary-text-color: #4f4f4f;
 }
 
+html {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+
 body {
     margin: 0;
     padding: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     font-family: "Roboto";
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6, b {
