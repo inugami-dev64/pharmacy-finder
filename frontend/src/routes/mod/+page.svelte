@@ -31,7 +31,7 @@
                 <p>My account</p>
             </a>
             <button>
-                <AccountIcon size={32}/>
+                <LogoutIcon size={32}/>
                 <p>Log out</p>
             </button>
         </dialog>
