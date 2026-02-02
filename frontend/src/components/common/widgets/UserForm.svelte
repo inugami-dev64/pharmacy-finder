@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { _ } from "svelte-i18n";
     import PrimaryButton from "./buttons/PrimaryButton.svelte";
     import Loader from "./Loader.svelte";
 
@@ -31,7 +32,7 @@
     {#if validationErrors.length > 0}
         <ul>
         {#each validationErrors as err}
-            <li class="err">{err}</li>
+            <li class="err">{$_(err)}</li>
         {/each}
         </ul>
     {/if}
@@ -59,6 +60,10 @@
         padding: 10px;
         border: 1px solid black;
         border-radius: 1em;
+
+        & > ul {
+            text-align: left;
+        }
 
         :global(& > input) {
             all: unset;
