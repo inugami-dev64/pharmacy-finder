@@ -38,7 +38,7 @@ func ProvideModeratorReviewController(
 
 func (handler *ModeratorReviewController) GetRoutes() []web.Route {
 	return []web.Route{
-		web.NewSecureRequestsHandler[ModeratorReviewController](handler.GetModerationReviews, "/mod/reviews", []string{"GET"}, web.NewSecurityChain[web.EmptyBody]().RuleAdmin(handler.userRepo, handler.tokenManager)),
+		web.NewSecureRequestsHandler[ModeratorReviewController](handler.GetModerationReviews, "/mod/reviews", []string{"GET"}, web.NewSecurityChain[web.EmptyBody]().RuleAuthenticated(handler.userRepo, handler.tokenManager)),
 	}
 }
 
