@@ -6,25 +6,23 @@
     let {
         title,
         submitBtnText,
+        isSubmitted = false,
         validationErrors = [],
         submitForm = undefined,
         children = undefined
     }: {
         title: string,
         submitBtnText: string,
+        isSubmitted?: boolean,
         validationErrors?: Array<string>,
         submitForm?: (e: SubmitEvent) => void,
         children?: Snippet
     } = $props();
-
-
-    let isSubmitted: boolean = $state(false);
 </script>
 
 <form
     onsubmit={
         (e: SubmitEvent) => {
-            isSubmitted=true;
             submitForm?.(e);
         }
     }
