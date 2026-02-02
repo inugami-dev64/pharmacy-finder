@@ -184,15 +184,21 @@ func (scraper *EuroapteekScraper) Scrape() {
 	}
 
 	scripts := soup.HTMLParse(string(body)).FindAll("script")
-	if len(scripts) < 46 {
+	if len(scripts) < 44 {
 		scraper.logger.Error().Msgf("Failed to find the required script tag for Euroapteek HTML")
 		return
 	}
 
-	script := scripts[45]
+	script := scripts[43]
 	scriptTxt := strings.ReplaceAll(strings.TrimSpace(script.Text()), "\n", " ")
-	re := regexp.MustCompile(`self\.__next_f\.push\(\[\d+,( |\t)*"\d+:(.*)"( |\t)*\]\)`)
-	data := strings.ReplaceAll(re.FindStringSubmatch(scriptTxt)[2], "\\n", "")
+	re := regexp.MustCompile(`self\.__next_f\.push\(\[\d+,( |\t)*"[0-9a-fA-F]+:(.*)"( |\t)*\]\)`)
+	matches := re.FindStringSubmatch(scriptTxt)
+	if len(matches) < 3 {
+		scraper.logger.Error().Msgf("Failed to regex extract Euroapteek json")
+		return
+	}
+
+	data := strings.ReplaceAll(matches[2], "\\n", "")
 	data = strings.ReplaceAll(data, "\\", "")
 	scrapedPharmacies, err := scraper.extractEuroapteekPharmaciesFromJson(data)
 	if err != nil {
