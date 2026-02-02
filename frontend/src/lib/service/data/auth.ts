@@ -1,20 +1,13 @@
 import { HttpError } from "$lib/http-error";
 import { LocalizedBackendError } from "./error";
 import type { FetchFunc } from "./fetch";
+import { UserProfile } from "./users";
 
 /**
  * AuthenticatedUser class represents the successful authentication
  * response from the server
  */
-export class AuthenticatedUser {
-    id?: string;
-    username?: string;
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    registrationTs?: number;
-    lastLoginTs?: number;
-    administrator?: boolean;
+export class AuthenticatedUser extends UserProfile {
     session?: {
         token: string;
         validFor?: number;
