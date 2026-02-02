@@ -1,0 +1,1 @@
+export const PAGER_LIMIT = 10;
