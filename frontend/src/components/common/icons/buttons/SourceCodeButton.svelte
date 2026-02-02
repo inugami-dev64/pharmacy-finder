@@ -7,6 +7,6 @@
     export let href: string = "https://github.com/inugami-dev64/pharmacy-finder"
 </script>
 
-<IconButton on:click title="{title}" href={href}>
+<IconButton on:click title="{title}" href={href} blankHref={true}>
     <SourceCodeIcon size={size} globalClass="svg-btn"/>
 </IconButton>
