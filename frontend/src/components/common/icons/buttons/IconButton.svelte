@@ -2,6 +2,7 @@
     export let title: string | null = null;
     export let hoverColor: string = "#10a7ff";
     export let href: string | undefined = undefined;
+    export let blankHref: boolean | undefined = false;
 </script>
 
 {#if href == null}
@@ -9,7 +10,7 @@
     <slot></slot>
 </button>
 {:else}
-<a href="{href}" target="_blank" style="--hover-color: {hoverColor}" type="button" on:click aria-label="icon-btn" title={title}>
+<a href="{href}" target={blankHref ? "_blank" : ""} style="--hover-color: {hoverColor}" type="button" on:click aria-label="icon-btn" title={title}>
     <slot></slot>
 </a>
 {/if}
@@ -27,10 +28,10 @@
         display: inline-block;
         vertical-align: middle;
         transition: fill 0.5s ease;
-    }
 
-    :global(.svg-btn:hover) {
-        fill: var(--hover-color);
-        cursor: pointer;
+        :global(&:hover) {
+            fill: var(--hover-color);
+            cursor: pointer;
+        }
     }
 </style>
