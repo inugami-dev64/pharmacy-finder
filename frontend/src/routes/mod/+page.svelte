@@ -2,6 +2,7 @@
     import { _ } from "svelte-i18n";
     import AccountIcon from "../../components/common/icons/AccountIcon.svelte";
     import AccountButton from "../../components/common/icons/buttons/AccountButton.svelte";
+    import LogoutIcon from "../../components/common/icons/LogoutIcon.svelte";
 
     let accountDialog: HTMLDialogElement;
     let isAccountDialogVisible: boolean = $state(false);
@@ -12,6 +13,10 @@
 </svelte:head>
 
 <header>
+    <a href="/" title="Go to home page">
+        <img src="banner.svg" alt="Logo">
+        <h3>Pharmacy Finder</h3>
+    </a>
     <div class="buttons">
         <AccountButton
             size={48}
@@ -53,11 +58,34 @@
 
     header {
         display: flex;
-        justify-content: end;
+        justify-content: space-between;
+        align-items: center;
         width: 100%;
         height: 64px;
         background-color: rgba(100, 0, 0, 0.2);
         border-bottom: 1px solid black;
+
+        & > a {
+            display: flex;
+            align-items: center;
+            & > img {
+                margin-left: 0.5em;
+                display: inline-block;
+                height: 48px;
+            }
+            h3 {
+                margin-left: 5px;
+                color: white;
+                text-shadow: 1px 1px 1px #eeeeee;
+
+            }
+
+            @media(max-width: 600px) {
+                & > h3 {
+                    display: none;
+                }
+            }
+        }
     }
 
     dialog {
