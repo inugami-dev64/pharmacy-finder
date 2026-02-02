@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"pharmafinder"
+	v1 "pharmafinder/api/v1"
 	"pharmafinder/api/v1/mod/auth"
 	modReviews "pharmafinder/api/v1/mod/reviews"
 	"pharmafinder/api/v1/mod/reviews/moderations"
@@ -138,6 +139,12 @@ func main() {
 			fx.Annotate(
 				bg.NewCronJob,
 				fx.ParamTags(`group:"scrapers"`),
+			),
+
+			// /health controller
+			fx.Annotate(
+				v1.ProvideHealthCheckController,
+				fx.ResultTags(`group:"routes"`),
 			),
 
 			// /pharmacies controller
