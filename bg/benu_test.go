@@ -130,6 +130,10 @@ func TestBenuScraper_EmptyDB(t *testing.T) {
 			}, nil
 		})
 
+	collectorMock := mock.NewMockScraperStatCollector(ctrl)
+	collectorMock.EXPECT().
+		CollectScrapeResult(gomock.Eq(entity.CHAIN_BENU), gomock.Eq(true))
+
 	queryMock := mock.NewMockQuery[entity.Pharmacy](ctrl)
 	queryMock.EXPECT().
 		QueryAll().
@@ -157,7 +161,7 @@ func TestBenuScraper_EmptyDB(t *testing.T) {
 			return nil
 		})
 
-	scraper := bg.ProvideBenuScraper(repoMock, httpMock)
+	scraper := bg.ProvideBenuScraper(repoMock, httpMock, collectorMock)
 	scraper.Scrape()
 }
 
@@ -190,6 +194,10 @@ func TestBenuScraper_Existing(t *testing.T) {
 			}, nil
 		})
 
+	collectorMock := mock.NewMockScraperStatCollector(ctrl)
+	collectorMock.EXPECT().
+		CollectScrapeResult(gomock.Eq(entity.CHAIN_BENU), gomock.Eq(true))
+
 	queryMock := mock.NewMockQuery[entity.Pharmacy](ctrl)
 	queryMock.EXPECT().
 		QueryAll().
@@ -208,6 +216,6 @@ func TestBenuScraper_Existing(t *testing.T) {
 			return nil
 		})
 
-	scraper := bg.ProvideBenuScraper(repoMock, httpMock)
+	scraper := bg.ProvideBenuScraper(repoMock, httpMock, collectorMock)
 	scraper.Scrape()
 }

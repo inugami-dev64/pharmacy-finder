@@ -85,6 +85,10 @@ func TestEuroapteekScraper_EmptyDB(t *testing.T) {
 			}, nil
 		})
 
+	collectorMock := mock.NewMockScraperStatCollector(ctrl)
+	collectorMock.EXPECT().
+		CollectScrapeResult(gomock.Eq(entity.CHAIN_EUROAPTEEK), gomock.Eq(true))
+
 	queryMock := mock.NewMockQuery[entity.Pharmacy](ctrl)
 	queryMock.EXPECT().
 		QueryAll().
@@ -112,7 +116,7 @@ func TestEuroapteekScraper_EmptyDB(t *testing.T) {
 			return nil
 		})
 
-	scraper := bg.ProvideEuroapteekScraper(repoMock, httpMock)
+	scraper := bg.ProvideEuroapteekScraper(repoMock, httpMock, collectorMock)
 	scraper.Scrape()
 }
 
@@ -156,6 +160,10 @@ func TestEuroapteekScraper_Existing(t *testing.T) {
 			}, nil
 		})
 
+	collectorMock := mock.NewMockScraperStatCollector(ctrl)
+	collectorMock.EXPECT().
+		CollectScrapeResult(gomock.Eq(entity.CHAIN_EUROAPTEEK), gomock.Eq(true))
+
 	queryMock := mock.NewMockQuery[entity.Pharmacy](ctrl)
 	queryMock.EXPECT().
 		QueryAll().
@@ -183,6 +191,6 @@ func TestEuroapteekScraper_Existing(t *testing.T) {
 			return nil
 		})
 
-	scraper := bg.ProvideEuroapteekScraper(repoMock, httpMock)
+	scraper := bg.ProvideEuroapteekScraper(repoMock, httpMock, collectorMock)
 	scraper.Scrape()
 }

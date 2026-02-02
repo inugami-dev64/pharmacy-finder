@@ -89,6 +89,10 @@ func TestApothekaScraper_EmptyDB(t *testing.T) {
 			}, nil
 		})
 
+	collectorMock := mock.NewMockScraperStatCollector(ctrl)
+	collectorMock.EXPECT().
+		CollectScrapeResult(gomock.Eq(entity.CHAIN_APOTHEKA), gomock.Eq(true))
+
 	queryMock := mock.NewMockQuery[entity.Pharmacy](ctrl)
 	queryMock.EXPECT().
 		QueryAll().
@@ -116,7 +120,7 @@ func TestApothekaScraper_EmptyDB(t *testing.T) {
 			return nil
 		})
 
-	scraper := bg.ProvideApothekaScraper(repoMock, httpMock)
+	scraper := bg.ProvideApothekaScraper(repoMock, httpMock, collectorMock)
 	scraper.Scrape()
 }
 
@@ -160,6 +164,10 @@ func TestApothekaScraper_Existing(t *testing.T) {
 			}, nil
 		})
 
+	collectorMock := mock.NewMockScraperStatCollector(ctrl)
+	collectorMock.EXPECT().
+		CollectScrapeResult(gomock.Eq(entity.CHAIN_APOTHEKA), gomock.Eq(true))
+
 	queryMock := mock.NewMockQuery[entity.Pharmacy](ctrl)
 	queryMock.EXPECT().
 		QueryAll().
@@ -187,6 +195,6 @@ func TestApothekaScraper_Existing(t *testing.T) {
 			return nil
 		})
 
-	scraper := bg.ProvideApothekaScraper(repoMock, httpMock)
+	scraper := bg.ProvideApothekaScraper(repoMock, httpMock, collectorMock)
 	scraper.Scrape()
 }
