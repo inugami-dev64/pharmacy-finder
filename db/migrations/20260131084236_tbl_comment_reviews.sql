@@ -3,8 +3,8 @@
 CREATE TYPE comment_review_result_t AS ENUM ('APPROVED', 'PERSONAL_ATTACK', 'OFFENSIVE', 'OTHER', 'NONE');
 CREATE TABLE comment_reviews (
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    comment_id BIGINT NOT NULL REFERENCES pharmacy_reviews(id),
-    moderator_id UUID NOT NULL REFERENCES moderator_users(id),
+    comment_id BIGINT NOT NULL REFERENCES pharmacy_reviews(id) ON DELETE CASCADE,
+    moderator_id UUID NOT NULL REFERENCES moderator_users(id) ON DELETE CASCADE,
     result comment_review_result_t NOT NULL,
     mod_comment VARCHAR(1024) NULL,
     marked_for_deletion BOOLEAN NOT NULL DEFAULT FALSE,
