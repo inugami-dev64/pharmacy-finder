@@ -7,12 +7,19 @@
             "title": "kaardile"
         }
     },
+    "universalErrors": {
+        "internalServerError": "Serveripoolne viga :("
+    },
     "mod": {
         "login": {
             "formTitle": "Sisene moderatsiooni paneeli",
             "usernamePlaceholder": "Kasutajanimi",
             "passwordPlaceholder": "Parool",
-            "submitTitle": "Logi sisse"
+            "submitTitle": "Logi sisse",
+            "errors": {
+                "userNotFound": "Antud kasutajanime või meiliaadressiga kasutajat ei leitud",
+                "invalidPassword": "Vale parool"
+            }
         },
         "register": {
             "formTitle": "Registreeri administraatori konto",
@@ -22,7 +29,12 @@
             "confirmPasswordPlaceholder": "Kinnita parool",
             "firstName": "Eesnimi",
             "lastName": "Perekonnanimi",
-            "submitTitle": "Registreeri administraatori konto"
+            "submitTitle": "Registreeri administraatori konto",
+            "errors": {
+                "passwordsDoNotMatch": "Paroolid ei kattu",
+                "passwordTooLong": "Parool on liiga pikk",
+                "usernameOrEmailExists": "Selle kasutajanime või meiliaadressiga konto on juba registreeritud"
+            }
         }
     },
     "map": {

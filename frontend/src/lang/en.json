@@ -7,12 +7,19 @@
             "title": "map"
         }
     },
+    "universalErrors": {
+        "internalServerError": "Server side error :("
+    },
     "mod": {
         "login": {
             "formTitle": "Login to moderation panel",
             "usernamePlaceholder": "Username",
             "passwordPlaceholder": "Password",
-            "submitTitle": "Login"
+            "submitTitle": "Login",
+            "errors": {
+                "userNotFound": "User with provided username or email does not exist",
+                "invalidPassword": "Invalid password"
+            }
         },
         "register": {
             "formTitle": "Register the admin account",
@@ -22,7 +29,12 @@
             "confirmPasswordPlaceholder": "Confirm password",
             "firstName": "First name",
             "lastName": "Last name",
-            "submitTitle": "Register admin account"
+            "submitTitle": "Register admin account",
+            "errors": {
+                "passwordsDoNotMatch": "Passwords do not match",
+                "passwordTooLong": "Password is too long",
+                "usernameOrEmailExists": "Username or email already exists"
+            }
         }
     },
     "map": {
