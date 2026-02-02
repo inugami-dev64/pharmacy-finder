@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { PharmacyInfo } from "$lib/service/pharmacy-info";
-    import { PharmacyReview } from "$lib/service/pharmacy-review";
+    import type { PharmacyInfo } from "$lib/service/data/pharmacy-info";
+    import { PharmacyReview } from "$lib/service/data/pharmacy-review";
     import { modifyReviewZIndex } from "$lib/utils/z-indices";
     import ModalWindow from "../ModalWindow.svelte";
     import Recaptcha from "../../common/Recaptcha.svelte";

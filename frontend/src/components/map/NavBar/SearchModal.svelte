@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { PharmacyInfo } from "$lib/service/pharmacy-info";
+    import { PharmacyInfo } from "$lib/service/data/pharmacy-info";
     import { searchViewZIndex } from "$lib/utils/z-indices";
     import CloseButton from "../../common/icons/buttons/CloseButton.svelte";
     import SearchIcon from "../../common/icons/SearchIcon.svelte";

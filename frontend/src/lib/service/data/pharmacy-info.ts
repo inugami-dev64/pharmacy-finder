@@ -1,4 +1,5 @@
 import type { HttpError } from "$lib/http-error";
+import type { FetchFunc } from "./fetch";
 
 const ESTONIA_BOUNDS = [[57.74100835592354, 21.73728235397422], [59.694266694887354, 28.30161313994147]]
 
@@ -15,7 +16,7 @@ export class PharmacyInfo {
     lat: number | undefined;
     lng: number | undefined;
 
-    public static async readPharmacies(): Promise<PharmacyInfo[]> {
+    public static async readPharmacies(fetch: FetchFunc): Promise<PharmacyInfo[]> {
         return await fetch(`/api/v1/pharmacies?sw=${ESTONIA_BOUNDS[0][0]},${ESTONIA_BOUNDS[0][1]}&ne=${ESTONIA_BOUNDS[1][0]},${ESTONIA_BOUNDS[1][1]}`)
             .then(async res => {
                 if (res.status != 200) {

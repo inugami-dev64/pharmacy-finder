@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { PharmacyReview } from "$lib/service/pharmacy-review";
+    import { PharmacyReview } from "$lib/service/data/pharmacy-review";
     import Countries from "$lib/assets/countries.json";
-    import type { PharmacyInfo } from "$lib/service/pharmacy-info";
+    import type { PharmacyInfo } from "$lib/service/data/pharmacy-info";
     import Loader from "../../common/widgets/Loader.svelte";
     import PrimaryButton from "../../common/widgets/buttons/PrimaryButton.svelte";
     import StarPicker from "../../common/widgets/stars/StarPicker.svelte";

@@ -1,11 +1,11 @@
 <script lang="ts">
-    import type { PharmacyInfo } from "$lib/service/pharmacy-info";
+    import type { PharmacyInfo } from "$lib/service/data/pharmacy-info";
     import StarRating from "../common/widgets/stars/StarRating.svelte";
     import {_} from "svelte-i18n";
     import Loader from "../common/widgets/Loader.svelte";
     import Review from "./PharmacyView/Review.svelte";
     import { onDestroy } from "svelte";
-    import { PAGER_LIMIT, PharmacyReview } from "$lib/service/pharmacy-review";
+    import { PAGER_LIMIT, PharmacyReview } from "$lib/service/data/pharmacy-review";
     import { ratingData, reviewData } from "$lib/stores";
     import IntersectionObserver from "svelte-intersection-observer";
 

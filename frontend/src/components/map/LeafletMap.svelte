@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { PharmacyInfo } from '$lib/service/pharmacy-info';
+    import type { PharmacyInfo } from '$lib/service/data/pharmacy-info';
     import type { Icon, LatLngBoundsExpression, LatLngExpression, Map as LeafletMap } from 'leaflet';
     import { onMount, onDestroy } from 'svelte';
     import { leafletZIndex } from '$lib/utils/z-indices';

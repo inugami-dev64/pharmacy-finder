@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { PharmacyInfo } from "$lib/service/pharmacy-info";
-    import { PharmacyRating, PharmacyTierRating } from "$lib/service/pharmacy-rating";
-    import { PharmacyReview } from "$lib/service/pharmacy-review";
+    import type { PharmacyInfo } from "$lib/service/data/pharmacy-info";
+    import { PharmacyRating, PharmacyTierRating } from "$lib/service/data/pharmacy-rating";
+    import { PharmacyReview } from "$lib/service/data/pharmacy-review";
     import { ratingData, reviewData, tierRatingData } from "$lib/stores";
     import { navBarZIndex } from "$lib/utils/z-indices";
     import { locale } from "svelte-i18n";
