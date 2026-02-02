@@ -95,7 +95,7 @@ func (handler *ModeratorAuthController) ModeratorLogin(details *web.HttpRequestD
 
 // First time admin user registration endpoint
 //
-// Path: `POST /api/v1/mod/auth/register/admin“
+// Path: `POST /api/v1/mod/auth/register
 //
 // @Summary 		Register the initial admin account
 // @Description		Endpoint which can be used to register the initial administrator account when admin accounts are not present
