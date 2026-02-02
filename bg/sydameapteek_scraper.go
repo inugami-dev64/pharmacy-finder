@@ -3,6 +3,7 @@ package bg
 import (
 	"pharmafinder/db"
 	"pharmafinder/db/entity"
+	"pharmafinder/service"
 	"pharmafinder/utils"
 	"time"
 
@@ -14,18 +15,23 @@ const SYDAMEAPTEEK_ENDPOINT = "https://www.sudameapteek.ee/shops/shop/shops"
 type SydameapteekScraper struct {
 	repo       db.PharmacyRepository
 	httpClient utils.HttpClient
+	collector  service.ScraperStatCollector
 	logger     zerolog.Logger
 }
 
-func ProvideSydameapteekScraper(repo db.PharmacyRepository, client utils.HttpClient) Scraper {
+func ProvideSydameapteekScraper(repo db.PharmacyRepository, client utils.HttpClient, collector service.ScraperStatCollector) Scraper {
 	return &SydameapteekScraper{
 		repo:       repo,
 		httpClient: client,
+		collector:  collector,
 		logger:     utils.GetLogger("BG"),
 	}
 }
 
 func (scraper *SydameapteekScraper) Scrape() {
+	success := false
+	defer func() { scraper.collector.CollectScrapeResult(entity.CHAIN_SUDAMEAPTEEK, success) }()
+
 	scraper.logger.Info().Msg("Scraping Südameapteek pharmacy locations...")
 	existingPharmacies, err := scraper.repo.FindPharmaciesByChain(entity.CHAIN_SUDAMEAPTEEK).QueryAll()
 	if err != nil {
@@ -61,5 +67,8 @@ func (scraper *SydameapteekScraper) Scrape() {
 	err = scraper.repo.StoreAll(pharmaciesToSave)
 	if err != nil {
 		scraper.logger.Error().Msgf("Failed to persist Südameapteek pharmacies: %v", err)
+		return
 	}
+
+	success = true
 }

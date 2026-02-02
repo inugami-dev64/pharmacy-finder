@@ -3,6 +3,7 @@ package bg
 import (
 	"pharmafinder/db"
 	"pharmafinder/db/entity"
+	"pharmafinder/service"
 	"pharmafinder/utils"
 	"time"
 
@@ -14,18 +15,23 @@ const APOTHEKA_ENDPOINT = "https://www.apotheka.ee/shops/shop/shops"
 type ApothekaScraper struct {
 	repo       db.PharmacyRepository
 	httpClient utils.HttpClient
+	collector  service.ScraperStatCollector
 	logger     zerolog.Logger
 }
 
-func ProvideApothekaScraper(repo db.PharmacyRepository, client utils.HttpClient) Scraper {
+func ProvideApothekaScraper(repo db.PharmacyRepository, client utils.HttpClient, collector service.ScraperStatCollector) Scraper {
 	return &ApothekaScraper{
 		repo:       repo,
 		httpClient: client,
+		collector:  collector,
 		logger:     utils.GetLogger("BG"),
 	}
 }
 
 func (scraper *ApothekaScraper) Scrape() {
+	success := false
+	defer func() { scraper.collector.CollectScrapeResult(entity.CHAIN_APOTHEKA, success) }()
+
 	scraper.logger.Info().Msg("Scraping Apotheka pharmacy locations...")
 	existingPharmacies, err := scraper.repo.FindPharmaciesByChain(entity.CHAIN_APOTHEKA).QueryAll()
 	if err != nil {
@@ -61,5 +67,8 @@ func (scraper *ApothekaScraper) Scrape() {
 	err = scraper.repo.StoreAll(pharmaciesToSave)
 	if err != nil {
 		scraper.logger.Error().Msgf("Failed to persist Apotheka pharmacies: %v", err)
+		return
 	}
+
+	success = true
 }

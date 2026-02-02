@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"pharmafinder/db"
 	"pharmafinder/db/entity"
+	"pharmafinder/service"
 	"pharmafinder/types"
 	"pharmafinder/utils"
 	"regexp"
@@ -23,13 +24,15 @@ const BENU_ENDPOINT = "https://www.benu.ee/leia-apteek"
 type BenuScraper struct {
 	repo       db.PharmacyRepository
 	httpClient utils.HttpClient
+	collector  service.ScraperStatCollector
 	logger     zerolog.Logger
 }
 
-func ProvideBenuScraper(repo db.PharmacyRepository, client utils.HttpClient) Scraper {
+func ProvideBenuScraper(repo db.PharmacyRepository, client utils.HttpClient, collector service.ScraperStatCollector) Scraper {
 	return &BenuScraper{
 		repo:       repo,
 		httpClient: client,
+		collector:  collector,
 		logger:     utils.GetLogger("BG"),
 	}
 }
@@ -157,6 +160,9 @@ func (scraper *BenuScraper) createEntitiesFromJson(data string) ([]entity.Pharma
 }
 
 func (scraper *BenuScraper) Scrape() {
+	success := false
+	defer func() { scraper.collector.CollectScrapeResult(entity.CHAIN_BENU, success) }()
+
 	scraper.logger.Info().Msg("Running BENU pharmacy scraper")
 	req, err := http.NewRequest("GET", BENU_ENDPOINT, nil)
 	if err != nil {
@@ -201,5 +207,11 @@ func (scraper *BenuScraper) Scrape() {
 		return
 	}
 
-	scraper.repo.StoreAll(pharmacies)
+	err = scraper.repo.StoreAll(pharmacies)
+	if err != nil {
+		scraper.logger.Error().Msgf("Failed to store scraper Benu pharmacies: %v", err)
+		return
+	}
+
+	success = true
 }

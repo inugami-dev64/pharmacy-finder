@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"pharmafinder/db"
 	"pharmafinder/db/entity"
+	"pharmafinder/service"
 	"pharmafinder/types"
 	"pharmafinder/utils"
 	"regexp"
@@ -24,6 +25,7 @@ const EUROAPTEEK_WEBSITE = "https://www.euroapteek.ee/apteegid"
 type EuroapteekScraper struct {
 	repo       db.PharmacyRepository
 	httpClient utils.HttpClient
+	collector  service.ScraperStatCollector
 	logger     zerolog.Logger
 }
 
@@ -39,10 +41,11 @@ type euroapteekPharmacy struct {
 
 var crc64Table *crc64.Table = crc64.MakeTable(crc64.ISO)
 
-func ProvideEuroapteekScraper(repo db.PharmacyRepository, client utils.HttpClient) Scraper {
+func ProvideEuroapteekScraper(repo db.PharmacyRepository, client utils.HttpClient, collector service.ScraperStatCollector) Scraper {
 	return &EuroapteekScraper{
 		repo:       repo,
 		httpClient: client,
+		collector:  collector,
 		logger:     utils.GetLogger("BG"),
 	}
 }
@@ -152,8 +155,10 @@ func (scraper *EuroapteekScraper) extractEuroapteekPharmaciesFromJson(data strin
 }
 
 func (scraper *EuroapteekScraper) Scrape() {
-	scraper.logger.Info().Msg("Scraping Euroapteek pharmacy locations...")
+	success := false
+	defer func() { scraper.collector.CollectScrapeResult(entity.CHAIN_EUROAPTEEK, success) }()
 
+	scraper.logger.Info().Msg("Scraping Euroapteek pharmacy locations...")
 	existingPharmacies, err := scraper.repo.FindPharmaciesByChain(entity.CHAIN_EUROAPTEEK).QueryAll()
 	if err != nil {
 		scraper.logger.Error().Msgf("Failed to query existing Euroapteek pharmacies: %v", err)
@@ -204,5 +209,8 @@ func (scraper *EuroapteekScraper) Scrape() {
 	err = scraper.repo.StoreAll(pharmacies)
 	if err != nil {
 		scraper.logger.Error().Msgf("Failed to persist Euroapteek pharmacies: %v", err)
+		return
 	}
+
+	success = true
 }

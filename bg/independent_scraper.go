@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"hash/crc64"
 	"io"
+	"maps"
 	"pharmafinder"
 	"pharmafinder/db"
 	"pharmafinder/db/entity"
+	"pharmafinder/service"
 	"pharmafinder/utils"
 
 	"github.com/rs/zerolog"
@@ -14,18 +16,28 @@ import (
 
 // "Scrapes" independent pharmacies from embedded json file
 type IndependentScraper struct {
-	repo   db.PharmacyRepository
-	logger zerolog.Logger
+	repo      db.PharmacyRepository
+	collector service.ScraperStatCollector
+	logger    zerolog.Logger
 }
 
-func ProvideIndependentScraper(repo db.PharmacyRepository) Scraper {
+func ProvideIndependentScraper(repo db.PharmacyRepository, collector service.ScraperStatCollector) Scraper {
 	return &IndependentScraper{
-		repo:   repo,
-		logger: utils.GetLogger("BG"),
+		repo:      repo,
+		collector: collector,
+		logger:    utils.GetLogger("BG"),
 	}
 }
 
 func (scraper *IndependentScraper) Scrape() {
+	success := false
+	chains := make(map[string]bool)
+	defer func() {
+		for v := range maps.Keys(chains) {
+			scraper.collector.CollectScrapeResult(entity.PharmacyChain(v), success)
+		}
+	}()
+
 	// Load the embedded independent pharmacies json
 	f, err := pharmafinder.PharmacyJSON.Open("db/independent-pharmacies.json")
 	if err != nil {
@@ -48,6 +60,7 @@ func (scraper *IndependentScraper) Scrape() {
 
 	var toStore []entity.Pharmacy
 	for _, pharmacy := range pharmacies {
+		chains[pharmacy.Chain] = true
 		pharmacy.PharmacyID = int64(crc64.Checksum([]byte(pharmacy.Name), crc64Table))
 		resps, err := scraper.repo.FindPharmacyByChainAndPharmacyID(pharmacy.PharmacyID, entity.PharmacyChain(pharmacy.Chain)).QueryAll()
 		if err != nil {
@@ -65,4 +78,6 @@ func (scraper *IndependentScraper) Scrape() {
 			scraper.logger.Error().Msgf("Failed to persist independent pharmacies to the database: %v", err)
 		}
 	}
+
+	success = true
 }
