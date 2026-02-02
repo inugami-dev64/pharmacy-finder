@@ -112,6 +112,7 @@ func main() {
 			service.ProvideSessionManager,
 			service.ProvidePasswordHasher,
 			service.ProvideRecaptchaVerifier,
+			service.ProvideScraperStatCollector,
 
 			// Background workers
 			fx.Annotate(
