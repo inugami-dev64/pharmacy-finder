@@ -6,6 +6,7 @@
     import TitleBar from "../common/TitleBar.svelte";
     import Sidepanel from "./Sidepanel.svelte";
     import Loader from "../common/widgets/Loader.svelte";
+    import CloseButton from "../common/icons/buttons/CloseButton.svelte";
 
     let {
         onSelectPharmacy,
@@ -29,7 +30,10 @@
 </script>
 
 <Sidepanel zIndex={pharmacyViewZIndex} rightAlign={true}>
-    <TitleBar onClose={onClose}/>
+    <TitleBar>
+        <CloseButton size=32 on:click={onClose}/>
+    </TitleBar>
+
     {#if pharmacies == null}
         <div class="loader-container">
             <Loader/>

@@ -6,7 +6,7 @@
     import EditButton from "../../common/icons/buttons/EditButton.svelte";
     import Countries from "$lib/assets/countries.json"
     import DeleteButton from "../../common/icons/buttons/DeleteButton.svelte";
-    import type { PharmacyReview } from "$lib/service/pharmacy-review";
+    import type { PharmacyReview } from "$lib/service/data/pharmacy-review";
     import ImagoLogo from "../../common/icons/logos/ImagoLogo.svelte";
     import GenderGPLogo from "../../common/icons/logos/GenderGPLogo.svelte";
     import { _ } from "svelte-i18n";

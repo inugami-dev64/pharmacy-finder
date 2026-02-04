@@ -1,4 +1,5 @@
 <script lang="ts">
+    import CloseButton from "../common/icons/buttons/CloseButton.svelte";
     import Overlay from "../common/Overlay.svelte";
     import TitleBar from "../common/TitleBar.svelte";
 
@@ -16,7 +17,9 @@
 
 <Overlay zIndex={zIndex}>
     <div class="modal-window" style="--minWidth: {minWidth}px; --minHeight: {minHeight}px">
-        <TitleBar onClose={onClose}/>
+        <TitleBar>
+            <CloseButton size=32 on:click={onClose}/>
+        </TitleBar>
         <slot/>
     </div>
 </Overlay>

@@ -1,11 +1,5 @@
-<script lang="ts">
-    import CloseButton from "./icons/buttons/CloseButton.svelte";
-
-    export let onClose: () => void;
-</script>
-
 <div class="titlebar">
-    <CloseButton size=32 on:click={(e) => onClose()}/>
+    <slot/>
 </div>
 
 <style>

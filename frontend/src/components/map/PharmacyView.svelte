@@ -22,6 +22,7 @@
     import { pharmacyViewZIndex } from "$lib/utils/z-indices";
     import Sidepanel from "./Sidepanel.svelte";
     import { PAGER_LIMIT } from "$lib/service/data/pager";
+    import CloseButton from "../common/icons/buttons/CloseButton.svelte";
 
     // props
     let {
@@ -90,7 +91,9 @@
 </script>
 
 <Sidepanel zIndex={pharmacyViewZIndex}>
-    <TitleBar onClose={onClose}/>
+    <TitleBar>
+        <CloseButton size={32} on:click={onClose}/>
+    </TitleBar>
 
     {#if pharmacy.chain?.toLowerCase() == "benu"}
         <img alt="Benu logo" src="{BenuLogo}" class="logo">
