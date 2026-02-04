@@ -5,8 +5,8 @@
     import ModalWindow from "../ModalWindow.svelte";
     import Recaptcha from "../../common/Recaptcha.svelte";
     import DangerButton from "../../common/widgets/buttons/DangerButton.svelte";
-    import Loader from "../../common/widgets/Loader.svelte";
     import { _ } from "svelte-i18n";
+    import CenteredLoader from "../../common/widgets/CenteredLoader.svelte";
 
     let {
         pharmacy,
@@ -62,9 +62,7 @@
 
         <div class="btn-captcha">
             {#if pendingSubmission}
-                <div style="display flex; justify-content: center; width: 100%">
-                    <Loader/>
-                </div>
+                <CenteredLoader/>
             {:else if invalidModCode}
                 <p style="color: red">{$_("map.reviewForm.responses.invalidModCode")}</p>
             {:else}

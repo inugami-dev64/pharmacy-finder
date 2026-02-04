@@ -23,6 +23,7 @@
     import Sidepanel from "./Sidepanel.svelte";
     import { PAGER_LIMIT } from "$lib/service/data/pager";
     import CloseButton from "../common/icons/buttons/CloseButton.svelte";
+    import CenteredLoader from "../common/widgets/CenteredLoader.svelte";
 
     // props
     let {
@@ -114,9 +115,7 @@
             <p>{pharmacy.address}, {pharmacy.city}, {pharmacy.county}, {pharmacy.postalCode}</p>
         </div>
         {#if overAllRating == null}
-            <div class="loader-container">
-                <Loader/>
-            </div>
+            <CenteredLoader/>
         {:else}
             <span><StarRating value={overAllRating} title={$_("map.sidebar.ratings.overallRating")}/></span>
             {#if (eRating || tRating) && !showMoreAverageScores}
@@ -136,10 +135,8 @@
 
     <!-- Container for pharmacy reviews -->
     <div class="phr-reviews">
-    {#if reviews == null}
-            <div class="loader-container">
-                <Loader/>
-            </div>
+        {#if reviews == null}
+            <CenteredLoader/>
         {:else}
             {#if reviews.length == 0}
                 <i>{$_("map.sidebar.noReviews")}</i>
@@ -164,9 +161,7 @@
                             updateReviewList().then();
                         }}
                     >
-                        <div class="loader-container" bind:this={element}>
-                            <Loader/>
-                        </div>
+                        <CenteredLoader bind:node={element}/>
                     </IntersectionObserver>
                 {/if}
             {/if}
@@ -200,14 +195,6 @@
     h3, p {
         padding: 0;
         margin: 0;
-    }
-
-    .loader-container {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin-top: 1em;
-        height: fit-content;
     }
 
     .logo {

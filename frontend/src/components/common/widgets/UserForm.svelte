@@ -2,7 +2,7 @@
     import type { Snippet } from "svelte";
     import { _ } from "svelte-i18n";
     import PrimaryButton from "./buttons/PrimaryButton.svelte";
-    import Loader from "./Loader.svelte";
+    import CenteredLoader from "./CenteredLoader.svelte";
 
     let {
         title,
@@ -41,9 +41,7 @@
     {#if !isSubmitted}
         <PrimaryButton>{submitBtnText}</PrimaryButton>
     {:else}
-        <div class="loader-container">
-            <Loader/>
-        </div>
+        <CenteredLoader/>
     {/if}
 </form>
 

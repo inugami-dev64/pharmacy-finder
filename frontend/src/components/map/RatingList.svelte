@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { PharmacyTierRating } from "$lib/service/pharmacy-rating";
+    import type { PharmacyTierRating } from "$lib/service/data/pharmacy-rating";
     import { tierRatingData } from "$lib/stores";
     import { pharmacyViewZIndex } from "$lib/utils/z-indices";
     import { onDestroy } from "svelte";
     import TitleBar from "../common/TitleBar.svelte";
     import Sidepanel from "./Sidepanel.svelte";
-    import Loader from "../common/widgets/Loader.svelte";
     import CloseButton from "../common/icons/buttons/CloseButton.svelte";
+    import CenteredLoader from "../common/widgets/CenteredLoader.svelte";
 
     let {
         onSelectPharmacy,
@@ -35,9 +35,7 @@
     </TitleBar>
 
     {#if pharmacies == null}
-        <div class="loader-container">
-            <Loader/>
-        </div>
+        <CenteredLoader/>
     {:else}
         <div class="pharmacy-rating-container">
         {#each pharmacies as pharmacy}
@@ -57,14 +55,6 @@
 </Sidepanel>
 
 <style>
-    .loader-container {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin-top: 1em;
-        height: fit-content;
-    }
-
     .pharmacy-rating-container {
         flex: 1;
         width: 100%;

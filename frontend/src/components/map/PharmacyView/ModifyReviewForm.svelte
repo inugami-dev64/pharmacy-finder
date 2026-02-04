@@ -2,7 +2,6 @@
     import { PharmacyReview } from "$lib/service/data/pharmacy-review";
     import Countries from "$lib/assets/countries.json";
     import type { PharmacyInfo } from "$lib/service/data/pharmacy-info";
-    import Loader from "../../common/widgets/Loader.svelte";
     import PrimaryButton from "../../common/widgets/buttons/PrimaryButton.svelte";
     import StarPicker from "../../common/widgets/stars/StarPicker.svelte";
     import ModalWindow from "../ModalWindow.svelte";
@@ -10,6 +9,7 @@
     import { _ } from "svelte-i18n";
     import { modifyReviewZIndex } from "$lib/utils/z-indices";
     import LimitedTextarea from "../../common/widgets/LimitedTextarea.svelte";
+    import CenteredLoader from "../../common/widgets/CenteredLoader.svelte";
 
     let {
         pharmacy,
@@ -126,9 +126,7 @@
         </div>
 
         {#if pendingSubmission}
-            <div style="display: flex; justify-content: center; width: 100%">
-                <Loader/>
-            </div>
+            <CenteredLoader/>
         {:else if successfullyModified}
             <p style="color: green">{$_("map.reviewForm.responses.modSuccess")}</p>
         {:else if invalidModCode}
