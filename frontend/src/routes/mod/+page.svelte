@@ -3,9 +3,52 @@
     import AccountIcon from "../../components/common/icons/AccountIcon.svelte";
     import AccountButton from "../../components/common/icons/buttons/AccountButton.svelte";
     import LogoutIcon from "../../components/common/icons/LogoutIcon.svelte";
+    import { authenticationSession } from "$lib/service/auth-session";
+    import { goto } from "$app/navigation";
+    import TitleBar from "../../components/common/TitleBar.svelte";
+    import { ModeratorPharmacyReview } from "$lib/service/data/moderator-pharmacy-review";
+    import CenteredLoader from "../../components/common/widgets/CenteredLoader.svelte";
+    import Review from "../../components/map/PharmacyView/Review.svelte";
+    import { PAGER_LIMIT } from "$lib/service/data/pager";
+    import IntersectionObserver from "svelte-intersection-observer/IntersectionObserver.svelte";
 
     let accountDialog: HTMLDialogElement;
     let isAccountDialogVisible: boolean = $state(false);
+
+    class ReviewFilter {
+        key?: number;
+        uniqueKey?: number;
+        desc: boolean = true;
+        showUnmoderated: boolean = true;
+        showModerated: boolean = false;
+    }
+
+    let filter: ReviewFilter = $state(new ReviewFilter());
+    let fetchDone: boolean = $state(false);
+    let reviews: ModeratorPharmacyReview[] = $state([]);
+
+    let element: HTMLElement | undefined = $state();
+    let orderByValue: string | undefined = $state();
+
+    const clearPager = () => {
+        reviews = [];
+        filter.key = undefined;
+        fetchDone = false;
+        filter.uniqueKey = undefined;
+    }
+
+    async function updateReviewList() {
+        let newReviews = await ModeratorPharmacyReview.getModeratorPharmacyReviews(filter.key, filter.uniqueKey, filter.desc, filter.showUnmoderated, filter.showModerated);
+        if (newReviews.length != 0) {
+            filter.key = newReviews[newReviews.length-1].updatedAt;
+            filter.uniqueKey = newReviews[newReviews.length-1].id;
+        }
+
+        if (newReviews.length < PAGER_LIMIT)
+            fetchDone = true;
+
+        reviews.push(...newReviews)
+    }
 </script>
 
 <svelte:head>
@@ -35,7 +78,10 @@
                 <AccountIcon size={32}/>
                 <p>My account</p>
             </a>
-            <button>
+            <button onclick={() => {
+                authenticationSession.logout();
+                goto("/mod/login", { replaceState: true })
+            }}>
                 <LogoutIcon size={32}/>
                 <p>Log out</p>
             </button>
@@ -43,7 +89,65 @@
     </div>
 </header>
 
-
+<div class="mod-container">
+    <div class="comment-container">
+        <TitleBar>
+            <div class="filters">
+                <label for="orderBy">Order by:</label>
+                <select
+                    name="orderBy"
+                    bind:value={orderByValue}
+                    onchange={() => {
+                        console.log(orderByValue)
+                        if (orderByValue == "newest")
+                            filter.desc = true;
+                        else filter.desc = false;
+                        clearPager();
+                    }}
+                >
+                    <option selected={filter.desc} value="newest">Newest first</option>
+                    <option selected={!filter.desc} value="oldest">Oldest first</option>
+                </select>
+                <label for="unmoderated">Show unmoderated:</label>
+                <input
+                    type="checkbox"
+                    name="unmoderated"
+                    bind:checked={filter.showUnmoderated}
+                    onchange={(_) => clearPager()}
+                >
+                <label for="moderated">Show moderated:</label>
+                <input
+                    type="checkbox"
+                    name="moderated"
+                    bind:checked={filter.showModerated}
+                    onchange={(_) => clearPager()}
+                >
+            </div>
+        </TitleBar>
+        {#each reviews as review}
+            <Review
+                review={review}
+                onDelete={() => {}}
+                onEdit={() => {}}
+            />
+        {/each}
+        {#if reviews.length === 0 && fetchDone}
+            <div style="width: 100%; text-align: center; margin-top: 1em">
+                <i>No reviews were found</i>
+            </div>
+        {/if}
+        {#if !fetchDone}
+            <IntersectionObserver
+                {element}
+                on:intersect={(e: CustomEvent<IntersectionObserverEntry>) => {
+                    updateReviewList().then();
+                }}
+            >
+                <CenteredLoader bind:node={element}/>
+            </IntersectionObserver>
+        {/if}
+    </div>
+</div>
 
 <style>
     :global(body) {
@@ -64,10 +168,12 @@
         height: 64px;
         background-color: rgba(100, 0, 0, 0.2);
         border-bottom: 1px solid black;
+        box-sizing: border-box;
 
         & > a {
             display: flex;
             align-items: center;
+            user-select: none;
             & > img {
                 margin-left: 0.5em;
                 display: inline-block;
@@ -77,7 +183,6 @@
                 margin-left: 5px;
                 color: white;
                 text-shadow: 1px 1px 1px #eeeeee;
-
             }
 
             @media(max-width: 600px) {
@@ -92,7 +197,7 @@
         text-align: center;
         background-color: white;
         position: absolute;
-        border: none;
+        border: 1px solid black;
         margin: 0;
         top: 64px;
         right: 0;
@@ -124,5 +229,24 @@
                 background-color: rgba(0, 0, 0, 0.15)
             }
         }
+    }
+
+    .mod-container {
+        width: 100%;
+        height: calc(100% - 65px);
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .comment-container {
+        margin: 30px auto;
+        overflow: auto;
+        max-height: calc(100% - 60px);
+        max-width: 50%;
+        min-width: 400px;
+        box-sizing: border-box;
+        padding: 0.5em;
+        border-radius: 0.5em;
+        background-color: #ffffff;
     }
 </style>
