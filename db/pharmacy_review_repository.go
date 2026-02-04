@@ -125,6 +125,8 @@ func (repo PharmacyReviewRepositorySQLX) FindReviewsForModeration(showUnmoderate
 	whereClause := strings.Join(whereClauses, " OR ")
 	if whereClause != "" {
 		q += " WHERE " + whereClause
+	} else {
+		q += " WHERE FALSE"
 	}
 
 	return &SQLXQuery[dto.ModerationPharmacyReview]{
