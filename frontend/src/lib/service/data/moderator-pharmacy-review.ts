@@ -27,15 +27,15 @@ export class ModeratorPharmacyReview extends PharmacyReview {
      * @param showUnmoderated specifies whether unmoderated reviews should be shown (default: true)
      * @param showModerated specifies whether moderated reviews should be shown (default: false)
      */
-    public static async getModeratoryPharmacyReviews(
+    public static async getModeratorPharmacyReviews(
         key?: number,
         uniqueKey?: number,
         desc?: boolean,
         showUnmoderated?: boolean,
         showModerated?: boolean
-    ): Promise<ModeratorPharmacyReview> {
+    ): Promise<ModeratorPharmacyReview[]> {
         const token = authenticationSession.getSessionToken();
-        return await fetch(`/api/v1/mod/reviews?l=${PAGER_LIMIT}${key != null ? `&k=${key}` : ""}${uniqueKey != null ? `&uk=${uniqueKey}` : ""}${desc != null ? `&desc=${desc}` : ""}${showModerated != null ? `&moderator=${showModerated}` : ""}${showUnmoderated != null ? `&unmoderated=${showUnmoderated}` : ""}`, {
+        return await fetch(`/api/v1/mod/reviews?l=${PAGER_LIMIT}${key != null ? `&k=${key}` : ""}${uniqueKey != null ? `&uk=${uniqueKey}` : ""}${desc != null ? `&desc=${desc}` : ""}${showModerated != null ? `&moderated=${showModerated}` : ""}${showUnmoderated != null ? `&unmoderated=${showUnmoderated}` : ""}`, {
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + token
