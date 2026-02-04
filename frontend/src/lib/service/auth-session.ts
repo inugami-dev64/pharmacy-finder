@@ -69,6 +69,13 @@ export class AuthenticationSession {
 
         return item.token;
     }
+
+    /**
+     * Attempts to logout the user by deleting the JWT from LocalStorage
+     */
+    public logout() {
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+    }
 }
 
 export const authenticationSession = new AuthenticationSession();
