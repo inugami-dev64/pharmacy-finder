@@ -4,8 +4,10 @@
 
     export let size: number;
     export let title: string;
+    export let color: string | undefined = "#999999"
+    export let padding: number | undefined = 0.5;
 </script>
 
-<IconButton on:click title="{title}">
-    <AccountIcon size={size} globalClass="svg-btn"/>
+<IconButton on:click title="{title}" padding={padding}>
+    <AccountIcon size={size} globalClass="svg-btn" color={color}/>
 </IconButton>
