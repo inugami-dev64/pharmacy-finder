@@ -6,11 +6,16 @@
     import { authenticationSession } from "$lib/service/auth-session";
     import { goto } from "$app/navigation";
     import TitleBar from "../../components/common/TitleBar.svelte";
-    import { ModeratorPharmacyReview } from "$lib/service/data/moderator-pharmacy-review";
+    import { ModeratorPharmacyReview, ReviewModerationResult } from "$lib/service/data/moderator-pharmacy-review";
     import CenteredLoader from "../../components/common/widgets/CenteredLoader.svelte";
     import Review from "../../components/map/PharmacyView/Review.svelte";
     import { PAGER_LIMIT } from "$lib/service/data/pager";
     import IntersectionObserver from "svelte-intersection-observer/IntersectionObserver.svelte";
+    import RateReviewButton from "../../components/common/icons/buttons/RateReviewButton.svelte";
+    import CheckCircleIcon from "../../components/common/icons/CheckCircleIcon.svelte";
+    import TimedDeletionIcon from "../../components/common/icons/TimedDeletionIcon.svelte";
+    import IntermediateCheckIcon from "../../components/common/icons/IntermediateCheckIcon.svelte";
+    import BellNotificationIcon from "../../components/common/icons/BellNotificationIcon.svelte";
 
     let accountDialog: HTMLDialogElement;
     let isAccountDialogVisible: boolean = $state(false);
@@ -125,11 +130,26 @@
             </div>
         </TitleBar>
         {#each reviews as review}
-            <Review
-                review={review}
-                onDelete={() => {}}
-                onEdit={() => {}}
-            />
+            <Review review={review}>
+                {#if !review.markedForDeletion && review.commentReviewResult !== ReviewModerationResult.None}
+                    <span title="Approved comment" class="icon">
+                        <CheckCircleIcon size={24}/>
+                    </span>
+                {:else if review.markedForDeletion}
+                    <span title="Marked for deletion" class="icon">
+                        <TimedDeletionIcon size={24}/>
+                    </span>
+                {:else if review.commentReviewResult === ReviewModerationResult.None}
+                    <span title="Not yet moderated" class="icon">
+                        <IntermediateCheckIcon size={24}/>
+                    </span>
+                {:else}
+                    <span title="This review has been marked as offensive" class="icon">
+                        <BellNotificationIcon size={24}/>
+                    </span>
+                {/if}
+                <RateReviewButton size={24} title="Rate the review"/>
+            </Review>
         {/each}
         {#if reviews.length === 0 && fetchDone}
             <div style="width: 100%; text-align: center; margin-top: 1em">
@@ -152,6 +172,11 @@
 <style>
     :global(body) {
         background-color: #fdcece;
+    }
+
+    .icon {
+        display: inline-block;
+        vertical-align: middle;
     }
 
     .buttons {
