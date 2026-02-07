@@ -63,7 +63,7 @@
 <header>
     <a href="/" title="Go to home page">
         <img src="banner.svg" alt="Logo">
-        <h3>Pharmacy Finder</h3>
+        <h3>{$_("mod.bannerName")}</h3>
     </a>
     <div class="buttons">
         <AccountButton
@@ -81,14 +81,14 @@
         <dialog bind:this={accountDialog}>
             <a href="/mod/account/me">
                 <AccountIcon size={32}/>
-                <p>My account</p>
+                <p>{$_("mod.header.myAccount")}</p>
             </a>
             <button onclick={() => {
                 authenticationSession.logout();
                 goto("/mod/login", { replaceState: true })
             }}>
                 <LogoutIcon size={32}/>
-                <p>Log out</p>
+                <p>{$_("mod.header.logOut")}</p>
             </button>
         </dialog>
     </div>
@@ -98,7 +98,7 @@
     <div class="comment-container">
         <TitleBar>
             <div class="filters">
-                <label for="orderBy">Order by:</label>
+                <label for="orderBy">{$_("mod.filters.orderBy.title")}:</label>
                 <select
                     name="orderBy"
                     bind:value={orderByValue}
@@ -110,17 +110,17 @@
                         clearPager();
                     }}
                 >
-                    <option selected={filter.desc} value="newest">Newest first</option>
-                    <option selected={!filter.desc} value="oldest">Oldest first</option>
+                    <option selected={filter.desc} value="newest">{$_("mod.filters.orderBy.newestFirst")}</option>
+                    <option selected={!filter.desc} value="oldest">{$_("mod.filters.orderBy.oldestFirst")}</option>
                 </select>
-                <label for="unmoderated">Show unmoderated:</label>
+                <label for="unmoderated">{$_("mod.filters.showUnmoderated")}:</label>
                 <input
                     type="checkbox"
                     name="unmoderated"
                     bind:checked={filter.showUnmoderated}
                     onchange={(_) => clearPager()}
                 >
-                <label for="moderated">Show moderated:</label>
+                <label for="moderated">{$_("mod.filters.showUnmoderated")}:</label>
                 <input
                     type="checkbox"
                     name="moderated"
@@ -132,19 +132,27 @@
         {#each reviews as review}
             <Review review={review}>
                 {#if !review.markedForDeletion && review.commentReviewResult !== ReviewModerationResult.None}
-                    <span title="Approved comment" class="icon">
+                    <span title="{$_("mod.comments.approved")}" class="icon">
                         <CheckCircleIcon size={24}/>
                     </span>
                 {:else if review.markedForDeletion}
-                    <span title="Marked for deletion" class="icon">
+                    <span title="{$_("mod.comments.markedForDeletion")}" class="icon">
                         <TimedDeletionIcon size={24}/>
                     </span>
                 {:else if review.commentReviewResult === ReviewModerationResult.None}
-                    <span title="Not yet moderated" class="icon">
+                    <span title="{$_("mod.comments.notModerated")}" class="icon">
                         <IntermediateCheckIcon size={24}/>
                     </span>
-                {:else}
-                    <span title="This review has been marked as offensive" class="icon">
+                {:else if review.commentReviewResult === ReviewModerationResult.PersonalAttack}
+                    <span title="{$_("mod.comments.personalAttack")}" class="icon">
+                        <BellNotificationIcon size={24}/>
+                    </span>
+                {:else if review.commentReviewResult === ReviewModerationResult.Offensive}
+                    <span title="{$_("mod.comments.offensive")}" class="icon">
+                        <BellNotificationIcon size={24}/>
+                    </span>
+                {:else if review.commentReviewResult === ReviewModerationResult.Other}
+                    <span title="{$_("mod.comments.other")}" class="icon">
                         <BellNotificationIcon size={24}/>
                     </span>
                 {/if}
@@ -153,7 +161,7 @@
         {/each}
         {#if reviews.length === 0 && fetchDone}
             <div style="width: 100%; text-align: center; margin-top: 1em">
-                <i>No reviews were found</i>
+                <i>{$_("mod.noReviews")}</i>
             </div>
         {/if}
         {#if !fetchDone}

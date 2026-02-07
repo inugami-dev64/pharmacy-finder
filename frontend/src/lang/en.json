@@ -43,7 +43,30 @@
                 "userNotFound": "User with provided ID does not exist",
                 "emailInUse": "Email is already in use"
             }
-        }
+        },
+        "bannerName": "Pharmacy Finder",
+        "header": {
+            "myAccount": "My account",
+            "logOut": "Log out"
+        },
+        "filters": {
+            "orderBy": {
+                "title": "Order by",
+                "newestFirst": "Newest first",
+                "oldestFirst": "Oldest first"
+            },
+            "showUnmoderated": "Show unmoderated",
+            "showModerated": "Show moderated"
+        },
+        "comments": {
+            "approved": "Approved comment",
+            "markedForDeletion": "Marked for deletion",
+            "notModerated": "Not yet moderated",
+            "personalAttack": "This comment has been marked to contain a personal attack",
+            "offensive": "This comment has been marked as offensive",
+            "other": "This comment has been flagged for other reasons"
+        },
+        "noReviews": "No reviews were found"
     },
     "map": {
         "navbar": {

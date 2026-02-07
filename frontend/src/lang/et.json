@@ -43,7 +43,30 @@
                 "userNotFound": "Antud kasutajatunnusega kasutajat ei leitud",
                 "emailInUse": "Meiliaadress on juba kasutusel"
             }
-        }
+        },
+        "bannerName": "Apteegileidja",
+        "header": {
+            "myAccount": "Minu kasutajakonto",
+            "logOut": "Logi välja"
+        },
+        "filters": {
+            "orderBy": {
+                "title": "Sorteeri",
+                "newestFirst": "Uuemad ees",
+                "oldestFirst": "Vanemad ees"
+            },
+            "showUnmoderated": "Näita modereerimata",
+            "showModerated": "Näita modereerituid"
+        },
+        "comments": {
+            "approved": "Heaks kiidetud",
+            "markedForDeletion": "Märgitud kustutamiseks",
+            "notModerated": "Pole veel üle vaadatud",
+            "personalAttack": "Kommentaar sisaldab isiklikke solvanguid",
+            "offensive": "Kommentaar on solvav",
+            "other": "Kommentaar on märgitud moderaatorite poolt mingil muul põhjusel"
+        },
+        "noReviews": "Kommentaare ei leitud"
     },
     "map": {
         "navbar": {
