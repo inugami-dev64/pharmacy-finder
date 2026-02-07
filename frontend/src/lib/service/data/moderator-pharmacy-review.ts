@@ -8,7 +8,8 @@ export enum ReviewModerationResult {
     Approved = "APPROVED",
     PersonalAttack = "PERSONAL_ATTACK",
     Offensive = "OFFENSIVE",
-    Other = "Other"
+    Other = "OTHER",
+    None = "NONE"
 }
 
 export class ModeratorPharmacyReview extends PharmacyReview {
