@@ -3,17 +3,14 @@
     import Estrogen from "$lib/assets/regimen/estrogen.webp";
     import Testosterone from "$lib/assets/regimen/testosterone.webp";
     import { onMount } from "svelte";
-    import EditButton from "../../common/icons/buttons/EditButton.svelte";
     import Countries from "$lib/assets/countries.json"
-    import DeleteButton from "../../common/icons/buttons/DeleteButton.svelte";
     import type { PharmacyReview } from "$lib/service/data/pharmacy-review";
     import ImagoLogo from "../../common/icons/logos/ImagoLogo.svelte";
     import GenderGPLogo from "../../common/icons/logos/GenderGPLogo.svelte";
     import { _ } from "svelte-i18n";
+    import { ModeratorPharmacyReview } from "$lib/service/data/moderator-pharmacy-review";
 
-    export let review: PharmacyReview;
-    export let onEdit: () => void;
-    export let onDelete: () => void;
+    export let review: ModeratorPharmacyReview | PharmacyReview;
 
     let truncateText: boolean = true;
     let textElement: HTMLElement;
@@ -32,8 +29,7 @@
     <div class="review-header">
         <span>
             <Stars value={review.stars ?? 5} scale={0.75}/>
-            <EditButton size={24} on:click={_ => onEdit()}/>
-            <DeleteButton size={22} on:click={_ => onDelete()}/>
+            <slot/>
         </span>
         <span style="display: flex; align-items: center">
             {#if review.nationality != null && review.nationality in Countries}
