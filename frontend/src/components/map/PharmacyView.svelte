@@ -23,6 +23,8 @@
     import { PAGER_LIMIT } from "$lib/service/data/pager";
     import CloseButton from "../common/icons/buttons/CloseButton.svelte";
     import CenteredLoader from "../common/widgets/CenteredLoader.svelte";
+    import EditButton from "../common/icons/buttons/EditButton.svelte";
+    import DeleteButton from "../common/icons/buttons/DeleteButton.svelte";
 
     // props
     let {
@@ -141,17 +143,16 @@
                 <i>{$_("map.sidebar.noReviews")}</i>
             {:else}
                 {#each reviews as review}
-                <Review
-                    review={review}
-                    onDelete={() => {
-                        pendingReview = review;
-                        showDeleteReview = true;
-                    }}
-                    onEdit={() => {
+                <Review review={review}>
+                    <EditButton size={24} on:click={(_) => {
                         pendingReview = review;
                         showModifyReview = true;
-                    }}
-                />
+                    }}/>
+                    <DeleteButton size={22} on:click={(_) => {
+                        pendingReview = review;
+                        showDeleteReview = true;
+                    }}/>
+                </Review>
                 {/each}
                 {#if !fetchDone}
                     <IntersectionObserver
@@ -169,25 +170,33 @@
 </Sidepanel>
 
 {#if showModifyReview}
-    <ModifyReviewForm pharmacy={pharmacy} review={pendingReview} onClose={async () => {
-        showModifyReview = false;
-        key = undefined;
-        uniqueKey = undefined;
-        pendingReview = undefined;
-        reviews = [];
-        await updateReviewList();
-    }}/>
+    <ModifyReviewForm
+        pharmacy={pharmacy}
+        review={pendingReview}
+        onClose={async () => {
+            showModifyReview = false;
+            key = undefined;
+            uniqueKey = undefined;
+            pendingReview = undefined;
+            reviews = [];
+            await updateReviewList();
+        }}
+    />
 {/if}
 
 {#if showDeleteReview}
-    <DeleteReviewForm pharmacy={pharmacy} review={pendingReview ?? new PharmacyReview} onClose={async () => {
-        showDeleteReview = false;
-        key = undefined;
-        uniqueKey = undefined;
-        pendingReview = undefined;
-        reviews = [];
-        await updateReviewList();
-    }}/>
+    <DeleteReviewForm
+        pharmacy={pharmacy}
+        review={pendingReview ?? new PharmacyReview}
+        onClose={async () => {
+            showDeleteReview = false;
+            key = undefined;
+            uniqueKey = undefined;
+            pendingReview = undefined;
+            reviews = [];
+            await updateReviewList();
+        }}
+    />
 {/if}
 
 <style>
