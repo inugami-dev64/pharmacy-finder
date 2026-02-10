@@ -45,6 +45,21 @@
             }
         },
         "moderations": {
+            "form": {
+                "moderationPlaceholder": "Moderation comment",
+                "markForDeletion": "Mark for deletion",
+                "decisionLabel": "Decision",
+                "createNew": "Create a new moderation comment",
+                "update": "Update moderation comment",
+                "decision": {
+                    "approve": "Approve",
+                    "personalAttack": "Personal attack",
+                    "offensive": "Offensive",
+                    "other": "Other"
+                }
+            },
+            "otherModerations": "Other moderations",
+            "noModerations": "No moderations for this review",
             "errors": {
                 "invalidReviewId": "Invalid review identifier",
                 "invalidModId": "Invalid moderation identifier",

@@ -45,6 +45,21 @@
             }
         },
         "moderations": {
+            "form": {
+                "moderationPlaceholder": "Moderaatori kommentaar",
+                "markForDeletion": "Märgi kustutamiseks",
+                "decisionLabel": "Otsus",
+                "createNew": "Loo uus modereering",
+                "update": "Uuenda modereeringut",
+                "decision": {
+                    "approve": "Kiida heaks",
+                    "personalAttack": "Isiklik rünnak",
+                    "offensive": "Solvav",
+                    "other": "Muu"
+                }
+            },
+            "otherModerations": "Teiste modereeringud",
+            "noModerations": "Sellel arvustusel puuduvad modereeringud",
             "errors": {
                 "invalidReviewId": "Vale arvustuse tunnus",
                 "invalidModId": "Vale moderatsiooni tunnus",
@@ -70,7 +85,7 @@
             "approved": "Heaks kiidetud",
             "markedForDeletion": "Märgitud kustutamiseks",
             "notModerated": "Pole veel üle vaadatud",
-            "personalAttack": "Kommentaar sisaldab isiklikke solvanguid",
+            "personalAttack": "Kommentaar sisaldab isiklikke ründeid",
             "offensive": "Kommentaar on solvav",
             "other": "Kommentaar on märgitud moderaatorite poolt mingil muul põhjusel"
         },

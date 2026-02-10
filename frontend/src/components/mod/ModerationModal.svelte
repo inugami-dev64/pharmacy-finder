@@ -95,23 +95,23 @@
             <form onsubmit={submitForm}>
                 <LimitedTextarea
                     name="moderation-comment"
-                    placeholder={$_("mod.moderations.moderationPlaceholder")}
+                    placeholder={$_("mod.moderations.form.moderationPlaceholder")}
                     text={userModeration?.moderatorComment || undefined}
                     maxLength={512}
                 />
                 <div class="markers">
                     <label for="mark-for-deletion">
-                        Mark for deletion
+                        {$_("mod.moderations.form.markForDeletion")}
                         <input type="checkbox" id="mark-for-deletion" name="mark-for-deletion" checked={userModeration != null && userModeration.markedForDeletion}>
                     </label>
                     <br>
                     <label for="moderation-decision">
-                        Decision
+                        {$_("mod.moderations.form.decisionLabel")}
                         <select name="moderation-decision">
-                            <option value={ReviewModerationResult.Approved} selected={userModeration != null && userModeration.result == ReviewModerationResult.Approved}>{$_("mod.moderations.decision.approve")}</option>
-                            <option value={ReviewModerationResult.PersonalAttack} selected={userModeration != null && userModeration.result == ReviewModerationResult.PersonalAttack}>{$_("mod.moderations.decision.personalAttack")}</option>
-                            <option value={ReviewModerationResult.Offensive} selected={userModeration != null && userModeration.result == ReviewModerationResult.Offensive}>{$_("mod.moderations.decision.offensive")}</option>
-                            <option value={ReviewModerationResult.Other} selected={userModeration != null && userModeration.result == ReviewModerationResult.Other}>{$_("mod.moderations.decision.other")}</option>
+                            <option value={ReviewModerationResult.Approved} selected={userModeration != null && userModeration.result == ReviewModerationResult.Approved}>{$_("mod.moderations.form.decision.approve")}</option>
+                            <option value={ReviewModerationResult.PersonalAttack} selected={userModeration != null && userModeration.result == ReviewModerationResult.PersonalAttack}>{$_("mod.moderations.form.decision.personalAttack")}</option>
+                            <option value={ReviewModerationResult.Offensive} selected={userModeration != null && userModeration.result == ReviewModerationResult.Offensive}>{$_("mod.moderations.form.decision.offensive")}</option>
+                            <option value={ReviewModerationResult.Other} selected={userModeration != null && userModeration.result == ReviewModerationResult.Other}>{$_("mod.moderations.form.decision.other")}</option>
                         </select>
                     </label>
                 </div>
@@ -120,21 +120,21 @@
                     <CenteredLoader/>
                 {:else}
                     {#if userModeration == null}
-                        <PrimaryButton>Create a new moderation comment</PrimaryButton>
+                        <PrimaryButton>{$_("mod.moderations.form.createNew")}</PrimaryButton>
                     {:else}
-                        <PrimaryButton>Update moderation comment</PrimaryButton>
+                        <PrimaryButton>{$_("mod.moderations.form.update")}</PrimaryButton>
                     {/if}
                 {/if}
             </form>
 
             <hr>
             {#if moderations.length > 0}
-                <p>Other comments:</p>
+                <p>{$_("mod.moderations.otherModerations")}:</p>
                 {#each moderations as moderation}
                 <TrunctablePost postText={moderation.moderatorComment || ""}></TrunctablePost>
                 {/each}
             {:else}
-                <i>No moderations for this review</i>
+                <i>{$_("mod.moderations.noModerations")}</i>
             {/if}
         {/if}
     </div>
