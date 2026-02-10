@@ -19,6 +19,7 @@
     import DropdownMenuContainer from "../../components/common/icons/dropdown/DropdownMenuContainer.svelte";
     import LanguageButton from "../../components/common/icons/buttons/LanguageButton.svelte";
     import { localeSwitcher } from "$lib/service/locale";
+    import LanguageDropdownMenu from "../../components/common/icons/dropdown/LanguageDropdownMenu.svelte";
 
     class ReviewFilter {
         key?: number;
@@ -66,25 +67,11 @@
         <h3>{$_("mod.bannerName")}</h3>
     </a>
     <div class="buttons">
-        <DropdownMenuContainer
+        <LanguageDropdownMenu
             size={48}
-            ButtonComponent={LanguageButton}
             title="Change language"
             color="#fff"
-        >
-            <button onclick={() => {
-                localeSwitcher.setLocale("en");
-            }}>
-                <span style="font-size: 32px;">🇬🇧</span>
-                <p>English</p>
-            </button>
-            <button onclick={() => {
-                localeSwitcher.setLocale("et");
-            }}>
-                <span style="font-size: 32px;">🇪🇪</span>
-                <p>eesti</p>
-            </button>
-        </DropdownMenuContainer>
+        />
         <DropdownMenuContainer
             size={48}
             ButtonComponent={AccountButton}

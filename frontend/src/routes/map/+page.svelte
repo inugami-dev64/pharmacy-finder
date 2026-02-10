@@ -17,6 +17,7 @@
     import { languages } from "$lib/utils/languages";
     import { _ } from "svelte-i18n";
     import RatingList from "../../components/map/RatingList.svelte";
+    import LanguageDropdownMenu from "../../components/common/icons/dropdown/LanguageDropdownMenu.svelte";
 
     let { data }: PageProps = $props();
 
@@ -58,21 +59,10 @@
     <NavBar size={48}>
         <SearchButton size={32} on:click={() => searchVisible = true} title={$_("map.navbar.search")}/>
         <ShinyStarButton size={32} on:click={showTierRatingList} title={$_("map.navbar.ratingTierList")}/>
-        <div>
-            <LanguageButton size={32} on:click={_ => langSelector.showPicker()} title={$_("map.navbar.language")}/>
-            <select
-                bind:this={langSelector}
-                onchange={e => {
-                    e.preventDefault();
-                    const value = (e.target as HTMLSelectElement).value;
-                    locale.set(value);
-                }}
-            >
-                {#each languages as selection}
-                <option value={selection.code}>{selection.language}</option>
-                {/each}
-            </select>
-        </div>
+        <LanguageDropdownMenu
+            size={32}
+            title={$_("map.navbar.language")}
+        />
         <SourceCodeButton size={32} title={$_("map.navbar.source")}/>
     </NavBar>
 </div>
@@ -108,20 +98,6 @@
 />
 
 <style>
-    select {
-        all: unset;
-        display: block;
-        width: 0;
-        height: 0;
-        padding: 0;
-        margin: 0;
-    }
-
-    select option {
-        font-size: 14px;
-        color: black;
-    }
-
     .navbar-container {
         display: flex;
         flex-direction: row;
