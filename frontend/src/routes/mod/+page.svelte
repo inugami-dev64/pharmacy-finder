@@ -16,9 +16,9 @@
     import TimedDeletionIcon from "../../components/common/icons/TimedDeletionIcon.svelte";
     import IntermediateCheckIcon from "../../components/common/icons/IntermediateCheckIcon.svelte";
     import BellNotificationIcon from "../../components/common/icons/BellNotificationIcon.svelte";
-
-    let accountDialog: HTMLDialogElement;
-    let isAccountDialogVisible: boolean = $state(false);
+    import DropdownMenuContainer from "../../components/common/icons/dropdown/DropdownMenuContainer.svelte";
+    import LanguageButton from "../../components/common/icons/buttons/LanguageButton.svelte";
+    import { localeSwitcher } from "$lib/service/locale";
 
     class ReviewFilter {
         key?: number;
@@ -66,19 +66,31 @@
         <h3>{$_("mod.bannerName")}</h3>
     </a>
     <div class="buttons">
-        <AccountButton
+        <DropdownMenuContainer
             size={48}
-            title="My Account"
-            on:click={(_) => {
-                if (isAccountDialogVisible)
-                    accountDialog.close();
-                else
-                    accountDialog.show();
-                isAccountDialogVisible = !isAccountDialogVisible;
-            }}
-        />
-
-        <dialog bind:this={accountDialog}>
+            ButtonComponent={LanguageButton}
+            title="Change language"
+            color="#fff"
+        >
+            <button onclick={() => {
+                localeSwitcher.setLocale("en");
+            }}>
+                <span style="font-size: 32px;">🇬🇧</span>
+                <p>English</p>
+            </button>
+            <button onclick={() => {
+                localeSwitcher.setLocale("et");
+            }}>
+                <span style="font-size: 32px;">🇪🇪</span>
+                <p>eesti</p>
+            </button>
+        </DropdownMenuContainer>
+        <DropdownMenuContainer
+            size={48}
+            ButtonComponent={AccountButton}
+            title="My account"
+            color="#fff"
+        >
             <a href="/mod/account/me">
                 <AccountIcon size={32}/>
                 <p>{$_("mod.header.myAccount")}</p>
@@ -90,7 +102,7 @@
                 <LogoutIcon size={32}/>
                 <p>{$_("mod.header.logOut")}</p>
             </button>
-        </dialog>
+        </DropdownMenuContainer>
     </div>
 </header>
 
@@ -222,44 +234,6 @@
                 & > h3 {
                     display: none;
                 }
-            }
-        }
-    }
-
-    dialog {
-        text-align: center;
-        background-color: white;
-        position: absolute;
-        border: 1px solid black;
-        margin: 0;
-        top: 64px;
-        right: 0;
-        left: auto;
-        width: 180px;
-        border-radius: 1em;
-        padding: 0;
-        overflow: hidden;
-        height: fit-content;
-        box-sizing: border-box;
-
-        & > button, & > a {
-            all: unset;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            user-select: none;
-            padding: 0;
-            height: 48px;
-            width: 100%;
-            transition: all 0.3s ease-in-out;
-
-            & > p {
-                flex: 1;
-            }
-
-            &:hover {
-                cursor: pointer;
-                background-color: rgba(0, 0, 0, 0.15)
             }
         }
     }
