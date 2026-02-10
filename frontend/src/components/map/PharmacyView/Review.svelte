@@ -2,34 +2,29 @@
     import Stars from "../../common/widgets/stars/Stars.svelte";
     import Estrogen from "$lib/assets/regimen/estrogen.webp";
     import Testosterone from "$lib/assets/regimen/testosterone.webp";
-    import { onMount } from "svelte";
     import Countries from "$lib/assets/countries.json"
     import type { PharmacyReview } from "$lib/service/data/pharmacy-review";
     import ImagoLogo from "../../common/icons/logos/ImagoLogo.svelte";
     import GenderGPLogo from "../../common/icons/logos/GenderGPLogo.svelte";
     import { _ } from "svelte-i18n";
     import { ModeratorPharmacyReview } from "$lib/service/data/moderator-pharmacy-review";
+    import TrunctablePost from "../../common/TrunctablePost.svelte";
+    import type { Snippet } from "svelte";
 
-    export let review: ModeratorPharmacyReview | PharmacyReview;
-
-    let truncateText: boolean = true;
-    let textElement: HTMLElement;
-    let truncatable: boolean = false;
-
-    onMount(async () => {
-        truncatable = textElement.offsetHeight < textElement.scrollHeight || textElement.offsetWidth < textElement.scrollWidth;
-    })
-
-    function toggleReadMore(_: Event) {
-        truncateText = !truncateText;
-    }
+    let {
+        review,
+        children = undefined
+    }: {
+        review: ModeratorPharmacyReview | PharmacyReview,
+        children?: Snippet
+    } = $props();
 </script>
 
-<div class="phr-review">
+<TrunctablePost postText={review.review || ""}>
     <div class="review-header">
         <span>
             <Stars value={review.stars ?? 5} scale={0.75}/>
-            <slot/>
+            {@render children?.()}
         </span>
         <span style="display: flex; align-items: center">
             {#if review.nationality != null && review.nationality in Countries}
@@ -54,14 +49,7 @@
         {/if}
         <b>{review.prescriptionType}</b>
     </span>
-    <div id="content">
-        <p class="{truncateText ? "hide-content" : ""}" bind:this={textElement}>{review.review}</p>
-    </div>
-
-    {#if truncatable}
-    <button on:click|preventDefault={toggleReadMore} aria-label="Toggle Read More" id="toggleBtn">{truncateText ? $_("map.sidebar.review.showMore") : $_("map.sidebar.review.showLess")}</button>
-    {/if}
-</div>
+</TrunctablePost>
 
 <style>
     time {
@@ -69,19 +57,7 @@
         margin-bottom: 0.25em;
     }
 
-    .phr-review {
-        margin-right: 15px;
-        padding-bottom: 0.25em;
-        border-bottom: 1px solid #cfcfcf;
-        text-wrap: wrap;
-    }
-
-    #content {
-        white-space: pre;
-        text-wrap: wrap;
-    }
-
-    .phr-review > div  {
+    .review-header  {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -95,14 +71,5 @@
         width: 24px;
         height: 24px;
         user-select: none;
-    }
-
-    .hide-content {
-        overflow: hidden;
-        -webkit-line-clamp: 5;
-        line-clamp: 5;
-        -webkit-box-orient: vertical;
-        box-orient: vertical;
-        display: -webkit-box;
     }
 </style>
