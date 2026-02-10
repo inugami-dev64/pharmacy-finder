@@ -1,7 +1,7 @@
 <script lang="ts">
-    import CloseButton from "../common/icons/buttons/CloseButton.svelte";
-    import Overlay from "../common/Overlay.svelte";
-    import TitleBar from "../common/TitleBar.svelte";
+    import CloseButton from "./icons/buttons/CloseButton.svelte";
+    import Overlay from "./Overlay.svelte";
+    import TitleBar from "./TitleBar.svelte";
 
     export let zIndex: number;
     export let onClose: () => void;
