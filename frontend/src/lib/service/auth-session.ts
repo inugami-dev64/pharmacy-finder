@@ -33,6 +33,39 @@ export class AuthenticationSession {
     }
 
     /**
+     * Returns true if provided session token belongs to an administrator
+     * and false otherwise
+     *
+     * @param token specifies the token to admin verify
+     * @returns true if provided session token belongs to an administrator, false otherwise
+     */
+    public isAdmin(token: string): boolean {
+        const splitToken = token.split(".");
+        if (splitToken.length === 3) {
+            const payload = this._decodePayload(splitToken[1]);
+            return payload?.admin || false;
+        }
+
+        return false;
+    }
+
+    /**
+     * Gets currently authenticated user ID from provided token
+     *
+     * @param token specifies the session token to extract the user ID from
+     * @returns a string value of the user ID or undefined if not found
+     */
+    public getUserId(token: string): string|undefined {
+        const splitToken = token.split(".");
+        if (splitToken.length === 3) {
+            const payload = this._decodePayload(splitToken[1]);
+            return payload?.sub;
+        }
+
+        return undefined;
+    }
+
+    /**
      * Sets the authentication token to LocalStorage
      *
      * @param token specifies the session token to persist
