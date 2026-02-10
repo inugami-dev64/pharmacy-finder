@@ -2,6 +2,12 @@
     import { _ } from 'svelte-i18n';
     import TransHeart from '../components/main/TransHeart.svelte'
     import LanguageSwitcher from '../components/common/LanguageSwitcher.svelte';
+    import { localeSwitcher } from '$lib/service/locale';
+    import { onMount } from 'svelte';
+
+    onMount(async () => {
+        localeSwitcher.setDefault();
+    });
 </script>
 
 <svelte:head>
