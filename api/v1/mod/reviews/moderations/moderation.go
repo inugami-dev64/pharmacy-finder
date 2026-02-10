@@ -89,7 +89,7 @@ func (handler *ReviewModerationController) GetReviewModerations(details *web.Htt
 // @Security		Bearer
 // @Param			id path int true "ID of the review whose moderation to create"
 // @Param			request body dto.CommentReviewModificationDTO true "Moderation review creation request body"
-// @Success			200 {object} entity.CommentReview
+// @Success			201 {object} entity.CommentReview
 // @Failure			400 {object} types.HttpError
 // @Failure			403 {object} types.HttpError
 // @Router			/api/v1/mod/reviews/{id}/moderations [post]

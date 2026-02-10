@@ -9,6 +9,6 @@ type CommentReviewResultDTO struct {
 
 type CommentReviewModificationDTO struct {
 	Result            entity.CommentReviewResult `json:"result" validate:"required,oneof=APPROVED PERSONAL_ATTACK OFFENSIVE OTHER"`
-	ModeratorComment  *string                    `json:"comment"`
+	ModeratorComment  *string                    `json:"moderatorComment"`
 	MarkedForDeletion bool                       `json:"markedForDeletion"`
 }
