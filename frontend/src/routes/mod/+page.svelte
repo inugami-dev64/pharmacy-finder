@@ -6,7 +6,7 @@
     import { authenticationSession } from "$lib/service/auth-session";
     import { goto } from "$app/navigation";
     import TitleBar from "../../components/common/TitleBar.svelte";
-    import { ModeratorPharmacyReview, ReviewModerationResult } from "$lib/service/data/moderator-pharmacy-review";
+    import { ModeratorPharmacyReview } from "$lib/service/data/moderator-pharmacy-review";
     import CenteredLoader from "../../components/common/widgets/CenteredLoader.svelte";
     import Review from "../../components/map/PharmacyView/Review.svelte";
     import { PAGER_LIMIT } from "$lib/service/data/pager";
@@ -17,9 +17,11 @@
     import IntermediateCheckIcon from "../../components/common/icons/IntermediateCheckIcon.svelte";
     import BellNotificationIcon from "../../components/common/icons/BellNotificationIcon.svelte";
     import DropdownMenuContainer from "../../components/common/icons/dropdown/DropdownMenuContainer.svelte";
-    import LanguageButton from "../../components/common/icons/buttons/LanguageButton.svelte";
-    import { localeSwitcher } from "$lib/service/locale";
     import LanguageDropdownMenu from "../../components/common/icons/dropdown/LanguageDropdownMenu.svelte";
+    import ModerationModal from "../../components/mod/ModerationModal.svelte";
+    import { ReviewModerationResult } from "$lib/service/data/moderation";
+    import { onMount } from "svelte";
+    import { localeSwitcher } from "$lib/service/locale";
 
     class ReviewFilter {
         key?: number;
@@ -35,6 +37,10 @@
 
     let element: HTMLElement | undefined = $state();
     let orderByValue: string | undefined = $state();
+    let showModerationModal: boolean = $state(false);
+    let pendingReview: ModeratorPharmacyReview | undefined = $state(undefined);
+
+    onMount(() => localeSwitcher.setDefault())
 
     const clearPager = () => {
         reviews = [];
@@ -119,7 +125,7 @@
                     bind:checked={filter.showUnmoderated}
                     onchange={(_) => clearPager()}
                 >
-                <label for="moderated">{$_("mod.filters.showUnmoderated")}:</label>
+                <label for="moderated">{$_("mod.filters.showModerated")}:</label>
                 <input
                     type="checkbox"
                     name="moderated"
@@ -142,7 +148,8 @@
                     <span title="{$_("mod.comments.notModerated")}" class="icon">
                         <IntermediateCheckIcon size={24}/>
                     </span>
-                {:else if review.commentReviewResult === ReviewModerationResult.PersonalAttack}
+                {/if}
+                {#if review.commentReviewResult === ReviewModerationResult.PersonalAttack}
                     <span title="{$_("mod.comments.personalAttack")}" class="icon">
                         <BellNotificationIcon size={24}/>
                     </span>
@@ -155,7 +162,14 @@
                         <BellNotificationIcon size={24}/>
                     </span>
                 {/if}
-                <RateReviewButton size={24} title="Rate the review"/>
+                <RateReviewButton
+                    size={24}
+                    title="Rate the review"
+                    on:click={() => {
+                        pendingReview = review;
+                        showModerationModal = true;
+                    }}
+                />
             </Review>
         {/each}
         {#if reviews.length === 0 && fetchDone}
@@ -175,6 +189,16 @@
         {/if}
     </div>
 </div>
+
+{#if showModerationModal && pendingReview != null}
+    <ModerationModal
+        onClose={() => {
+            showModerationModal = false;
+            clearPager();
+        }}
+        review={pendingReview}
+    />
+{/if}
 
 <style>
     :global(body) {
