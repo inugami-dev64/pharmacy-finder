@@ -10,6 +10,9 @@
     import PrimaryButton from "../common/widgets/buttons/PrimaryButton.svelte";
     import TrunctablePost from "../common/TrunctablePost.svelte";
     import CenteredLoader from "../common/widgets/CenteredLoader.svelte";
+    import CheckCircleIcon from "../common/icons/CheckCircleIcon.svelte";
+    import TimedDeletionIcon from "../common/icons/TimedDeletionIcon.svelte";
+    import BellNotificationIcon from "../common/icons/BellNotificationIcon.svelte";
 
     let {
         onClose,
@@ -131,7 +134,34 @@
             {#if moderations.length > 0}
                 <p>{$_("mod.moderations.otherModerations")}:</p>
                 {#each moderations as moderation}
-                <TrunctablePost postText={moderation.moderatorComment || ""}></TrunctablePost>
+                <TrunctablePost postText={moderation.moderatorComment || ""}>
+                    <div class="mod-header">
+                        <a href="/mod/account/{moderation.moderatorId}">{moderation.moderatorUsername}</a>
+                        {#if !moderation.markedForDeletion && moderation.result === ReviewModerationResult.Approved}
+                            <span title="{$_("mod.comments.approved")}" class="icon">
+                                <CheckCircleIcon size={24}/>
+                            </span>
+                        {:else if moderation.markedForDeletion}
+                            <span title="{$_("mod.comments.markedForDeletion")}" class="icon">
+                                <TimedDeletionIcon size={24}/>
+                            </span>
+                        {/if}
+                        {#if moderation.result === ReviewModerationResult.PersonalAttack}
+                            <span title="{$_("mod.comments.personalAttack")}" class="icon">
+                                <BellNotificationIcon size={24}/>
+                            </span>
+                        {:else if moderation.result === ReviewModerationResult.Offensive}
+                            <span title="{$_("mod.comments.offensive")}" class="icon">
+                                <BellNotificationIcon size={24}/>
+                            </span>
+                        {:else if moderation.result === ReviewModerationResult.Other}
+                            <span title="{$_("mod.comments.other")}" class="icon">
+                                <BellNotificationIcon size={24}/>
+                            </span>
+                        {/if}
+                    </div>
+                    <time>{new Date(moderation.reviewedAt ?? 0).toLocaleDateString()} {new Date(moderation.reviewedAt ?? 0).toLocaleTimeString()}</time>
+                </TrunctablePost>
                 {/each}
             {:else}
                 <i>{$_("mod.moderations.noModerations")}</i>
@@ -141,10 +171,30 @@
 </ModalWindow>
 
 <style>
+
+    .mod-header {
+        display: flex;
+
+        & > a {
+            font-weight: 400;
+            transition: all 0.3s ease-in-out;
+
+            &:hover {
+                color: #999;
+            }
+        }
+
+        & ~ time {
+            display: block;
+            margin-bottom: 0.25em;
+        }
+    }
+
     .container {
         width: 100%;
         height: 100%;
         overflow: auto;
+
         & > form {
             display: flex;
             flex-direction: column;
