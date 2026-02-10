@@ -1,0 +1,82 @@
+<script lang="ts">
+    import type { Component, Snippet, SvelteComponent } from "svelte";
+
+    let {
+        size,
+        ButtonComponent,
+        title = undefined,
+        color = "#999999",
+        children = undefined
+    }: {
+        size: number,
+        ButtonComponent: Component<{size: number, title: string, color?: string, padding?: number, onclick?: () => void}>,
+        title?: string,
+        color?: string,
+        children?: Snippet
+    } = $props();
+</script>
+
+<label for="_hidden" class="dropdown-container" style="--size: {size}px">
+    <input type="checkbox" name="_hidden" id="_hidden" hidden>
+    <ButtonComponent
+        size={size}
+        title={title || ""}
+        padding={0}
+        color={color}
+    />
+
+    <div class="dropdown">
+        {@render children?.()}
+    </div>
+</label>
+
+<style>
+    .dropdown-container {
+        display: inline-block;
+        vertical-align: middle;
+        padding: 0.5em;
+        width: var(--size);
+        height: var(--size);
+
+        & > .dropdown {
+            display: none;
+        }
+
+        &:hover > .dropdown, & > input:checked ~ .dropdown {
+            display: block;
+            text-align: center;
+            background-color: white;
+            position: relative;
+            border: 1px solid black;
+            margin: 0;
+            left: calc(var(--size) - 180px);
+            width: 180px;
+            border-radius: 1em;
+            padding: 0;
+            overflow: hidden;
+            height: fit-content;
+            box-sizing: border-box;
+
+            :global(& > button), :global(& > a) {
+                all: unset;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                user-select: none;
+                padding: 0;
+                height: 48px;
+                width: 100%;
+                transition: all 0.3s ease-in-out;
+
+                & > p {
+                    flex: 1;
+                }
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: rgba(0, 0, 0, 0.15)
+                }
+            }
+        }
+    }
+</style>
