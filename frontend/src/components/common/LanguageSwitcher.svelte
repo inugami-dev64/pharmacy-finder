@@ -1,12 +1,15 @@
 <script lang="ts">
+    import { localeSwitcher } from '$lib/service/locale';
     import { languages } from '$lib/utils/languages';
-    import { locale } from 'svelte-i18n';
+    import { onMount } from 'svelte';
 
-    let selectedValue: string | undefined = $state()
+    let selectedValue: string | undefined = $state();
+
+    onMount(() => selectedValue = localeSwitcher.getLocale());
 
     function changeLanguage(e: Event) {
-        e.preventDefault()
-        locale.set(selectedValue);
+        e.preventDefault();
+        localeSwitcher.setLocale(selectedValue || "");
     }
 </script>
 
@@ -17,7 +20,7 @@
     name="langSelect"
 >
     {#each languages as selection}
-    <option value="{selection.code}">{selection.language}</option>
+    <option value="{selection.code}" selected={selection.language === selectedValue}>{selection.language}</option>
     {/each}
 </select>
 
