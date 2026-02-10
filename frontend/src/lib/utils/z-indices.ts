@@ -6,3 +6,4 @@ export const pharmacyViewZIndex = 1;
 export const navBarZIndex = 2;
 export const searchViewZIndex = 3;
 export const modifyReviewZIndex = 4;
+export const moderatorModalZIndex = 5;
