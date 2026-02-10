@@ -44,6 +44,14 @@
                 "emailInUse": "Email is already in use"
             }
         },
+        "moderations": {
+            "errors": {
+                "invalidReviewId": "Invalid review identifier",
+                "invalidModId": "Invalid moderation identifier",
+                "moderationNotFound": "Moderation was not found",
+                "moderationExists": "Moderation for this comment by current user already exists"
+            }
+        },
         "bannerName": "Pharmacy Finder",
         "header": {
             "myAccount": "My account",

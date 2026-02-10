@@ -44,6 +44,14 @@
                 "emailInUse": "Meiliaadress on juba kasutusel"
             }
         },
+        "moderations": {
+            "errors": {
+                "invalidReviewId": "Vale arvustuse tunnus",
+                "invalidModId": "Vale moderatsiooni tunnus",
+                "moderationNotFound": "Moderatsiooni ei leitud",
+                "moderationExists": "Antud arvustus on juba praeguse kasutaja poolt üle vaadatud"
+            }
+        },
         "bannerName": "Apteegileidja",
         "header": {
             "myAccount": "Minu kasutajakonto",
