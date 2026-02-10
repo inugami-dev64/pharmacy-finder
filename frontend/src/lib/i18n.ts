@@ -1,4 +1,4 @@
-import { _ } from "svelte-i18n";
+import { _, getLocaleFromNavigator } from "svelte-i18n";
 
 import { addMessages, init } from "svelte-i18n";
 
@@ -8,7 +8,9 @@ import et from "../lang/et.json";
 addMessages("en", en);
 addMessages("et", et);
 
+const initialLocale = getLocaleFromNavigator();
+
 init({
-    initialLocale: "en",
-    fallbackLocale: "et"
+    initialLocale: initialLocale,
+    fallbackLocale: "en"
 });
