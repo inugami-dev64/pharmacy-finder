@@ -1,16 +1,9 @@
 import type { HttpError } from "$lib/http-error";
 import { authenticationSession } from "../auth-session";
 import { LocalizedBackendError } from "./error";
+import type { ReviewModerationResult } from "./moderation";
 import { PAGER_LIMIT } from "./pager";
 import { PharmacyReview } from "./pharmacy-review";
-
-export enum ReviewModerationResult {
-    Approved = "APPROVED",
-    PersonalAttack = "PERSONAL_ATTACK",
-    Offensive = "OFFENSIVE",
-    Other = "OTHER",
-    None = "NONE"
-}
 
 export class ModeratorPharmacyReview extends PharmacyReview {
     pharmacyId?: number;
@@ -27,6 +20,7 @@ export class ModeratorPharmacyReview extends PharmacyReview {
      * @param desc specifies whether descending sorting order should be applied (default: false)
      * @param showUnmoderated specifies whether unmoderated reviews should be shown (default: true)
      * @param showModerated specifies whether moderated reviews should be shown (default: false)
+     * @returns a promise to an array of ModeratorPharmacyReviews
      */
     public static async getModeratorPharmacyReviews(
         key?: number,
