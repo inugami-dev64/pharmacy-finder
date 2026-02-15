@@ -92,7 +92,7 @@ func (handler *ModeratorUserController) GetUserByID(details *web.HttpRequestDeta
 	id, err := uuid.Parse(idStr)
 	if err != nil {
 		handler.logger.Warn().Msgf("Malformed user ID %v", idStr)
-		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed ID variable"), nil
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed ID path variable"), nil
 	}
 
 	user, err := handler.repo.FindUserByID(types.UUID(id)).Query()
