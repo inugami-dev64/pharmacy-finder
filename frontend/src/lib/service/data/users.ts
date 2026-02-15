@@ -28,7 +28,7 @@ export class UserProfile {
      *
      * @returns a Promise to an array of UserProfile objects
      */
-    protected static async getAllUsers(): Promise<UserProfile[]> {
+    public static async getAllUsers(): Promise<UserProfile[]> {
         const token = authenticationSession.getSessionToken();
         return await fetch(`/api/v1/mod/users`, {
             method: "GET",
@@ -55,7 +55,7 @@ export class UserProfile {
      *
      * @returns a Promise to a UserProfile object
      */
-    protected static async getAuthenticatedUser(): Promise<UserProfile> {
+    public static async getAuthenticatedUser(): Promise<UserProfile> {
         const token = authenticationSession.getSessionToken();
         return await fetch(`/api/v1/mod/users/me`, {
             method: "GET",
@@ -73,7 +73,39 @@ export class UserProfile {
                 }
 
                 return await res.json();
-            })
+            });
+    }
+
+    /**
+     * Queries a user from specified ID
+     * NOTE: Requires authentication
+     *
+     * @param id specifies the user ID to query for
+     * @returns a Promise to a UserProfile object
+     */
+    public static async getUserById(id: string): Promise<UserProfile> {
+        const token = authenticationSession.getSessionToken();
+        return await fetch(`/api/v1/mod/users/${id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        })
+            .then(async res => {
+                if (res.status != 200) {
+                    const err: HttpError = await res.json();
+                    console.error(err);
+                    if (err.msg?.startsWith("Forbidden"))
+                        throw new LocalizedBackendError("universalErrors.forbidden");
+                    else if (err.msg?.startsWith("Malformed ID path variable"))
+                        throw new LocalizedBackendError("mod.users.errors.invalidUserId");
+                    else if (err.msg?.startsWith("Not found"))
+                        throw new LocalizedBackendError("mod.users.errors.userNotFound");
+                    else throw new LocalizedBackendError("universalErrors.internalServerError");
+                }
+
+                return res.json();
+            });
     }
 
     /**
@@ -84,7 +116,7 @@ export class UserProfile {
      * @param form specifies the RegistrationForm object to use
      * @returns a Promise to UserProfile object which represents the user just created
      */
-    protected static async createNewModeratorUser(form: RegistrationForm): Promise<UserProfile> {
+    public static async createNewModeratorUser(form: RegistrationForm): Promise<UserProfile> {
         const token = authenticationSession.getSessionToken();
         return await fetch(`/api/v1/mod/users`, {
             method: "POST",
@@ -116,7 +148,7 @@ export class UserProfile {
      * @param currentPassword specifies the password for current user
      * @param newPassword optionally specifies the new password for the user
      */
-    protected async updateCurrentlyAuthenticatedUser(currentPassword: string, newPassword?: string): Promise<void> {
+    public async updateCurrentlyAuthenticatedUser(currentPassword: string, newPassword?: string): Promise<void> {
         const form = new CurrentUserModificationForm();
         form.email = this.email;
         form.firstName = this.firstName;
@@ -160,7 +192,7 @@ export class UserProfile {
      *
      * @param newPassword optionally specifies the new password for given user
      */
-    protected async updateUser(newPassword?: string): Promise<void> {
+    public async updateUser(newPassword?: string): Promise<void> {
         const form = new CurrentUserModificationForm();
         form.email = this.email;
         form.firstName = this.firstName;
@@ -205,7 +237,7 @@ export class UserProfile {
      *
      * @param currentPassword specifies the current password of the authenticated user
      */
-    protected async deleteCurrentlyAuthenticatedUser(currentPassword: string): Promise<void> {
+    public async deleteCurrentlyAuthenticatedUser(currentPassword: string): Promise<void> {
         const form = new CurrentUserModificationForm();
         form.currentPassword = currentPassword;
 
@@ -238,7 +270,7 @@ export class UserProfile {
      * Deletes someone else's user account from the system.
      * NOTE: Requires administrator privileges
      */
-    protected async deleteUser(): Promise<void> {
+    public async deleteUser(): Promise<void> {
         const token = authenticationSession.getSessionToken();
         await fetch(`/api/v1/mod/users/${this.id}`, {
             method: "DELETE",
