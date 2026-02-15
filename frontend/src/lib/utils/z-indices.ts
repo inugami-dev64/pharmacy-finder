@@ -7,3 +7,5 @@ export const navBarZIndex = 2;
 export const searchViewZIndex = 3;
 export const modifyReviewZIndex = 4;
 export const moderatorModalZIndex = 5;
+
+export const dropdownMenuZIndex = 1000;

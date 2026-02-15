@@ -1,5 +1,6 @@
 <script lang="ts">
-    import type { Component, Snippet, SvelteComponent } from "svelte";
+    import { dropdownMenuZIndex } from "$lib/utils/z-indices";
+    import type { Component, Snippet } from "svelte";
 
     let {
         size,
@@ -25,7 +26,7 @@
         color={color}
     />
 
-    <div class="dropdown">
+    <div class="dropdown" style="--zIndex: {dropdownMenuZIndex}">
         {@render children?.()}
     </div>
 </label>
@@ -40,6 +41,7 @@
 
         & > .dropdown {
             display: none;
+            z-index: var(--zIndex);
         }
 
         &:hover > .dropdown, & > input:checked ~ .dropdown {
