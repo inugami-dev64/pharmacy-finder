@@ -11,6 +11,9 @@
         "internalServerError": "Serveripoolne viga :(",
         "forbidden": "Tegevus pole lubatud"
     },
+    "languageSwitcher": {
+        "changeLanguage": "Muuda keelt"
+    },
     "mod": {
         "login": {
             "formTitle": "Sisene moderatsiooni paneeli",
@@ -67,8 +70,12 @@
                 "moderationExists": "Antud arvustus on juba praeguse kasutaja poolt üle vaadatud"
             }
         },
-        "bannerName": "Apteegileidja",
         "header": {
+            "name": "Pharmacy Finder",
+            "gotoHome": "Mine kodulehele",
+            "gotoMod": "Mine moderaatori lehele",
+            "admin": "Administraatori tegevused",
+            "administerAccounts": "Halda kontosid",
             "myAccount": "Minu kasutajakonto",
             "logOut": "Logi välja"
         },

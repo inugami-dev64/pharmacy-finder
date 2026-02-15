@@ -11,6 +11,9 @@
         "internalServerError": "Server side error :(",
         "forbidden": "Access denied"
     },
+    "languageSwitcher": {
+        "changeLanguage": "Change language"
+    },
     "mod": {
         "login": {
             "formTitle": "Login to moderation panel",
@@ -67,8 +70,12 @@
                 "moderationExists": "Moderation for this comment by current user already exists"
             }
         },
-        "bannerName": "Pharmacy Finder",
         "header": {
+            "name": "Pharmacy Finder",
+            "gotoHome": "Go to home page",
+            "gotoMod": "Go to moderation page",
+            "admin": "Administrator actions",
+            "administerAccounts": "Manage accounts",
             "myAccount": "My account",
             "logOut": "Log out"
         },
