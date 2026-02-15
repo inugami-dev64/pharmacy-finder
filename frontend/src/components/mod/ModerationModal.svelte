@@ -136,7 +136,7 @@
                 {#each moderations as moderation}
                 <TrunctablePost postText={moderation.moderatorComment || ""}>
                     <div class="mod-header">
-                        <a href="/mod/account/{moderation.moderatorId}">{moderation.moderatorUsername}</a>
+                        <a href="/mod/account/{moderation.moderatorId}" target="_blank">{moderation.moderatorUsername}</a>
                         {#if !moderation.markedForDeletion && moderation.result === ReviewModerationResult.Approved}
                             <span title="{$_("mod.comments.approved")}" class="icon">
                                 <CheckCircleIcon size={24}/>
