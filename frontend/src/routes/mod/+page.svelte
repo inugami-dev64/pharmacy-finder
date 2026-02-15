@@ -1,10 +1,6 @@
 <script lang="ts">
     import { _ } from "svelte-i18n";
-    import AccountIcon from "../../components/common/icons/AccountIcon.svelte";
-    import AccountButton from "../../components/common/icons/buttons/AccountButton.svelte";
-    import LogoutIcon from "../../components/common/icons/LogoutIcon.svelte";
     import { authenticationSession } from "$lib/service/auth-session";
-    import { goto } from "$app/navigation";
     import TitleBar from "../../components/common/TitleBar.svelte";
     import { ModeratorPharmacyReview } from "$lib/service/data/moderator-pharmacy-review";
     import CenteredLoader from "../../components/common/widgets/CenteredLoader.svelte";
@@ -16,12 +12,11 @@
     import TimedDeletionIcon from "../../components/common/icons/TimedDeletionIcon.svelte";
     import IntermediateCheckIcon from "../../components/common/icons/IntermediateCheckIcon.svelte";
     import BellNotificationIcon from "../../components/common/icons/BellNotificationIcon.svelte";
-    import DropdownMenuContainer from "../../components/common/icons/dropdown/DropdownMenuContainer.svelte";
-    import LanguageDropdownMenu from "../../components/common/icons/dropdown/LanguageDropdownMenu.svelte";
     import ModerationModal from "../../components/mod/ModerationModal.svelte";
     import { ReviewModerationResult } from "$lib/service/data/moderation";
     import { onMount } from "svelte";
     import { localeSwitcher } from "$lib/service/locale";
+    import ModeratorHeader from "../../components/mod/ModeratorHeader.svelte";
 
     class ReviewFilter {
         key?: number;
@@ -67,37 +62,11 @@
     <title>Moderation panel - Pharmacy Finder</title>
 </svelte:head>
 
-<header>
-    <a href="/" title="Go to home page">
-        <img src="banner.svg" alt="Logo">
-        <h3>{$_("mod.bannerName")}</h3>
-    </a>
-    <div class="buttons">
-        <LanguageDropdownMenu
-            size={48}
-            title="Change language"
-            color="#fff"
-        />
-        <DropdownMenuContainer
-            size={48}
-            ButtonComponent={AccountButton}
-            title="My account"
-            color="#fff"
-        >
-            <a href="/mod/account/me">
-                <AccountIcon size={32}/>
-                <p>{$_("mod.header.myAccount")}</p>
-            </a>
-            <button onclick={() => {
-                authenticationSession.logout();
-                goto("/mod/login", { replaceState: true })
-            }}>
-                <LogoutIcon size={32}/>
-                <p>{$_("mod.header.logOut")}</p>
-            </button>
-        </DropdownMenuContainer>
-    </div>
-</header>
+<ModeratorHeader
+    bannerHref="/"
+    bannerTitle={$_("mod.header.gotoHome")}
+    isAdmin={authenticationSession.isAdmin(authenticationSession.getSessionToken() || "")}
+/>
 
 <div class="mod-container">
     <div class="comment-container">
@@ -208,45 +177,6 @@
     .icon {
         display: inline-block;
         vertical-align: middle;
-    }
-
-    .buttons {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
-
-    header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        height: 64px;
-        background-color: rgba(100, 0, 0, 0.2);
-        border-bottom: 1px solid black;
-        box-sizing: border-box;
-
-        & > a {
-            display: flex;
-            align-items: center;
-            user-select: none;
-            & > img {
-                margin-left: 0.5em;
-                display: inline-block;
-                height: 48px;
-            }
-            h3 {
-                margin-left: 5px;
-                color: white;
-                text-shadow: 1px 1px 1px #eeeeee;
-            }
-
-            @media(max-width: 600px) {
-                & > h3 {
-                    display: none;
-                }
-            }
-        }
     }
 
     .mod-container {
