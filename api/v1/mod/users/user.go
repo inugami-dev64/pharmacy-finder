@@ -43,6 +43,7 @@ func (handler *ModeratorUserController) GetRoutes() []web.Route {
 	return []web.Route{
 		web.NewSecureRequestsHandler[ModeratorUserController](handler.GetAllUsers, "/mod/users", []string{"GET"}, web.NewSecurityChain[web.EmptyBody]().RuleAdmin(handler.repo, handler.tokenManager)),
 		web.NewSecureRequestsHandler[ModeratorUserController](handler.GetAuthenticatedUserProfile, "/mod/users/me", []string{"GET"}, web.NewSecurityChain[web.EmptyBody]().RuleAuthenticated(handler.repo, handler.tokenManager)),
+		web.NewSecureRequestsHandler[ModeratorUserController](handler.GetUserByID, "/mod/users/{id}", []string{"GET"}, web.NewSecurityChain[web.EmptyBody]().RuleAuthenticated(handler.repo, handler.tokenManager)),
 		web.NewSecureRequestsHandler[ModeratorUserController](handler.CreateNewModeratorUser, "/mod/users", []string{"POST"}, web.NewSecurityChain[dto.ModeratorUserRegistrationDTO]().RuleAdmin(handler.repo, handler.tokenManager)),
 		web.NewSecureRequestsHandler[ModeratorUserController](handler.UpdateCurrentModeratorUser, "/mod/users/me", []string{"PATCH"}, web.NewSecurityChain[dto.ModeratorUserUpdateDTO]().RuleAuthenticated(handler.repo, handler.tokenManager)),
 		web.NewSecureRequestsHandler[ModeratorUserController](handler.UpdateModeratorUser, "/mod/users/{id}", []string{"PATCH"}, web.NewSecurityChain[dto.AdminUserUpdateDTO]().RuleAdmin(handler.repo, handler.tokenManager)),
@@ -70,6 +71,49 @@ func (handler *ModeratorUserController) GetAllUsers(details *web.HttpRequestDeta
 	}
 
 	return http.StatusOK, data, nil
+}
+
+// Find a moderator user by specified ID
+//
+// Path: `GET /api/v1/mod/users/{id}`
+//
+// @Summary 		Query data about a specific moderator user
+// @Description		Endpoint for querying data about a specific moderator user
+// @Tags			Users
+// @Security		Bearer
+// @Produce			json
+// @Success			200 {object} dto.ModeratorUserProfileDTO
+// @Failure			400 {object} types.HttpError
+// @Failure			403 {object} types.HttpError
+// @Failure			404 {object} types.HttpError
+// @Router			/api/v1/mod/users/{id} [get]
+func (handler *ModeratorUserController) GetUserByID(details *web.HttpRequestDetails[web.EmptyBody]) (int, interface{}, error) {
+	idStr := details.PathVars["id"]
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		handler.logger.Warn().Msgf("Malformed user ID %v", idStr)
+		return http.StatusBadRequest, types.NewHttpError(http.StatusBadRequest, "Malformed ID variable"), nil
+	}
+
+	user, err := handler.repo.FindUserByID(types.UUID(id)).Query()
+	if err != nil {
+		return http.StatusInternalServerError, nil, nil
+	} else if user == nil {
+		return http.StatusNotFound, types.NewHttpError(http.StatusNotFound, "Not found"), nil
+	}
+
+	dto := dto.ModeratorUserProfileDTO{
+		ID:                    user.ID,
+		Username:              user.Username,
+		Email:                 user.Email,
+		FirstName:             user.FirstName,
+		LastName:              user.LastName,
+		RegistrationTimestamp: user.RegistrationTimestamp,
+		LastLoginTimestamp:    user.LastLoginTimestamp,
+		Administrator:         user.Administrator,
+	}
+
+	return http.StatusOK, dto, nil
 }
 
 // Get currently authenticated user's details
