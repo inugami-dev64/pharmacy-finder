@@ -4,6 +4,7 @@
     import LanguageSwitcher from '../components/common/LanguageSwitcher.svelte';
     import { localeSwitcher } from '$lib/service/locale';
     import { onMount } from 'svelte';
+    import BANNER from "$lib/assets/banner.svg"
 
     onMount(async () => {
         localeSwitcher.setDefault();
@@ -16,7 +17,7 @@
 
 <LanguageSwitcher/>
 <div class="intro-container">
-    <img src="banner.svg" alt="banner" class="banner">
+    <img src={BANNER} alt="banner" class="banner">
     <h1>{$_("mainPage.title")}</h1>
     <p>{$_("mainPage.introduction")}</p>
     <h2>{$_("mainPage.gotoMap.pretext")}<a href="/map">👉️<span class="rainbow">{$_("mainPage.gotoMap.title")}</span>👈️</a></h2>

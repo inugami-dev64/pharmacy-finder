@@ -8,6 +8,7 @@
     import { goto } from "$app/navigation";
     import LogoutIcon from "../common/icons/LogoutIcon.svelte";
     import ShieldButton from "../common/icons/buttons/ShieldButton.svelte";
+    import BANNER from "$lib/assets/banner.svg"
 
     let {
         bannerHref = "/",
@@ -22,7 +23,7 @@
 
 <header>
     <a href="{bannerHref}" title="{bannerTitle}">
-        <img src="banner.svg" alt="Logo">
+        <img src={BANNER} alt="Logo">
         <h3>{$_("mod.header.name")}</h3>
     </a>
     <div class="buttons">
