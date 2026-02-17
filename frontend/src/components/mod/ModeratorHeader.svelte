@@ -27,18 +27,18 @@
         <h3>{$_("mod.header.name")}</h3>
     </a>
     <div class="buttons">
-        {#if isAdmin}
-        <DropdownMenuContainer
-            size={48}
-            ButtonComponent={ShieldButton}
-            title={$_("mod.header.admin")}
-            color="#fff"
-        >
-            <a href="/mod/accounts">
-                <AccountIcon size={32}/>
-                <p>{$_("mod.header.administerAccounts")}</p>
-            </a>
-        </DropdownMenuContainer>
+        {#if isAdmin === true}
+            <DropdownMenuContainer
+                size={48}
+                ButtonComponent={ShieldButton}
+                title={$_("mod.header.admin")}
+                color="#fff"
+            >
+                <a href="/mod/accounts">
+                    <AccountIcon size={32}/>
+                    <p>{$_("mod.header.administerAccounts")}</p>
+                </a>
+            </DropdownMenuContainer>
         {/if}
         <LanguageDropdownMenu
             size={48}
