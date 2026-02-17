@@ -40,6 +40,26 @@
                 "usernameOrEmailExists": "Username or email already exists"
             }
         },
+        "accounts": {
+            "greeting": "Hi",
+            "username": "Username",
+            "email": "Email",
+            "firstName": "First name",
+            "lastName": "Last name",
+            "registrationTimestamp": "Registration timestamp",
+            "lastLoginTimestamp": "Last login timestamp",
+            "administrator": "Administrator",
+            "currentPassword": "Current password",
+            "credentials": {
+                "title": "Credentials",
+                "description": "Leave empty if you do not want to change the password"
+            },
+            "newPassword": "New password",
+            "verifyPassword": "Verify password",
+            "allowEditing": "Allow editing",
+            "update": "Update user profile",
+            "userId": "User ID"
+        },
         "users": {
             "errors": {
                 "invalidUserId": "Invalid user identifier",

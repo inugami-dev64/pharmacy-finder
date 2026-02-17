@@ -40,6 +40,26 @@
                 "usernameOrEmailExists": "Selle kasutajanime või meiliaadressiga konto on juba registreeritud"
             }
         },
+        "accounts": {
+            "greeting": "Tere",
+            "username": "Kasutajanimi",
+            "email": "Meiliaadress",
+            "firstName": "Eesnimi",
+            "lastName": "Perekonnanimi",
+            "registrationTimestamp": "Registreerimise aeg",
+            "lastLoginTimestamp": "Viimatise sisselogimise aeg",
+            "administrator": "Administraator",
+            "currentPassword": "Praegune parool",
+            "credentials": {
+                "title": "Parooli muutmine",
+                "description": "Jätke järgnevad väljad tühjaks kui ei soovi parooli muuta"
+            },
+            "newPassword": "Uus parool",
+            "verifyPassword": "Kinnita parool",
+            "allowEditing": "Luba redigeerimine",
+            "update": "Uuenda kasutajaprofiili",
+            "userId": "Kasutaja ID"
+        },
         "users": {
             "errors": {
                 "invalidUserId": "Vale kasutajatunnus",
