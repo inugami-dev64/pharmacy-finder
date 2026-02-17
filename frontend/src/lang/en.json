@@ -54,6 +54,10 @@
                 "title": "Credentials",
                 "description": "Leave empty if you do not want to change the password"
             },
+            "status": {
+                "success": "User data has been successfully updated",
+                "passwordsDoNotMatch": "Passwords do not match"
+            },
             "newPassword": "New password",
             "verifyPassword": "Verify password",
             "allowEditing": "Allow editing",

@@ -54,6 +54,10 @@
                 "title": "Parooli muutmine",
                 "description": "Jätke järgnevad väljad tühjaks kui ei soovi parooli muuta"
             },
+            "status": {
+                "success": "Kasutajaandmeid on edukalt muudetud",
+                "passwordsDoNotMatch": "Paroolid ei kattu"
+            },
             "newPassword": "Uus parool",
             "verifyPassword": "Kinnita parool",
             "allowEditing": "Luba redigeerimine",
