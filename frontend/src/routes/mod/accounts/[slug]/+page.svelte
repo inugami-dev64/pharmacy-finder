@@ -57,7 +57,7 @@
 
         // If newPassword or verifyPassword values were provided, check if they match
         if ((newPassword != null || verifyPassword != null) && newPassword !== verifyPassword) {
-            errorMessage = "Passwords do not match";
+            errorMessage = $_("mod.accounts.status.passwordsDoNotMatch");
             pendingSubmission = false;
             return;
         }
@@ -67,6 +67,8 @@
         user.firstName = firstName;
         user.lastName = lastName;
         user.administrator = isAdmin;
+
+        const previousIsAdmin = data.profile?.administrator || false;
 
         try {
             if (data.isMe) {
@@ -84,13 +86,13 @@
             return;
         }
 
-        successMessage = "User data has been successfully updated";
+        successMessage = $_("mod.accounts.status.success");
         errorMessage = "";
         pendingSubmission = false;
         allowEditing = false;
 
         // If password or administrator state has been updated, the user shall be logged out
-        if (data.isMe && newPassword != "" || isAdmin != data.profile.administrator) {
+        if (data.isMe && (newPassword != "" || isAdmin != previousIsAdmin)) {
             setTimeout(() => {
                 authenticationSession.logout();
                 goto("/mod/login", { replaceState: true });
