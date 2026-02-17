@@ -198,7 +198,7 @@ func (handler *ModeratorUserController) CreateNewModeratorUser(details *web.Http
 	return http.StatusCreated, userDTO, nil
 }
 
-func (handler *ModeratorUserController) updateUser(user *entity.ModeratorUser, body *dto.AdminUserUpdateDTO, me bool) (int, interface{}, error) {
+func (handler *ModeratorUserController) updateUser(principal *entity.ModeratorUser, user *entity.ModeratorUser, body *dto.AdminUserUpdateDTO, me bool) (int, interface{}, error) {
 	// Update password if present
 	if body.Password != "" {
 		var err error
@@ -220,7 +220,7 @@ func (handler *ModeratorUserController) updateUser(user *entity.ModeratorUser, b
 	user.Email = body.Email
 	user.FirstName = body.FirstName
 	user.LastName = body.LastName
-	if !me && body.Administrator != nil {
+	if principal.Administrator && body.Administrator != nil {
 		user.Administrator = *body.Administrator
 	}
 
@@ -271,7 +271,7 @@ func (handler *ModeratorUserController) UpdateCurrentModeratorUser(details *web.
 		return http.StatusForbidden, types.NewHttpError(http.StatusForbidden, "Invalid password"), nil
 	}
 
-	return handler.updateUser(user, &details.Body.AdminUserUpdateDTO, true)
+	return handler.updateUser(details.AuthenticatedUser, user, &details.Body.AdminUserUpdateDTO, true)
 }
 
 // Modify someone's user account
@@ -305,7 +305,7 @@ func (handler *ModeratorUserController) UpdateModeratorUser(details *web.HttpReq
 		return http.StatusNotFound, types.NewHttpError(http.StatusNotFound, fmt.Sprintf("User with ID '%s' does not exist", id.String())), nil
 	}
 
-	return handler.updateUser(user, &details.Body, false)
+	return handler.updateUser(details.AuthenticatedUser, user, &details.Body, false)
 }
 
 // Delete my user account
