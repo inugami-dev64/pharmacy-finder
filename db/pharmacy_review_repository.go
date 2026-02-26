@@ -31,8 +31,21 @@ func (repo PharmacyReviewRepositorySQLX) FindReviewForPharmacy(id int64) Query[e
 		*
 	FROM
 		pharmacy_reviews pr
+	LEFT JOIN (
+		SELECT
+			cr.comment_id,
+			AVG(CAST(cr.marked_for_deletion AS INT)) AS avg_marked_for_deletion
+		FROM
+			comment_reviews cr
+		GROUP BY
+			cr.comment_id
+	) mr
+	ON
+		mr.comment_id = pr.id
 	WHERE
 		pr.pharmacy_id = $1
+	AND
+		COALESCE(mr.avg_marked_for_deletion, 0) < 0.5
 	`
 
 	args := []interface{}{id}
