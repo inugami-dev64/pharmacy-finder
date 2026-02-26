@@ -4,9 +4,13 @@
     export let href: string | undefined = undefined;
     export let blankHref: boolean | undefined = false;
     export let padding: number | undefined = 0.5;
+    export let dummy: boolean | undefined = false;
 </script>
-
-{#if href == null}
+{#if dummy}
+<div style="--hover-color: {hoverColor}; --padding: {padding}em">
+    <slot></slot>
+</div>
+{:else if href == null}
 <button style="--hover-color: {hoverColor}; --padding: {padding}em" type="button" on:click aria-label="icon-btn" title={title}>
     <slot></slot>
 </button>
