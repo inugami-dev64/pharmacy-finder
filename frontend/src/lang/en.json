@@ -58,6 +58,16 @@
                 "success": "User data has been successfully updated",
                 "passwordsDoNotMatch": "Passwords do not match"
             },
+            "sorting": {
+                "registrationTime": "Registration Time",
+                "lastLoginTime": "Last Login Time",
+                "username": "Username",
+                "firstName": "First name",
+                "lastName": "Last name",
+                "email": "Email",
+                "desc": "Descending order"
+            },
+            "listTitle": "List of all moderator users",
             "newPassword": "New password",
             "verifyPassword": "Verify password",
             "allowEditing": "Allow editing",

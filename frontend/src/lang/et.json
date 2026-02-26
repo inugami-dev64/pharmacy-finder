@@ -58,6 +58,16 @@
                 "success": "Kasutajaandmeid on edukalt muudetud",
                 "passwordsDoNotMatch": "Paroolid ei kattu"
             },
+            "sorting": {
+                "registrationTime": "Registreerimise aeg",
+                "lastLoginTime": "Viimatine sisselogimise aeg",
+                "username": "Kasutajanimi",
+                "firstName": "Eesnimi",
+                "lastName": "Perekonnanimi",
+                "email": "Meiliaadress",
+                "desc": "Järjesta tagurpidi"
+            },
+            "listTitle": "Kõikide moderaatorite kontod",
             "newPassword": "Uus parool",
             "verifyPassword": "Kinnita parool",
             "allowEditing": "Luba redigeerimine",
