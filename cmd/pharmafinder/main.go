@@ -35,9 +35,13 @@ func NewServerMux(routes [][]web.Route) *mux.Router {
 		}
 	}
 
+	r.PathPrefix("/mod/accounts/{id}").
+		Methods("GET").
+		HandlerFunc(pharmafinder.AccountSlugHandler)
+
 	r.PathPrefix("/").
 		Methods("GET").
-		HandlerFunc(pharmafinder.StaticServer)
+		HandlerFunc(pharmafinder.StaticHandler)
 
 	return r
 }
