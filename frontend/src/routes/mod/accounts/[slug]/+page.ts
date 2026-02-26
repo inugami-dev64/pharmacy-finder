@@ -23,16 +23,14 @@ export async function load({ params }) {
     if (userId === "me") {
         try {
             profile = await UserProfile.getAuthenticatedUser();
-        } catch (e) {
-            if (e instanceof LocalizedBackendError)
-                error = e;
+        } catch (_) {
+            redirect(307, "/mod");
         }
     } else {
         try {
             profile = await UserProfile.getUserById(userId);
-        } catch (e) {
-            if (e instanceof LocalizedBackendError)
-                error = e;
+        } catch (_) {
+            redirect(307, "/mod");
         }
     }
 
