@@ -15,7 +15,9 @@
     <title>Pharmacy finder</title>
 </svelte:head>
 
-<LanguageSwitcher/>
+<div>
+    <LanguageSwitcher/>
+</div>
 <div class="intro-container">
     <img src={BANNER} alt="banner" class="banner">
     <h1>{$_("mainPage.title")}</h1>
@@ -68,12 +70,11 @@
     .intro-container {
         padding-top: 0.5em;
         text-align: center;
-        display: flex;
         flex-direction: column;
         justify-content: center;
         margin: auto;
         width: 70%;
-        height: 100%;
+        height: auto;
     }
 
     @media(max-width: 600px) {
