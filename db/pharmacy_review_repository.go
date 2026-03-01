@@ -28,7 +28,7 @@ func ProvidePharmacyReviewRepository(conn *sqlx.DB) PharmacyReviewRepository {
 func (repo PharmacyReviewRepositorySQLX) FindReviewForPharmacy(id int64) Query[entity.PharmacyReview] {
 	q := `
 	SELECT
-		*
+		pr.*
 	FROM
 		pharmacy_reviews pr
 	LEFT JOIN (
